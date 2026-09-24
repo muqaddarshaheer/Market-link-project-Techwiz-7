@@ -1,0 +1,11 @@
+@extends('layouts.app')
+@section('title', 'Sitemap')
+@section('content')
+<h1 class="section-title mb-3">Sitemap</h1>
+<div class="row g-4">
+    <div class="col-md-3"><h2 class="h6">Public</h2><ul><li><a href="{{ route('home') }}">Home</a></li><li><a href="{{ route('about') }}">About</a></li><li><a href="{{ route('contact') }}">Contact</a></li><li><a href="{{ route('markets.index') }}">Markets</a></li><li><a href="{{ route('farmers.index') }}">Farmers</a></li><li><a href="{{ route('products.index') }}">Products</a></li></ul></div>
+    <div class="col-md-3"><h2 class="h6">Customer</h2><ul><li><a href="{{ route('customer.dashboard') }}">Dashboard</a></li><li><a href="{{ route('cart.index') }}">Cart</a></li><li><a href="{{ route('customer.orders.index') }}">Orders</a></li><li><a href="{{ route('customer.favorites') }}">Favorites</a></li><li><a href="{{ route('customer.notifications') }}">Notifications</a></li><li><a href="{{ route('customer.profile') }}">Profile</a></li></ul></div>
+    <div class="col-md-3"><h2 class="h6">Farmer</h2><ul><li><a href="{{ route('farmer.dashboard') }}">Dashboard</a></li><li><a href="{{ route('farmer.products.index') }}">Products</a></li><li><a href="{{ route('farmer.orders.index') }}">Orders</a></li><li><a href="{{ route('farmer.slots.index') }}">Slots</a></li><li><a href="{{ route('farmer.insights') }}">Insights</a></li><li><a href="{{ route('farmer.reviews') }}">Reviews</a></li><li><a href="{{ route('farmer.profile') }}">Profile</a></li></ul></div>
+    <div class="col-md-3"><h2 class="h6">Admin</h2><ul><li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li><li><a href="{{ route('admin.users.index') }}">Users</a></li><li><a href="{{ route('admin.farmers.index') }}">Farmers</a></li><li><a href="{{ route('admin.markets.index') }}">Markets</a></li><li><a href="{{ route('admin.categories.index') }}">Categories</a></li><li><a href="{{ route('admin.products.index') }}">Products</a></li><li><a href="{{ route('admin.reviews.index') }}">Reviews</a></li><li><a href="{{ route('admin.reports.index') }}">Reports</a></li><li><a href="{{ route('admin.announcements.index') }}">Announcements</a></li><li><a href="{{ route('admin.settings') }}">Settings</a></li></ul></div>
+</div>
+@endsection
