@@ -4,7 +4,7 @@
 <section class="hero p-4 p-md-5 mb-5">
     <div class="row align-items-center">
         <div class="col-lg-7">
-            <p class="text-uppercase small mb-2">Farmers markets, without the guesswork</p>
+            <p class="hero-kicker">Farmers markets, without the guesswork</p>
             <h1 class="display-5">Meet the growers. Reserve your basket. Pick it up fresh.</h1>
             <p class="lead">MarketLink connects nearby markets and farmers with customers who want to pre-order produce and pay in person.</p>
             <div class="d-flex gap-2 flex-wrap">
@@ -13,7 +13,7 @@
             </div>
         </div>
         <div class="col-lg-5 mt-4 mt-lg-0">
-            <div class="bg-white text-dark rounded-4 p-4">
+            <div class="how-card p-4">
                 <h2 class="h5">How it works</h2>
                 <ol class="mb-0">
                     <li>Find a market or farmer near you.</li>
