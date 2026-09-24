@@ -33,8 +33,18 @@ class AppServiceProvider extends ServiceProvider
             if ($user) {
                 $unread = $user->appNotifications()->where('is_read', false)->count();
             }
+            $cartCount = 0;
+            if ($user && $user->isCustomer()) {
+                $cartCount = (int) ($user->cart?->items()->sum('quantity') ?? 0);
+            }
             $view->with('unreadNotifications', $unread);
+            $view->with('cartCount', $cartCount);
             $view->with('siteName', Setting::getValue('platform_name', 'MarketLink'));
+            $view->with('siteEmail', Setting::getValue('contact_email', 'hello@marketlink.com'));
+            $view->with('sitePhone', Setting::getValue('contact_phone', ''));
+            $view->with('siteAddress', Setting::getValue('contact_address', ''));
+            $view->with('siteFacebook', Setting::getValue('facebook', ''));
+            $view->with('siteInstagram', Setting::getValue('instagram', ''));
         });
 
         View::composer('layouts.app', function ($view) {

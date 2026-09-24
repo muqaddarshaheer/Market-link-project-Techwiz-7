@@ -1,11 +1,8 @@
 @php use App\Support\ImageStore; @endphp
 <div class="card-ml h-100">
     <div class="thumb">
-        @if($product->image)
-            <img src="{{ ImageStore::url($product->image) }}" alt="{{ $product->name }}">
-        @else
-            <i class="bi {{ $product->category->icon ?? 'bi-basket' }}"></i>
-        @endif
+        <img src="{{ ImageStore::picture($product->image, $product->name) }}" alt="{{ $product->name }}" width="640" height="420" loading="lazy" decoding="async">
+        <div class="thumb-label">{{ $product->name }}</div>
     </div>
     <div class="p-3">
         <div class="d-flex justify-content-between">
@@ -23,7 +20,17 @@
         @include('partials.star-rating', ['rating' => $product->rating_avg ?? $product->averageRating()])
         <div class="d-flex justify-content-between align-items-center mt-2">
             <strong>${{ number_format($product->price, 2) }} <span class="small muted">/ {{ $product->unit }}</span></strong>
-            <a class="btn btn-ml btn-sm" href="{{ route('products.show', $product) }}">View</a>
+            <div class="d-flex gap-1">
+                @auth
+                    @if(auth()->user()->isCustomer())
+                        <form method="POST" action="{{ route('customer.favorites.toggle') }}">@csrf<input type="hidden" name="product_id" value="{{ $product->id }}"><button class="btn btn-outline-ml btn-sm" aria-label="Favorite"><i class="bi bi-heart"></i></button></form>
+                        @if($product->is_available && ! $product->is_sold_out && $product->stock_quantity > 0)
+                            <form method="POST" action="{{ route('cart.add', $product) }}">@csrf<input type="hidden" name="quantity" value="1"><button class="btn btn-ml btn-sm">Add</button></form>
+                        @endif
+                    @endif
+                @endauth
+                <a class="btn btn-outline-ml btn-sm" href="{{ route('products.show', $product) }}">View</a>
+            </div>
         </div>
     </div>
 </div>

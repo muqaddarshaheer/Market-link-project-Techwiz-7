@@ -41,7 +41,7 @@ class OrderService
                 }
 
                 $order = Order::query()->create([
-                    'order_number' => 'ML-'.now()->format('Ymd').'-'.strtoupper(substr(uniqid(), -6)),
+                    'order_number' => 'ML-'.now()->year.'-'.str_pad((string) ((int) Order::max('id') + 1), 6, '0', STR_PAD_LEFT),
                     'customer_id' => $customer->id,
                     'farmer_id' => $farmer->id,
                     'market_id' => $first->market_id,

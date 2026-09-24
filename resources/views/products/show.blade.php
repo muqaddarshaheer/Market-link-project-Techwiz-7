@@ -4,7 +4,8 @@
 <div class="row g-4">
     <div class="col-lg-6">
         <div class="card-ml thumb" style="height:360px">
-            @if($product->image)<img src="{{ \App\Support\ImageStore::url($product->image) }}" alt="{{ $product->name }}">@else<i class="bi bi-basket"></i>@endif
+            <img src="{{ \App\Support\ImageStore::picture($product->image, $product->name) }}" alt="{{ $product->name }}" width="960" height="640" loading="lazy" decoding="async">
+            <div class="thumb-label">{{ $product->name }}</div>
         </div>
     </div>
     <div class="col-lg-6">

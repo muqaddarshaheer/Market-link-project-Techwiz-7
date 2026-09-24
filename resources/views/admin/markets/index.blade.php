@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Markets')
 @section('content')
 <h1 class="section-title">Markets</h1>
@@ -10,8 +10,9 @@
         <div class="col-md-4"><input class="form-control" name="address" placeholder="Address" required></div>
         <div class="col-md-3"><input class="form-control" type="time" name="opening_time" required></div>
         <div class="col-md-3"><input class="form-control" type="time" name="closing_time" required></div>
-        <div class="col-md-3"><input class="form-control" name="latitude" placeholder="Latitude" required></div>
-        <div class="col-md-3"><input class="form-control" name="longitude" placeholder="Longitude" required></div>
+        <div class="col-md-3"><input class="form-control" id="marketLat" name="latitude" placeholder="Latitude" required></div>
+        <div class="col-md-3"><input class="form-control" id="marketLng" name="longitude" placeholder="Longitude" required></div>
+        <div class="col-12"><div id="marketPicker" class="map-box"></div><div class="small muted">Click the map to set latitude and longitude.</div></div>
         <div class="col-md-6">@foreach(['Saturday','Sunday','Wednesday'] as $day)<label class="me-2"><input type="checkbox" name="operating_days[]" value="{{ $day }}" checked> {{ $day }}</label>@endforeach</div>
         <div class="col-md-3"><select class="form-select" name="status"><option>active</option><option>inactive</option></select></div>
         <div class="col-md-3"><input class="form-control" type="file" name="image"></div>
@@ -38,3 +39,15 @@
 @endforeach
 {{ $markets->links() }}
 @endsection
+@push('scripts')
+<script>
+const picker = L.map('marketPicker').setView([30.27, -97.74], 11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; OpenStreetMap'}).addTo(picker);
+let marker;
+picker.on('click', (event) => {
+    document.getElementById('marketLat').value = event.latlng.lat.toFixed(6);
+    document.getElementById('marketLng').value = event.latlng.lng.toFixed(6);
+    if (marker) marker.setLatLng(event.latlng); else marker = L.marker(event.latlng).addTo(picker);
+});
+</script>
+@endpush

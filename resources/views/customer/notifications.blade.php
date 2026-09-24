@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(auth()->user()->isFarmer() ? 'layouts.farmer' : 'layouts.customer')
 @section('title', 'Notifications')
 @section('content')
 <div class="d-flex justify-content-between"><h1 class="section-title">Notifications</h1>

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.farmer')
 @section('title', 'Reviews')
 @section('content')
 <h1 class="section-title">Reviews</h1>

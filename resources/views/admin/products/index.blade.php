@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Moderate products')
 @section('content')
 <h1 class="section-title">Products</h1>

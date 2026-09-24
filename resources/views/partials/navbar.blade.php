@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-ml sticky-top" x-data="notifyBell()" x-init="start()">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('home') }}">
-            <span class="brand-mark">M</span>
+            <img class="brand-logo" src="{{ asset('images/logo.svg') }}" alt="" width="40" height="40">
             <span class="fw-bold">{{ $siteName ?? 'MarketLink' }}</span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-label="Toggle navigation">
@@ -9,6 +9,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navMain">
             <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('markets.index') }}">Markets</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('farmers.index') }}">Farmers</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('products.index') }}">Products</a></li>
@@ -16,7 +17,7 @@
                 <li class="nav-item"><a class="nav-link" href="{{ route('contact') }}">Contact</a></li>
             </ul>
             <form class="d-flex position-relative me-2 my-2 my-lg-0" action="{{ route('products.index') }}" method="GET" x-data="searchBox()" @click.outside="open=false">
-                <input class="form-control" name="q" placeholder="Search produce, stalls, markets" autocomplete="off" x-model="q" @input.debounce.250ms="lookup()">
+                <input class="form-control" name="q" placeholder="Search products, farmers or markets..." autocomplete="off" x-model="q" @input.debounce.250ms="lookup()">
                 <div class="search-pop mt-1" x-show="open" x-cloak>
                     <template x-for="item in items" :key="item.url">
                         <a class="d-block px-3 py-2 text-decoration-none" :href="item.url" x-text="item.label"></a>
@@ -42,16 +43,27 @@
                         </div>
                     </div>
                     @if(auth()->user()->isCustomer())
-                        <a class="btn btn-outline-ml btn-sm" href="{{ route('cart.index') }}"><i class="bi bi-bag"></i></a>
+                        <a class="btn btn-outline-ml btn-sm position-relative" href="{{ route('cart.index') }}" aria-label="Cart">
+                            <i class="bi bi-bag"></i>
+                            @if(($cartCount ?? 0) > 0)<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ $cartCount }}</span>@endif
+                        </a>
                     @endif
                     <div class="dropdown">
                         <button class="btn btn-ml btn-sm dropdown-toggle" data-bs-toggle="dropdown">{{ auth()->user()->name }}</button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ auth()->user()->dashboardRoute() }}">Dashboard</a></li>
                             @if(auth()->user()->isCustomer())
+                                <li><a class="dropdown-item" href="{{ route('customer.dashboard') }}">Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{{ route('customer.orders.index') }}">Orders</a></li>
+                                <li><a class="dropdown-item" href="{{ route('customer.favorites') }}">Favorites</a></li>
                                 <li><a class="dropdown-item" href="{{ route('customer.profile') }}">Profile</a></li>
                             @elseif(auth()->user()->isFarmer())
+                                <li><a class="dropdown-item" href="{{ route('farmer.dashboard') }}">Farmer dashboard</a></li>
+                                <li><a class="dropdown-item" href="{{ route('farmer.products.index') }}">Products</a></li>
+                                <li><a class="dropdown-item" href="{{ route('farmer.orders.index') }}">Orders</a></li>
                                 <li><a class="dropdown-item" href="{{ route('farmer.profile') }}">Stall profile</a></li>
+                                <li><a class="dropdown-item" href="{{ route('farmer.insights') }}">Insights</a></li>
+                            @else
+                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">Admin dashboard</a></li>
                             @endif
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">@csrf

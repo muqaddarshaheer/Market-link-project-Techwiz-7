@@ -4,7 +4,7 @@
 <div class="row g-4">
     <div class="col-lg-8">
         <div class="d-flex gap-3 align-items-center mb-3">
-            <img class="avatar" style="width:72px;height:72px" src="{{ \App\Support\ImageStore::url($farmer->logo) }}" alt="">
+            <img class="avatar" style="width:72px;height:72px" src="{{ \App\Support\ImageStore::picture($farmer->logo, $farmer->stall_name) }}" alt="{{ $farmer->stall_name }}" width="72" height="72" loading="lazy" decoding="async">
             <div>
                 <h1 class="section-title mb-0">{{ $farmer->stall_name }}</h1>
                 <div class="muted">{{ $farmer->contact_person }} · {{ implode(', ', $farmer->operating_days ?? []) }}</div>

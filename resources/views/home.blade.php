@@ -5,22 +5,28 @@
     <div class="row align-items-center">
         <div class="col-lg-7">
             <p class="hero-kicker">Farmers markets, without the guesswork</p>
-            <h1 class="display-5">Meet the growers. Reserve your basket. Pick it up fresh.</h1>
-            <p class="lead">MarketLink connects nearby markets and farmers with customers who want to pre-order produce and pay in person.</p>
+            <h1 class="display-5">Fresh Local Products. Simple Market Pickup.</h1>
+            <p class="lead">Find a market, reserve produce from approved farmers, and pay in person when you pick it up. There is no delivery and no online payment.</p>
+            <form class="d-flex gap-2 mb-3" action="{{ route('search') }}" method="GET">
+                <input class="form-control" name="q" placeholder="Search products, farmers or markets...">
+                <button class="btn btn-light">Search</button>
+            </form>
             <div class="d-flex gap-2 flex-wrap">
-                <a class="btn btn-light rounded-pill" href="{{ route('products.index') }}">Browse products</a>
-                <a class="btn btn-outline-light rounded-pill" href="{{ route('markets.index') }}">Find a market</a>
+                <a class="btn btn-light rounded-pill" href="{{ route('markets.index') }}">Explore Markets</a>
+                <a class="btn btn-outline-light rounded-pill" href="{{ route('products.index') }}">Browse Products</a>
+                <a class="btn btn-outline-light rounded-pill" href="{{ route('register') }}">Become a Farmer</a>
             </div>
         </div>
         <div class="col-lg-5 mt-4 mt-lg-0">
             <div class="how-card p-4">
                 <h2 class="h5">How it works</h2>
-                <ol class="mb-0">
-                    <li>Find a market or farmer near you.</li>
-                    <li>Add produce to your cart.</li>
-                    <li>Choose a pickup window before cutoff.</li>
-                    <li>Pay the farmer when you collect your order.</li>
+                <ol class="mb-2">
+                    <li>Discover a market or stall.</li>
+                    <li>Browse what is in stock this week.</li>
+                    <li>Pre-order a pickup window before cutoff.</li>
+                    <li>Pickup and pay the farmer at the stall.</li>
                 </ol>
+                <p class="mb-0"><strong>Payment is made in person at the market during pickup.</strong></p>
             </div>
         </div>
     </div>
@@ -69,6 +75,15 @@
         @empty
             <p class="muted">Reviews from completed pickups will show up here.</p>
         @endforelse
+    </div>
+</section>
+<section class="card-ml p-4 p-md-5 mb-2">
+    <h2 class="section-title">Ready for Saturday?</h2>
+    <p>Discover a market, reserve a basket, and pay the grower when you pick it up. There is no online checkout and no delivery.</p>
+    <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-ml" href="{{ route('markets.index') }}">Browse markets</a>
+        <a class="btn btn-outline-ml" href="{{ route('register') }}">Become a farmer</a>
+        <a class="btn btn-outline-ml" href="{{ route('register') }}">Register as a customer</a>
     </div>
 </section>
 @endsection

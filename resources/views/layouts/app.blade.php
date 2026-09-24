@@ -34,6 +34,13 @@
 <main class="py-4">
     <div class="container">
         @include('partials.flashes')
+        @auth
+            @if(auth()->user()->isCustomer())
+                @include('partials.customer-nav')
+            @elseif(auth()->user()->isFarmer())
+                @include('partials.farmer-nav')
+            @endif
+        @endauth
         @yield('content')
     </div>
 </main>

@@ -62,6 +62,9 @@ class OrderController extends Controller
             ->where('customer_id', auth()->id())
             ->with(['farmer', 'market', 'items'])
             ->when($request->status, fn ($q, $status) => $q->where('status', $status))
+            ->when($request->q, fn ($q, $term) => $q->where('order_number', 'like', "%$term%"))
+            ->when($request->from, fn ($q, $date) => $q->whereDate('pickup_date', '>=', $date))
+            ->when($request->to, fn ($q, $date) => $q->whereDate('pickup_date', '<=', $date))
             ->latest()
             ->paginate(10)
             ->withQueryString();

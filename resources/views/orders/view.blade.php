@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.customer')
 @section('title', $order->order_number)
 @section('content')
 <div class="d-flex justify-content-between align-items-start">

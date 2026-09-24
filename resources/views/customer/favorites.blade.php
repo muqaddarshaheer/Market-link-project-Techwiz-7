@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.customer')
 @section('title', 'Favorites')
 @section('content')
 <h1 class="section-title">Favorites</h1>

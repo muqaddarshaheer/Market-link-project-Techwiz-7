@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.farmer')
 @section('title', 'Pickup slots')
 @section('content')
 <h1 class="section-title">Pickup slots</h1>

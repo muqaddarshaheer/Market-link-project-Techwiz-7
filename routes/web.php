@@ -27,7 +27,10 @@ Route::get('/farmers', [FarmerController::class, 'index'])->name('farmers.index'
 Route::get('/farmers/{farmer}', [FarmerController::class, 'show'])->name('farmers.show');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/search', [ProductController::class, 'search'])->name('search');
 Route::get('/search/suggest', [ProductController::class, 'suggest'])->name('search.suggest');
+Route::get('/privacy', [HomeController::class, 'privacy'])->name('privacy');
+Route::get('/terms', [HomeController::class, 'terms'])->name('terms');
 Route::post('/chatbot', [ChatbotController::class, 'ask'])->middleware('throttle:30,1')->name('chatbot.ask');
 
 Route::middleware('guest')->group(function () {
@@ -52,6 +55,7 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
     Route::get('/notifications/poll', [CustomerDashboardController::class, 'poll'])->name('notifications.poll');
     Route::post('/notifications/{notification}/read', [CustomerDashboardController::class, 'read'])->name('notifications.read');
     Route::post('/notifications/read-all', [CustomerDashboardController::class, 'readAll'])->name('notifications.read-all');
+    Route::get('/reviews', [CustomerDashboardController::class, 'reviews'])->name('reviews');
     Route::get('/profile', [CustomerDashboardController::class, 'profile'])->name('profile');
     Route::put('/profile', [CustomerDashboardController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password', [CustomerDashboardController::class, 'updatePassword'])->name('password.update');
@@ -102,8 +106,13 @@ Route::middleware(['auth', 'role:farmer'])->prefix('farmer')->name('farmer.')->g
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::get('/users', [AdminDashboardController::class, 'users'])->name('users.index');
+    Route::get('/users/{user}', [AdminDashboardController::class, 'showUser'])->name('users.show');
     Route::post('/users/{user}/toggle', [AdminDashboardController::class, 'toggleUser'])->name('users.toggle');
+    Route::post('/users/{user}/status', [AdminDashboardController::class, 'setUserStatus'])->name('users.status');
     Route::get('/farmers', [AdminDashboardController::class, 'farmers'])->name('farmers.index');
+    Route::get('/farmers/{farmer}', [AdminDashboardController::class, 'showFarmer'])->name('farmers.show');
+    Route::get('/orders', [AdminDashboardController::class, 'orders'])->name('orders.index');
+    Route::get('/orders/{order}', [AdminDashboardController::class, 'showOrder'])->name('orders.show');
     Route::post('/farmers/{farmer}/decide', [AdminDashboardController::class, 'decideFarmer'])->name('farmers.decide');
     Route::post('/farmers/{farmer}/suspend', [AdminDashboardController::class, 'suspendFarmer'])->name('farmers.suspend');
     Route::get('/markets', [AdminDashboardController::class, 'markets'])->name('markets.index');
@@ -127,6 +136,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/announcements/{announcement}', [AdminDashboardController::class, 'updateAnnouncement'])->name('announcements.update');
     Route::delete('/announcements/{announcement}', [AdminDashboardController::class, 'destroyAnnouncement'])->name('announcements.destroy');
     Route::get('/faqs', [AdminDashboardController::class, 'faqs'])->name('faqs.index');
+    Route::get('/chatbot-faqs', [AdminDashboardController::class, 'faqs'])->name('chatbot-faqs.index');
     Route::post('/faqs', [AdminDashboardController::class, 'storeFaq'])->name('faqs.store');
     Route::delete('/faqs/{faq}', [AdminDashboardController::class, 'destroyFaq'])->name('faqs.destroy');
     Route::get('/settings', [AdminDashboardController::class, 'settings'])->name('settings');

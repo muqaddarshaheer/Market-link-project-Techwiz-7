@@ -11,6 +11,7 @@ class MarketController extends Controller
     {
         $markets = Market::query()
             ->where('status', 'active')
+            ->when($request->q, fn ($q, $term) => $q->where(fn ($w) => $w->where('name', 'like', "%$term%")->orWhere('address', 'like', "%$term%")->orWhere('city', 'like', "%$term%")))
             ->when($request->city, fn ($q, $city) => $q->where('city', $city))
             ->when($request->day, fn ($q, $day) => $q->whereJsonContains('operating_days', $day))
             ->withCount(['products', 'farmers'])

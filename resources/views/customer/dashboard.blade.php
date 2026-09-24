@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.customer')
 @section('title', 'Your dashboard')
 @section('content')
 <h1 class="section-title">Hello, {{ auth()->user()->name }}</h1>

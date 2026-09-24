@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.farmer')
 @section('title', 'Products')
 @section('content')
 <div class="d-flex justify-content-between flex-wrap gap-2">

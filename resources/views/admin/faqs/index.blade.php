@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'FAQs')
 @section('content')
 <h1 class="section-title">Chatbot FAQs</h1>

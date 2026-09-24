@@ -206,12 +206,19 @@ class FarmerDashboardController extends Controller
         return back()->with('success', 'Pickup slots saved.');
     }
 
-    public function insights()
+    public function insights(Request $request)
     {
         $farmer = $this->profile();
+        $days = match ($request->range) {
+            'today' => 0,
+            '30' => 30,
+            default => 7,
+        };
+        $start = $request->filled('from') ? $request->date('from') : ($days === 0 ? now()->startOfDay() : now()->subDays($days));
         $byDay = $farmer->orders()
-            ->select(DB::raw('DATE(created_at) as day'), DB::raw('COUNT(*) as total'), DB::raw('SUM(total_amount) as revenue'))
-            ->where('created_at', '>=', now()->subDays(14))
+            ->select(DB::raw('DATE(created_at) as day'), DB::raw('COUNT(*) as total'), DB::raw('SUM(CASE WHEN status = "completed" THEN total_amount ELSE 0 END) as revenue'))
+            ->where('created_at', '>=', $start)
+            ->when($request->to, fn ($q, $date) => $q->whereDate('created_at', '<=', $date))
             ->groupBy('day')->orderBy('day')->get();
 
         $top = $farmer->products()->withSum('orderItems as sold', 'quantity')->orderByDesc('sold')->take(5)->get();

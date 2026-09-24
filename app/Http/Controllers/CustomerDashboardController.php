@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AppNotification;
 use App\Models\Order;
+use App\Models\Review;
 use App\Support\ImageStore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -72,6 +73,13 @@ class CustomerDashboardController extends Controller
         auth()->user()->appNotifications()->where('is_read', false)->update(['is_read' => true]);
 
         return back()->with('success', 'All notifications marked as read.');
+    }
+
+    public function reviews()
+    {
+        $reviews = Review::query()->where('customer_id', auth()->id())->with(['product', 'farmer'])->latest()->paginate(12);
+
+        return view('customer.reviews', compact('reviews'));
     }
 
     public function profile()

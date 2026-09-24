@@ -14,11 +14,11 @@
                     <td>{{ $item->product->name }}<div class="small muted">${{ number_format($item->product->price, 2) }}/{{ $item->product->unit }}</div></td>
                     <td>{{ $item->product->farmer->stall_name }}<div class="small muted">{{ $item->product->market->name }}</div></td>
                     <td>
-                        <form method="POST" action="{{ route('cart.update', $item->product) }}" class="d-flex gap-1">
-                            @csrf @method('PUT')
-                            <input class="form-control" style="width:80px" type="number" name="quantity" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock_quantity }}">
-                            <button class="btn btn-outline-ml btn-sm">Update</button>
-                        </form>
+                        <div class="d-flex gap-1">
+                            <form method="POST" action="{{ route('cart.update', $item->product) }}">@csrf @method('PUT')<button class="btn btn-outline-ml btn-sm" name="quantity" value="{{ max(1, $item->quantity - 1) }}">−</button></form>
+                            <form method="POST" action="{{ route('cart.update', $item->product) }}" class="d-flex gap-1">@csrf @method('PUT')<input class="form-control" style="width:70px" type="number" name="quantity" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock_quantity }}"><button class="btn btn-outline-ml btn-sm">Update</button></form>
+                            <form method="POST" action="{{ route('cart.update', $item->product) }}">@csrf @method('PUT')<button class="btn btn-outline-ml btn-sm" name="quantity" value="{{ min($item->product->stock_quantity, $item->quantity + 1) }}">+</button></form>
+                        </div>
                     </td>
                     <td>${{ number_format($item->quantity * $item->product->price, 2) }}</td>
                     <td>

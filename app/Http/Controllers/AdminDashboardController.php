@@ -48,14 +48,26 @@ class AdminDashboardController extends Controller
                 'rejected' => FarmerProfile::where('approval_status', 'rejected')->count(),
                 'customers' => User::where('role', 'customer')->count(),
                 'markets' => Market::count(),
+                'products' => Product::count(),
                 'orders' => Order::count(),
+                'pending_orders' => Order::where('status', 'placed')->count(),
+                'completed' => Order::where('status', 'completed')->count(),
                 'revenue' => Order::where('status', 'completed')->sum('total_amount'),
             ],
             'byStatus' => Order::query()->select('status', DB::raw('COUNT(*) as total'))->groupBy('status')->pluck('total', 'status'),
+            'ordersOverTime' => Order::query()
+                ->select(DB::raw('DATE(created_at) as day'), DB::raw('COUNT(*) as total'))
+                ->where('created_at', '>=', now()->subDays(14))
+                ->groupBy('day')->orderBy('day')->get(),
             'revenue' => $revenue,
             'topFarmers' => $topFarmers,
+            'topProducts' => DB::table('order_items')
+                ->select('product_name', DB::raw('SUM(quantity) as qty'))
+                ->groupBy('product_name')->orderByDesc('qty')->limit(5)->get(),
             'growth' => $growth,
-            'activity' => Order::query()->with(['customer', 'farmer'])->latest()->take(8)->get(),
+            'activity' => Order::query()->with(['customer', 'farmer', 'market'])->latest()->take(8)->get(),
+            'recentFarmers' => FarmerProfile::query()->with('user')->latest()->take(5)->get(),
+            'recentReviews' => Review::query()->with(['customer', 'product', 'farmer'])->latest()->take(5)->get(),
         ]);
     }
 
@@ -76,11 +88,63 @@ class AdminDashboardController extends Controller
         return back()->with('success', 'Customer status updated.');
     }
 
-    public function farmers()
+    public function farmers(Request $request)
     {
-        $farmers = FarmerProfile::query()->with('user')->latest()->paginate(15);
+        $farmers = FarmerProfile::query()->with('user')
+            ->when($request->status, fn ($q, $status) => $q->where('approval_status', $status))
+            ->when($request->q, fn ($q, $term) => $q->where('stall_name', 'like', "%$term%"))
+            ->latest()->paginate(15)->withQueryString();
 
         return view('admin.farmers.index', compact('farmers'));
+    }
+
+    public function showFarmer(FarmerProfile $farmer)
+    {
+        $farmer->load(['user', 'markets', 'products.category', 'orders', 'reviews.customer']);
+
+        return view('admin.farmers.show', compact('farmer'));
+    }
+
+    public function showUser(User $user)
+    {
+        abort_if($user->role === 'admin', 404);
+        $user->load(['orders.farmer', 'orders.market', 'farmerProfile']);
+
+        return view('admin.users.show', compact('user'));
+    }
+
+    public function setUserStatus(Request $request, User $user)
+    {
+        abort_unless($user->role === 'customer', 403);
+        $status = $request->validate(['status' => ['required', 'in:active,inactive,suspended']])['status'];
+        $user->update(['status' => $status]);
+
+        return back()->with('success', 'Customer status updated.');
+    }
+
+    public function orders(Request $request)
+    {
+        $orders = Order::query()->with(['customer', 'farmer', 'market'])
+            ->when($request->q, fn ($q, $term) => $q->where('order_number', 'like', "%$term%"))
+            ->when($request->status, fn ($q, $status) => $q->where('status', $status))
+            ->when($request->market, fn ($q, $id) => $q->where('market_id', $id))
+            ->when($request->farmer, fn ($q, $id) => $q->where('farmer_id', $id))
+            ->when($request->from, fn ($q, $date) => $q->whereDate('created_at', '>=', $date))
+            ->when($request->to, fn ($q, $date) => $q->whereDate('created_at', '<=', $date))
+            ->latest()->paginate(20)->withQueryString();
+
+        return view('admin.orders.index', [
+            'orders' => $orders,
+            'markets' => Market::orderBy('name')->get(),
+            'farmers' => FarmerProfile::orderBy('stall_name')->get(),
+        ]);
+    }
+
+    public function showOrder(Order $order)
+    {
+        $order->load(['customer', 'farmer.user', 'market', 'items', 'reviews']);
+
+        return view('admin.orders.show', compact('order'));
     }
 
     public function decideFarmer(Request $request, FarmerProfile $farmer)

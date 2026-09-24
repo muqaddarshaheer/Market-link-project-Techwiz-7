@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Reviews')
 @section('content')
 <h1 class="section-title">Review moderation</h1>

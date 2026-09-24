@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.farmer')
 @section('title', 'Farmer dashboard')
 @section('content')
 @if($farmer->approval_status !== 'approved')

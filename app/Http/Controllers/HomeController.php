@@ -51,4 +51,14 @@ class HomeController extends Controller
     {
         return view('sitemap');
     }
+
+    public function privacy()
+    {
+        return view('privacy');
+    }
+
+    public function terms()
+    {
+        return view('terms');
+    }
 }

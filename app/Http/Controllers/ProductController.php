@@ -75,6 +75,19 @@ class ProductController extends Controller
         return view('products.show', compact('product', 'related'));
     }
 
+    public function search(Request $request)
+    {
+        $term = trim((string) $request->q);
+
+        return view('search.results', [
+            'q' => $term,
+            'products' => $term === '' ? collect() : Product::query()->with(['farmer', 'market'])->where('name', 'like', "%$term%")->whereHas('farmer', fn ($q) => $q->where('approval_status', 'approved'))->limit(12)->get(),
+            'farmers' => $term === '' ? collect() : FarmerProfile::query()->where('approval_status', 'approved')->where('stall_name', 'like', "%$term%")->limit(8)->get(),
+            'markets' => $term === '' ? collect() : Market::query()->where('status', 'active')->where('name', 'like', "%$term%")->limit(8)->get(),
+            'categories' => $term === '' ? collect() : Category::query()->where('name', 'like', "%$term%")->limit(6)->get(),
+        ]);
+    }
+
     public function suggest(Request $request)
     {
         $term = $request->string('q')->trim();

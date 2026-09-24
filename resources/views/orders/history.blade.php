@@ -1,14 +1,18 @@
-@extends('layouts.app')
+@extends('layouts.customer')
 @section('title', 'Orders')
 @section('content')
 <h1 class="section-title">Order history</h1>
-<form class="d-flex gap-2 mb-3" method="GET">
-    <select class="form-select" style="max-width:240px" name="status" onchange="this.form.submit()">
+<form class="row g-2 mb-3" method="GET">
+    <div class="col-md-3"><input class="form-control" name="q" value="{{ request('q') }}" placeholder="Order number"></div>
+    <div class="col-md-2"><input class="form-control" type="date" name="from" value="{{ request('from') }}"></div>
+    <div class="col-md-2"><input class="form-control" type="date" name="to" value="{{ request('to') }}"></div>
+    <div class="col-md-3"><select class="form-select" name="status" onchange="this.form.submit()">
         <option value="">All statuses</option>
         @foreach(['placed','accepted','declined','ready_for_pickup','completed','cancelled'] as $status)
             <option value="{{ $status }}" @selected(request('status')===$status)>{{ str_replace('_',' ',$status) }}</option>
         @endforeach
-    </select>
+    </select></div>
+    <div class="col-md-2"><button class="btn btn-ml w-100">Filter</button></div>
 </form>
 @forelse($orders as $order)
     <div class="card-ml p-3 mb-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
