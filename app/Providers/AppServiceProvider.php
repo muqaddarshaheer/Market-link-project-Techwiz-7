@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Announcement;
 use App\Models\Setting;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -18,6 +19,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        if (! $this->app->runningInConsole() && ! empty($_SERVER['HTTP_HOST'])) {
+            $https = (! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+            $base = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '')), '/');
+            $base = $base === '/' ? '' : $base;
+            URL::forceRootUrl(($https ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].$base);
+        }
 
         View::composer('*', function ($view) {
             $user = auth()->user();
