@@ -28,7 +28,7 @@ class OrderService
         $groups = $cart->items->groupBy(fn ($item) => $item->product->farmer_id.'-'.$item->product->market_id);
         $orders = [];
 
-        DB::transaction(function () use ($groups, $customer, $pickupDate, $pickupSlot, $note, &$orders) {
+        DB::transaction(function () use ($groups, $customer, $pickupDate, $pickupSlot, $note, $cart, &$orders) {
             foreach ($groups as $items) {
                 $first = $items->first()->product;
                 $farmer = $first->farmer;

@@ -1,0 +1,28 @@
+@extends('layouts.app')
+@section('title', 'Orders')
+@section('content')
+<h1 class="section-title">Order history</h1>
+<form class="d-flex gap-2 mb-3" method="GET">
+    <select class="form-select" style="max-width:240px" name="status" onchange="this.form.submit()">
+        <option value="">All statuses</option>
+        @foreach(['placed','accepted','declined','ready_for_pickup','completed','cancelled'] as $status)
+            <option value="{{ $status }}" @selected(request('status')===$status)>{{ str_replace('_',' ',$status) }}</option>
+        @endforeach
+    </select>
+</form>
+@forelse($orders as $order)
+    <div class="card-ml p-3 mb-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <a href="{{ route('customer.orders.show', $order) }}"><strong>{{ $order->order_number }}</strong></a>
+            <div class="small muted">{{ $order->farmer->stall_name }} · {{ $order->pickup_date->format('M j') }} · ${{ number_format($order->total_amount, 2) }}</div>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            @include('partials.order-status-badge', ['status' => $order->status])
+            <form method="POST" action="{{ route('customer.orders.reorder', $order) }}">@csrf<button class="btn btn-outline-ml btn-sm">Reorder</button></form>
+        </div>
+    </div>
+@empty
+    <div class="empty-state card-ml"><i class="bi bi-receipt"></i><p>No orders yet.</p></div>
+@endforelse
+{{ $orders->links() }}
+@endsection

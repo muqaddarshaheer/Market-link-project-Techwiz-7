@@ -1,0 +1,9 @@
+{
+  "name": "MarketLink",
+  "short_name": "MarketLink",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f7f4",
+  "theme_color": "#1f7a4d",
+  "icons": []
+}

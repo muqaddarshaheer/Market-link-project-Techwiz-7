@@ -18,6 +18,16 @@
         });
         if (bounds.length > 1) map.fitBounds(bounds, {padding: [24, 24]});
         setTimeout(() => map.invalidateSize(), 200);
+        if (@json($id ?? 'map') === 'picker') {
+            map.on('click', (e) => {
+                const lat = document.getElementById('lat');
+                const lng = document.getElementById('lng');
+                if (!lat || !lng) return;
+                lat.value = e.latlng.lat.toFixed(6);
+                lng.value = e.latlng.lng.toFixed(6);
+                L.marker(e.latlng).addTo(map);
+            });
+        }
     });
 </script>
 @endpush

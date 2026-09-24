@@ -233,8 +233,7 @@ class AdminDashboardController extends Controller
         $payload = [
             'orders' => (clone $orders)->count(),
             'revenue' => (clone $orders)->where('status', 'completed')->sum('total_amount'),
-            'by_market' => (clone $orders)->select('market_id', DB::raw('SUM(total_amount) as revenue'), DB::raw('COUNT(*) as total'))
-                ->groupBy('market_id')->with('market')->get(),
+            'by_market' => Market::query()->withSum(['orders as revenue' => fn ($q) => $q->whereBetween('created_at', [$from, $to])->where('status', 'completed')], 'total_amount')->get(),
             'farmers' => FarmerProfile::query()->withCount(['orders' => fn ($q) => $q->whereBetween('created_at', [$from, $to])])->orderByDesc('orders_count')->take(8)->get(),
             'products' => Product::query()->withSum(['orderItems as sold' => fn ($q) => $q->whereBetween('created_at', [$from, $to])], 'quantity')->orderByDesc('sold')->take(8)->get(),
             'growth' => User::query()->select(DB::raw('DATE(created_at) as day'), DB::raw('COUNT(*) as total'))
