@@ -19,6 +19,10 @@
             <select class="form-select mb-2" name="day"><option value="">Any</option>@foreach(['Saturday','Sunday','Wednesday','Friday'] as $day)<option @selected(request('day')===$day)>{{ $day }}</option>@endforeach</select>
             <label class="form-label">Rating</label>
             <select class="form-select mb-2" name="rating"><option value="">Any</option>@foreach([4,3,2] as $r)<option value="{{ $r }}" @selected(request('rating')==$r)>{{ $r }}+ stars</option>@endforeach</select>
+            <label class="form-label">Quality</label>
+            <select class="form-select mb-2" name="quality"><option value="">Any</option>@foreach(['premium','fresh','standard'] as $quality)<option value="{{ $quality }}" @selected(request('quality')===$quality)>{{ ucfirst($quality) }}</option>@endforeach</select>
+            <label class="form-label">Farmer</label>
+            <select class="form-select mb-2" name="farmer"><option value="">Any</option>@foreach($farmers as $farmer)<option value="{{ $farmer->id }}" @selected(request('farmer')==$farmer->id)>{{ $farmer->stall_name }}</option>@endforeach</select>
             <div class="form-check mb-2"><input class="form-check-input" type="checkbox" name="available" value="1" @checked(request()->boolean('available'))><label class="form-check-label">In stock only</label></div>
             <label class="form-label">Sort</label>
             <select class="form-select mb-3" name="sort">

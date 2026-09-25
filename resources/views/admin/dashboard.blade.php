@@ -42,7 +42,7 @@
                 @foreach($activity as $order)
                     <tr>
                         <td>{{ $order->order_number }}</td>
-                        <td>{{ $order->customer->name }}</td>
+                        <td>{{ $order->buyerName() }}</td>
                         <td>{{ $order->farmer->stall_name }}</td>
                         <td>{{ $order->market->name ?? '' }}</td>
                         <td>${{ number_format($order->total_amount, 2) }}</td>

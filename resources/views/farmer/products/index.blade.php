@@ -17,6 +17,7 @@
         <div class="col-md-4"><select class="form-select" name="market_id" required>@foreach($markets as $m)<option value="{{ $m->id }}">{{ $m->name }}</option>@endforeach</select></div>
         <div class="col-md-3"><input class="form-control" name="price" type="number" step="0.01" placeholder="Price" required></div>
         <div class="col-md-3"><select class="form-select" name="unit">@foreach(['kg','gram','dozen','bunch','litre','piece','pack'] as $u)<option>{{ $u }}</option>@endforeach</select></div>
+        <div class="col-md-3"><select class="form-select" name="quality">@foreach(['premium'=>'Premium','fresh'=>'Fresh','standard'=>'Standard'] as $val=>$label)<option value="{{ $val }}">{{ $label }}</option>@endforeach</select></div>
         <div class="col-md-2"><input class="form-control" name="stock_quantity" type="number" value="10" required></div>
         <div class="col-md-4"><input class="form-control" type="file" name="image" accept="image/*"></div>
         <div class="col-12"><textarea class="form-control" name="description" placeholder="Description"></textarea></div>

@@ -24,10 +24,10 @@
                 <div class="login-field mb-3"><i class="bi bi-telephone"></i><input class="form-control" id="c-phone" name="phone" value="{{ old('phone') }}" required placeholder="555-0100"></div>
                 <label class="form-label" for="c-address">Address</label>
                 <textarea class="form-control mb-3" id="c-address" name="address" required placeholder="Street, city">{{ old('address') }}</textarea>
-                <label class="form-label" for="c-password">Password</label>
-                <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control" id="c-password" type="password" name="password" required minlength="8" placeholder="At least 8 characters"></div>
-                <label class="form-label" for="c-confirm">Confirm password</label>
-                <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control" id="c-confirm" type="password" name="password_confirmation" required placeholder="Repeat password"></div>
+                <label class="form-label" for="c-password">4-digit PIN</label>
+                <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control" id="c-password" name="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required placeholder="4 digits"></div>
+                <label class="form-label" for="c-confirm">Confirm PIN</label>
+                <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control" id="c-confirm" name="password_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required placeholder="Repeat PIN"></div>
                 <button class="btn btn-ml w-100" type="submit">Create customer account</button>
             </form>
         </div>
@@ -50,10 +50,10 @@
                         <label><input type="checkbox" name="operating_days[]" value="{{ $day }}" @checked($day === 'Saturday' || in_array($day, old('operating_days', [])))> {{ substr($day, 0, 3) }}</label>
                     @endforeach
                 </div>
-                <label class="form-label" for="f-password">Password</label>
-                <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control" id="f-password" type="password" name="password" required minlength="8"></div>
-                <label class="form-label" for="f-confirm">Confirm password</label>
-                <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control" id="f-confirm" type="password" name="password_confirmation" required></div>
+                <label class="form-label" for="f-password">4-digit PIN</label>
+                <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control" id="f-password" name="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required></div>
+                <label class="form-label" for="f-confirm">Confirm PIN</label>
+                <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control" id="f-confirm" name="password_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required></div>
                 <button class="btn btn-ml w-100" type="submit">Apply as a farmer</button>
                 <p class="small muted mt-2 mb-0">Your stall stays pending until an admin approves it.</p>
             </form>

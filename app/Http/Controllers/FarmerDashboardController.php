@@ -302,6 +302,7 @@ class FarmerDashboardController extends Controller
             'description' => ['nullable', 'string', 'max:2000'],
             'price' => ['required', 'numeric', 'min:0.01', 'max:99999'],
             'unit' => ['required', 'in:kg,gram,dozen,bunch,litre,piece,pack'],
+            'quality' => ['required', 'in:premium,fresh,standard'],
             'stock_quantity' => ['required', 'integer', 'min:0'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
             'is_available' => ['sometimes', 'boolean'],

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\Product;
 use App\Services\NotificationService;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
@@ -102,7 +103,7 @@ class OrderController extends Controller
         $order->update(['status' => 'cancelled']);
         $this->notifications->send($order->customer, 'order_cancelled', 'Order cancelled', $order->order_number.' was cancelled.', ['order_id' => $order->id]);
         if ($order->farmer->user) {
-            $this->notifications->send($order->farmer->user, 'order_cancelled', 'Order cancelled', $order->customer->name.' cancelled '.$order->order_number.'.', ['order_id' => $order->id]);
+            $this->notifications->send($order->farmer->user, 'order_cancelled', 'Order cancelled', $order->buyerName().' cancelled '.$order->order_number.'.', ['order_id' => $order->id]);
         }
 
         return back()->with('success', 'Order cancelled and stock restored.');
@@ -139,6 +140,36 @@ class OrderController extends Controller
         $order->load('items', 'farmer', 'market', 'customer');
 
         return view('orders.invoice', compact('order'));
+    }
+
+    public function guestCreate()
+    {
+        $lines = array_map('intval', session('ml_guest_cart', []));
+        $products = Product::query()->with('farmer')->whereIn('id', array_keys($lines))->get();
+        $slots = $products->flatMap(fn ($product) => $product->farmer->slots())->pluck('label')->unique()->values();
+
+        return view('orders.guest', compact('products', 'lines', 'slots'));
+    }
+
+    public function guestStore(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'phone' => ['required', 'string', 'max:20'],
+            'address' => ['required', 'string', 'max:255'],
+            'pickup_date' => ['required', 'date', 'after_or_equal:today'],
+            'pickup_slot' => ['required', 'string', 'max:100'],
+            'customer_note' => ['nullable', 'string', 'max:500'],
+        ]);
+        $lines = array_map('intval', session('ml_guest_cart', []));
+        $placed = $this->orders->placeGuest($lines, [
+            'name' => $data['name'],
+            'phone' => $data['phone'],
+            'address' => $data['address'],
+        ], $data['pickup_date'], $data['pickup_slot'], $data['customer_note'] ?? null);
+        session()->forget('ml_guest_cart');
+
+        return redirect()->route('home')->with('success', 'Guest pre-order '.$placed[0]->order_number.' is placed. Pay the farmer at the stall. No account was created.');
     }
 
     private function authorizeCustomer(Order $order): void

@@ -69,6 +69,12 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
     Route::post('/reviews/{review}/helpful', [ReviewController::class, 'helpful'])->name('reviews.helpful');
 });
 
+Route::get('/guest/cart', [CartController::class, 'guestIndex'])->name('guest.cart');
+Route::post('/guest/cart/{product}', [CartController::class, 'guestAdd'])->name('guest.cart.add');
+Route::post('/guest/cart/{product}/remove', [CartController::class, 'guestRemove'])->name('guest.cart.remove');
+Route::get('/guest/checkout', [OrderController::class, 'guestCreate'])->name('guest.checkout');
+Route::post('/guest/checkout', [OrderController::class, 'guestStore'])->middleware('throttle:8,1')->name('guest.checkout.store');
+
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/{product}', [CartController::class, 'add'])->name('cart.add');
@@ -109,11 +115,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/users/{user}', [AdminDashboardController::class, 'showUser'])->name('users.show');
     Route::post('/users/{user}/toggle', [AdminDashboardController::class, 'toggleUser'])->name('users.toggle');
     Route::post('/users/{user}/status', [AdminDashboardController::class, 'setUserStatus'])->name('users.status');
+    Route::post('/users/{user}/pin', [AdminDashboardController::class, 'setUserPin'])->name('users.pin');
+    Route::post('/pin', [AdminDashboardController::class, 'setOwnPin'])->name('pin.update');
+    Route::post('/orders/{order}/payment', [AdminDashboardController::class, 'setPayment'])->name('orders.payment');
     Route::get('/farmers', [AdminDashboardController::class, 'farmers'])->name('farmers.index');
     Route::get('/farmers/{farmer}', [AdminDashboardController::class, 'showFarmer'])->name('farmers.show');
     Route::get('/orders', [AdminDashboardController::class, 'orders'])->name('orders.index');
     Route::get('/orders/{order}', [AdminDashboardController::class, 'showOrder'])->name('orders.show');
     Route::post('/farmers/{farmer}/decide', [AdminDashboardController::class, 'decideFarmer'])->name('farmers.decide');
+    Route::put('/farmers/{farmer}', [AdminDashboardController::class, 'updateFarmer'])->name('farmers.update');
     Route::post('/farmers/{farmer}/suspend', [AdminDashboardController::class, 'suspendFarmer'])->name('farmers.suspend');
     Route::get('/markets', [AdminDashboardController::class, 'markets'])->name('markets.index');
     Route::post('/markets', [AdminDashboardController::class, 'storeMarket'])->name('markets.store');

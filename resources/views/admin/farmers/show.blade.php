@@ -6,7 +6,23 @@
 <p class="muted">{{ $farmer->user->name }} · {{ $farmer->user->email }} · {{ $farmer->user->phone }}</p>
 <p>Approval: <strong>{{ $farmer->approval_status }}</strong> · Account: <strong>{{ $farmer->user->status }}</strong></p>
 <p>{{ $farmer->business_description }}</p>
-<p class="small muted">{{ $farmer->address }} · Cutoff {{ $farmer->cutoff_hours }} hours</p>
+<form method="POST" action="{{ route('admin.farmers.update', $farmer) }}" class="card-ml p-3 mb-3">@csrf @method('PUT')
+    <h2 class="h6">Farmer details</h2>
+    <div class="row g-2">
+        <div class="col-md-4"><label class="form-label">Stall</label><input class="form-control" name="stall_name" value="{{ $farmer->stall_name }}" required></div>
+        <div class="col-md-4"><label class="form-label">Contact name</label><input class="form-control" name="contact_person" value="{{ $farmer->contact_person }}" required></div>
+        <div class="col-md-4"><label class="form-label">Phone</label><input class="form-control" name="phone" value="{{ $farmer->user->phone }}" required></div>
+        <div class="col-12"><label class="form-label">Address</label><input class="form-control" name="address" value="{{ $farmer->address }}"></div>
+        <div class="col-12"><label class="form-label">About the stall</label><textarea class="form-control" name="business_description">{{ $farmer->business_description }}</textarea></div>
+        <div class="col-12 d-flex flex-wrap gap-2">
+            @foreach(['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] as $day)
+                <label class="small"><input type="checkbox" name="operating_days[]" value="{{ $day }}" @checked(in_array($day, $farmer->operating_days ?? [], true))> {{ $day }}</label>
+            @endforeach
+        </div>
+    </div>
+    <button class="btn btn-ml mt-2">Save farmer</button>
+</form>
+<p class="small muted">Cutoff {{ $farmer->cutoff_hours }} hours</p>
 <div class="d-flex gap-2 mb-3">
     <form method="POST" action="{{ route('admin.farmers.decide', $farmer) }}">@csrf<input type="hidden" name="approval_status" value="approved"><button class="btn btn-ml">Approve</button></form>
     <form method="POST" action="{{ route('admin.farmers.decide', $farmer) }}">@csrf<input type="hidden" name="approval_status" value="rejected"><button class="btn btn-outline-danger">Reject</button></form>

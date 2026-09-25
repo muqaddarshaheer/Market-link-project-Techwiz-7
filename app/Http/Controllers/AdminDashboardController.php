@@ -122,6 +122,35 @@ class AdminDashboardController extends Controller
         return back()->with('success', 'Customer status updated.');
     }
 
+    public function setUserPin(Request $request, User $user)
+    {
+        abort_if($user->role === 'admin', 403);
+        $data = $request->validate(['pin' => ['required', 'digits:4', 'confirmed']]);
+        $user->update(['password' => $data['pin']]);
+
+        return back()->with('success', 'PIN updated. It is not shown again.');
+    }
+
+    public function setOwnPin(Request $request)
+    {
+        $data = $request->validate([
+            'current_pin' => ['required', 'digits:4'],
+            'pin' => ['required', 'digits:4', 'confirmed'],
+        ]);
+        abort_unless(\Illuminate\Support\Facades\Hash::check($data['current_pin'], $request->user()->password), 422);
+        $request->user()->update(['password' => $data['pin']]);
+
+        return back()->with('success', 'Your PIN was changed.');
+    }
+
+    public function setPayment(Request $request, Order $order)
+    {
+        $status = $request->validate(['payment_status' => ['required', 'in:unpaid,paid']])['payment_status'];
+        $order->update(['payment_status' => $status]);
+
+        return back()->with('success', 'Payment status updated. This only records in-person payment.');
+    }
+
     public function orders(Request $request)
     {
         $orders = Order::query()->with(['customer', 'farmer', 'market'])
@@ -166,6 +195,33 @@ class AdminDashboardController extends Controller
         );
 
         return back()->with('success', 'Farmer marked '.$status.'.');
+    }
+
+    public function updateFarmer(Request $request, FarmerProfile $farmer)
+    {
+        $data = $request->validate([
+            'stall_name' => ['required', 'string', 'max:100'],
+            'contact_person' => ['required', 'string', 'max:100'],
+            'phone' => ['required', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:500'],
+            'business_description' => ['nullable', 'string', 'max:2000'],
+            'operating_days' => ['nullable', 'array'],
+            'operating_days.*' => ['in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday'],
+        ]);
+        $farmer->update([
+            'stall_name' => $data['stall_name'],
+            'contact_person' => $data['contact_person'],
+            'address' => $data['address'] ?? null,
+            'business_description' => $data['business_description'] ?? null,
+            'operating_days' => $data['operating_days'] ?? [],
+        ]);
+        $farmer->user->update([
+            'name' => $data['contact_person'],
+            'phone' => $data['phone'],
+            'address' => $data['address'] ?? $farmer->user->address,
+        ]);
+
+        return back()->with('success', 'Farmer details updated.');
     }
 
     public function suspendFarmer(FarmerProfile $farmer)
@@ -250,6 +306,9 @@ class AdminDashboardController extends Controller
         $product->update($request->validate([
             'name' => ['required', 'string', 'max:150'],
             'price' => ['required', 'numeric', 'min:0'],
+            'quality' => ['required', 'in:premium,fresh,standard'],
+            'description' => ['nullable', 'string', 'max:2000'],
+            'stock_quantity' => ['required', 'integer', 'min:0'],
             'is_available' => ['sometimes', 'boolean'],
             'is_featured' => ['sometimes', 'boolean'],
         ]) + [

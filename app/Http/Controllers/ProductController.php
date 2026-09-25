@@ -35,6 +35,12 @@ class ProductController extends Controller
         if ($request->boolean('available')) {
             $query->where('is_available', true)->where('is_sold_out', false)->where('stock_quantity', '>', 0);
         }
+        if ($request->filled('quality')) {
+            $query->where('quality', $request->quality);
+        }
+        if ($request->filled('farmer')) {
+            $query->where('farmer_id', $request->farmer);
+        }
         if ($request->filled('rating')) {
             $query->having('rating_avg', '>=', (int) $request->rating);
         }
@@ -55,6 +61,7 @@ class ProductController extends Controller
             'products' => $query->paginate(12)->withQueryString(),
             'categories' => Category::query()->orderBy('name')->get(),
             'markets' => Market::query()->where('status', 'active')->orderBy('name')->get(),
+            'farmers' => \App\Models\FarmerProfile::query()->where('approval_status', 'approved')->orderBy('stall_name')->get(),
         ]);
     }
 

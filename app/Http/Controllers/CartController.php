@@ -55,6 +55,43 @@ class CartController extends Controller
         return back()->with('success', 'Item removed.');
     }
 
+    public function guestIndex()
+    {
+        $lines = $this->guestLines();
+        $products = Product::query()->with(['farmer', 'market'])->whereIn('id', array_keys($lines))->get();
+
+        return view('cart.guest', compact('products', 'lines'));
+    }
+
+    public function guestAdd(Request $request, Product $product)
+    {
+        $qty = (int) $request->validate(['quantity' => ['required', 'integer', 'min:1', 'max:99']])['quantity'];
+        abort_unless($product->canPurchase(), 422);
+        $lines = $this->guestLines();
+        $next = ($lines[$product->id] ?? 0) + $qty;
+        if ($next > $product->stock_quantity) {
+            return back()->withErrors(['quantity' => 'Only '.$product->stock_quantity.' left in stock.']);
+        }
+        $lines[$product->id] = $next;
+        session(['ml_guest_cart' => $lines]);
+
+        return redirect()->route('guest.cart')->with('success', $product->name.' added.');
+    }
+
+    public function guestRemove(Product $product)
+    {
+        $lines = $this->guestLines();
+        unset($lines[$product->id]);
+        session(['ml_guest_cart' => $lines]);
+
+        return back()->with('success', 'Item removed.');
+    }
+
+    private function guestLines(): array
+    {
+        return array_map('intval', session('ml_guest_cart', []));
+    }
+
     private function cart(): Cart
     {
         return Cart::query()->firstOrCreate(['customer_id' => auth()->id()]);

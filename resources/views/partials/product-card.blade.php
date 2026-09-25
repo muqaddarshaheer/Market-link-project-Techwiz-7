@@ -7,6 +7,7 @@
     <div class="p-3">
         <div class="d-flex justify-content-between">
             <span class="badge badge-soft">{{ $product->category->name ?? 'Produce' }}</span>
+            <span class="badge badge-soft">{{ ucfirst($product->quality ?? 'fresh') }}</span>
             @if($product->is_sold_out || $product->stock_quantity < 1)
                 <span class="badge text-bg-secondary">Sold out</span>
             @elseif($product->is_available)
@@ -29,6 +30,11 @@
                         @endif
                     @endif
                 @endauth
+                @guest
+                    @if($product->is_available && ! $product->is_sold_out && $product->stock_quantity > 0)
+                        <form method="POST" action="{{ route('guest.cart.add', $product) }}">@csrf<input type="hidden" name="quantity" value="1"><button class="btn btn-ml btn-sm">Add</button></form>
+                    @endif
+                @endguest
                 <a class="btn btn-outline-ml btn-sm" href="{{ route('products.show', $product) }}">View</a>
             </div>
         </div>

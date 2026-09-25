@@ -106,6 +106,83 @@ class OrderService
         return $orders;
     }
 
+    public function placeGuest(array $lines, array $guest, string $pickupDate, string $pickupSlot, ?string $note): array
+    {
+        if ($lines === []) {
+            throw ValidationException::withMessages(['cart' => 'Your cart is empty.']);
+        }
+
+        $orders = [];
+        DB::transaction(function () use ($lines, $guest, $pickupDate, $pickupSlot, $note, &$orders) {
+            $products = Product::query()->with('farmer')->whereIn('id', array_keys($lines))->lockForUpdate()->get()->keyBy('id');
+            $groups = [];
+            foreach ($lines as $id => $qty) {
+                $product = $products->get($id);
+                if (! $product || ! $product->canPurchase() || $product->stock_quantity < $qty) {
+                    throw ValidationException::withMessages(['cart' => 'A product in the cart is no longer available.']);
+                }
+                $groups[$product->farmer_id.'-'.$product->market_id][] = [$product, $qty];
+            }
+
+            foreach ($groups as $items) {
+                $first = $items[0][0];
+                $cutoff = $this->cutoffFor($first->farmer->cutoff_hours ?? 12, $pickupDate, $pickupSlot);
+                if (now()->gte($cutoff)) {
+                    throw ValidationException::withMessages(['pickup_date' => 'That pickup window is already past the cutoff.']);
+                }
+                $order = Order::query()->create([
+                    'order_number' => 'ML-'.now()->year.'-'.str_pad((string) ((int) Order::max('id') + 1), 6, '0', STR_PAD_LEFT),
+                    'customer_id' => null,
+                    'guest_name' => $guest['name'],
+                    'guest_phone' => $guest['phone'],
+                    'guest_address' => $guest['address'],
+                    'farmer_id' => $first->farmer_id,
+                    'market_id' => $first->market_id,
+                    'pickup_date' => $pickupDate,
+                    'pickup_slot' => $pickupSlot,
+                    'status' => 'placed',
+                    'total_amount' => 0,
+                    'payment_status' => 'unpaid',
+                    'customer_note' => $note,
+                    'cutoff_time' => $cutoff,
+                ]);
+                $total = 0;
+                foreach ($items as [$product, $qty]) {
+                    $product->decrement('stock_quantity', $qty);
+                    if ($product->stock_quantity <= 0) {
+                        $product->update(['is_sold_out' => true]);
+                    }
+                    $subtotal = $qty * (float) $product->price;
+                    $total += $subtotal;
+                    OrderItem::query()->create([
+                        'order_id' => $order->id,
+                        'product_id' => $product->id,
+                        'product_name' => $product->name,
+                        'unit_price' => $product->price,
+                        'quantity' => $qty,
+                        'subtotal' => $subtotal,
+                    ]);
+                }
+                $order->update(['total_amount' => $total]);
+                $orders[] = $order->fresh(['farmer.user']);
+            }
+        });
+
+        foreach ($orders as $order) {
+            if ($order->farmer->user) {
+                $this->notifications->send(
+                    $order->farmer->user,
+                    'new_order',
+                    'New guest pre-order',
+                    $order->guest_name.' placed '.$order->order_number.'. Pay at the stall.',
+                    ['order_id' => $order->id]
+                );
+            }
+        }
+
+        return $orders;
+    }
+
     public function restoreStock(Order $order): void
     {
         $order->load('items.product');

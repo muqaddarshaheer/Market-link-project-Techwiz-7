@@ -24,12 +24,15 @@ class AuthController extends Controller
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
+            'pin' => ['required', 'digits:4'],
         ]);
 
-        if (! auth()->attempt($credentials, $request->boolean('remember'))) {
-            return back()->withErrors(['email' => 'Those credentials do not match our records.'])->onlyInput('email');
+        $user = User::query()->where('email', $credentials['email'])->first();
+        if (! $user || ! Hash::check($credentials['pin'], $user->password)) {
+            return back()->withErrors(['pin' => 'That email or PIN is incorrect.'])->onlyInput('email');
         }
+
+        auth()->login($user, $request->boolean('remember'));
 
         $user = auth()->user();
         if (in_array($user->status, ['suspended', 'inactive'], true)) {
@@ -147,7 +150,7 @@ class AuthController extends Controller
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', 'min:8'],
+            'password' => ['required', 'confirmed', 'digits:4'],
         ]);
 
         $status = Password::reset(

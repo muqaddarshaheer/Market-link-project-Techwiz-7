@@ -11,7 +11,7 @@
     <link href="{{ asset('css/marketlink.css') }}" rel="stylesheet">
     <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ml-theme') || 'light');</script>
 </head>
-<body class="auth-body">
+<body class="auth-body {{ request()->routeIs('register') ? 'auth-register' : 'auth-login' }}">
 <div class="auth-shell">
     <aside class="auth-panel">
         <a href="{{ route('home') }}" class="d-inline-flex align-items-center gap-2 text-white text-decoration-none mb-4">

@@ -10,7 +10,7 @@
     <link href="{{ asset('css/marketlink.css') }}" rel="stylesheet">
     <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ml-theme') || 'light');</script>
 </head>
-<body class="admin-body">
+<body class="admin-body desk-customer">
 <div class="admin-shell">
     <aside class="admin-side" id="adminSide">
         <a class="admin-brand" href="{{ route('customer.dashboard') }}"><img class="brand-logo" src="{{ asset('images/logo.svg') }}" alt="" width="36" height="36"> {{ $siteName ?? 'MarketLink' }}</a>
