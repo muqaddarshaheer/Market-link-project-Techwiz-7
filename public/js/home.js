@@ -453,6 +453,9 @@
     }
 
     const modalRoot = document.getElementById('harvestEventModalRoot');
+    if (modalRoot && modalRoot.parentElement !== document.body) {
+        document.body.appendChild(modalRoot);
+    }
     const productsUrl = (document.getElementById('harvest-calendar') || {}).dataset
         ? document.getElementById('harvest-calendar').dataset.productsUrl
         : '#';
