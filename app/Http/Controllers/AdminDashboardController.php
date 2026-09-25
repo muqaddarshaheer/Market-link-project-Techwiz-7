@@ -231,6 +231,16 @@ class AdminDashboardController extends Controller
         return back()->with('success', 'Farmer account updated.');
     }
 
+    public function destroyFarmer(FarmerProfile $farmer)
+    {
+        $stall = $farmer->stall_name;
+        $user = $farmer->user;
+        $farmer->delete();
+        $user?->delete();
+
+        return redirect()->route('admin.farmers.index')->with('success', $stall.' was deleted.');
+    }
+
     public function markets()
     {
         return view('admin.markets.index', ['markets' => Market::query()->latest()->paginate(12)]);

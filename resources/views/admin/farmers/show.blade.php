@@ -23,10 +23,14 @@
     <button class="btn btn-ml mt-2">Save farmer</button>
 </form>
 <p class="small muted">Cutoff {{ $farmer->cutoff_hours }} hours</p>
-<div class="d-flex gap-2 mb-3">
+<div class="d-flex gap-2 mb-3 flex-wrap">
     <form method="POST" action="{{ route('admin.farmers.decide', $farmer) }}">@csrf<input type="hidden" name="approval_status" value="approved"><button class="btn btn-ml">Approve</button></form>
     <form method="POST" action="{{ route('admin.farmers.decide', $farmer) }}">@csrf<input type="hidden" name="approval_status" value="rejected"><button class="btn btn-outline-danger">Reject</button></form>
     <form method="POST" action="{{ route('admin.farmers.suspend', $farmer) }}">@csrf<button class="btn btn-outline-ml">Suspend / restore</button></form>
+    <form method="POST" action="{{ route('admin.farmers.destroy', $farmer) }}" onsubmit="return confirm('Delete {{ $farmer->stall_name }}? This removes the stall, products, and login.')">
+        @csrf @method('DELETE')
+        <button class="btn btn-outline-danger" type="submit">Delete farmer</button>
+    </form>
 </div>
 <h2 class="h5">Markets</h2>
 <ul>@forelse($farmer->markets as $market)<li>{{ $market->name }} @if($market->pivot->stall_number) · stall {{ $market->pivot->stall_number }} @endif</li>@empty<li class="muted">No markets assigned.</li>@endforelse</ul>

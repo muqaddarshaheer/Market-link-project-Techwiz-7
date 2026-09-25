@@ -126,6 +126,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/farmers/{farmer}/decide', [AdminDashboardController::class, 'decideFarmer'])->name('farmers.decide');
     Route::put('/farmers/{farmer}', [AdminDashboardController::class, 'updateFarmer'])->name('farmers.update');
     Route::post('/farmers/{farmer}/suspend', [AdminDashboardController::class, 'suspendFarmer'])->name('farmers.suspend');
+    Route::delete('/farmers/{farmer}', [AdminDashboardController::class, 'destroyFarmer'])->name('farmers.destroy');
     Route::get('/markets', [AdminDashboardController::class, 'markets'])->name('markets.index');
     Route::post('/markets', [AdminDashboardController::class, 'storeMarket'])->name('markets.store');
     Route::put('/markets/{market}', [AdminDashboardController::class, 'updateMarket'])->name('markets.update');

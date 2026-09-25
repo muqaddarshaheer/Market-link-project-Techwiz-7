@@ -35,6 +35,10 @@
                 <form method="POST" action="{{ route('admin.farmers.decide', $farmer) }}">@csrf<input type="hidden" name="approval_status" value="rejected"><button class="btn btn-sm btn-outline-danger">Reject</button></form>
                 <form method="POST" action="{{ route('admin.farmers.suspend', $farmer) }}">@csrf<button class="btn btn-sm btn-outline-ml">Suspend</button></form>
                 <a class="btn btn-sm btn-outline-ml" href="{{ route('admin.farmers.show', $farmer) }}">Edit</a>
+                <form method="POST" action="{{ route('admin.farmers.destroy', $farmer) }}" onsubmit="return confirm('Delete {{ $farmer->stall_name }}? This removes the stall, products, and login.')">
+                    @csrf @method('DELETE')
+                    <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                </form>
             </div>
         </article>
     </div>
