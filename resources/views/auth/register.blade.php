@@ -1,10 +1,19 @@
 @extends('layouts.guest')
 @section('title', 'Create an account')
+@section('auth_panel')
+    <h1 class="display-6">Join in a minute.</h1>
+    <p>Shop as a customer, or apply for a stall. Farmers go live after a quick admin check.</p>
+    <ol>
+        <li>Pick customer or farmer.</li>
+        <li>Add a few details + PIN.</li>
+        <li>Start browsing or waiting for approval.</li>
+    </ol>
+@endsection
 @section('content')
 <div class="login-card card-ml p-4 p-md-5">
     <p class="login-kicker">Join MarketLink</p>
     <h1 class="h3 mb-1">Create an account</h1>
-    <p class="muted mb-4">Choose customer or farmer below. Farmer stalls go live after admin approval.</p>
+    <p class="muted mb-3">Only the basics — you can fill the rest later.</p>
     @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show">
             <ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
@@ -12,11 +21,11 @@
         </div>
     @endif
 
-    <label class="form-label" for="accountType">I want to join as</label>
-    <select class="form-select mb-4" id="accountType" aria-label="Account type">
-        <option value="customer" @selected(old('_form', 'customer') !== 'farmer')>Customer — browse and pick up</option>
-        <option value="farmer" @selected(old('_form') === 'farmer')>Farmer — apply for a stall</option>
-    </select>
+    <div class="auth-type-pills mb-4" role="group" aria-label="Account type">
+        <button type="button" class="auth-type-pill {{ old('_form', 'customer') !== 'farmer' ? 'is-on' : '' }}" data-type="customer">Customer</button>
+        <button type="button" class="auth-type-pill {{ old('_form') === 'farmer' ? 'is-on' : '' }}" data-type="farmer">Farmer</button>
+    </div>
+    <input type="hidden" id="accountType" value="{{ old('_form', 'customer') === 'farmer' ? 'farmer' : 'customer' }}">
 
     <div id="customerPane" class="auth-pane" @style(['display:none' => old('_form') === 'farmer'])>
         <form method="POST" action="{{ route('register.customer') }}" id="customerForm">
@@ -28,10 +37,8 @@
             <div class="login-field mb-3"><i class="bi bi-envelope"></i><input class="form-control" id="c-email" type="email" name="email" value="{{ old('email') }}" required placeholder="you@email.com"></div>
             <label class="form-label" for="c-phone">Phone</label>
             <div class="login-field mb-3"><i class="bi bi-telephone"></i><input class="form-control" id="c-phone" name="phone" value="{{ old('phone') }}" required placeholder="03xxxxxxxxx"></div>
-            <label class="form-label" for="c-address">Address</label>
-            <textarea class="form-control mb-3" id="c-address" name="address" required placeholder="Street, city">{{ old('address') }}</textarea>
-            <label class="form-label" for="c-password">4-digit PIN</label>
-            <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control pin-input" id="c-password" name="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required placeholder="4 digits" autocomplete="new-password"></div>
+            <label class="form-label" for="c-password">Choose a 4-digit PIN</label>
+            <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control pin-input" id="c-password" name="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required placeholder="e.g. 2580" autocomplete="new-password"></div>
             <label class="form-label" for="c-confirm">Confirm PIN</label>
             <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control pin-input" id="c-confirm" name="password_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required placeholder="Repeat PIN" autocomplete="new-password"></div>
             <button class="btn btn-ml w-100" type="submit">Create customer account</button>
@@ -42,28 +49,21 @@
         <form method="POST" action="{{ route('register.farmer') }}" id="farmerForm">
             @csrf
             <input type="hidden" name="_form" value="farmer">
+            <input type="hidden" name="operating_days[]" value="Saturday">
             <label class="form-label" for="stall">Stall name</label>
             <div class="login-field mb-3"><i class="bi bi-shop"></i><input class="form-control" id="stall" name="stall_name" value="{{ old('stall_name') }}" placeholder="Green Row Farm"></div>
-            <label class="form-label" for="contact">Contact person</label>
-            <div class="login-field mb-3"><i class="bi bi-person"></i><input class="form-control" id="contact" name="contact_person" value="{{ old('contact_person') }}" placeholder="Your name"></div>
+            <label class="form-label" for="contact">Your name</label>
+            <div class="login-field mb-3"><i class="bi bi-person"></i><input class="form-control" id="contact" name="contact_person" value="{{ old('contact_person') }}" placeholder="Contact person"></div>
             <label class="form-label" for="f-email">Email</label>
             <div class="login-field mb-3"><i class="bi bi-envelope"></i><input class="form-control" id="f-email" type="email" name="email" value="{{ old('email') }}"></div>
             <label class="form-label" for="f-phone">Phone</label>
             <div class="login-field mb-3"><i class="bi bi-telephone"></i><input class="form-control" id="f-phone" name="phone" value="{{ old('phone') }}"></div>
-            <label class="form-label" for="f-address">Address</label>
-            <textarea class="form-control mb-3" id="f-address" name="address">{{ old('address') }}</textarea>
-            <label class="form-label">Operating days</label>
-            <div class="day-picks mb-3">
-                @foreach(['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] as $day)
-                    <label><input type="checkbox" name="operating_days[]" value="{{ $day }}" @checked(in_array($day, old('operating_days', ['Saturday'])))> {{ substr($day, 0, 3) }}</label>
-                @endforeach
-            </div>
-            <label class="form-label" for="f-password">4-digit PIN</label>
+            <label class="form-label" for="f-password">Choose a 4-digit PIN</label>
             <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control pin-input" id="f-password" name="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" autocomplete="new-password"></div>
             <label class="form-label" for="f-confirm">Confirm PIN</label>
             <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control pin-input" id="f-confirm" name="password_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" autocomplete="new-password"></div>
             <button class="btn btn-ml w-100" type="submit">Apply as a farmer</button>
-            <p class="small muted mt-2 mb-0">Your stall stays pending until an admin approves it.</p>
+            <p class="small muted mt-2 mb-0">Starts as Saturday stall — edit days later after approval.</p>
         </form>
     </div>
 
@@ -71,15 +71,16 @@
 </div>
 <script>
 (function () {
-    const type = document.getElementById('accountType');
+    const typeInput = document.getElementById('accountType');
     const customerPane = document.getElementById('customerPane');
     const farmerPane = document.getElementById('farmerPane');
     const customerForm = document.getElementById('customerForm');
     const farmerForm = document.getElementById('farmerForm');
+    const pills = document.querySelectorAll('.auth-type-pill');
 
     function setRequired(form, on) {
-        form.querySelectorAll('input, textarea, select').forEach(function (el) {
-            if (el.type === 'hidden' || el.name === 'operating_days[]') return;
+        form.querySelectorAll('input, textarea').forEach(function (el) {
+            if (el.type === 'hidden') return;
             if (on) {
                 if (el.dataset.wasRequired === '1') el.required = true;
             } else {
@@ -89,27 +90,31 @@
         });
     }
 
-    function sync() {
-        const farmer = type.value === 'farmer';
+    function sync(type) {
+        typeInput.value = type;
+        const farmer = type === 'farmer';
         customerPane.style.display = farmer ? 'none' : '';
         farmerPane.style.display = farmer ? '' : 'none';
+        pills.forEach(function (pill) {
+            pill.classList.toggle('is-on', pill.dataset.type === type);
+        });
         setRequired(customerForm, !farmer);
         setRequired(farmerForm, farmer);
         if (farmer) {
-            farmerForm.querySelectorAll('[name="operating_days[]"]').forEach(function (el) { el.disabled = false; });
-            ['stall','contact','f-email','f-phone','f-address','f-password','f-confirm'].forEach(function (id) {
+            ['stall', 'contact', 'f-email', 'f-phone', 'f-password', 'f-confirm'].forEach(function (id) {
                 const el = document.getElementById(id);
                 if (el) el.required = true;
             });
         }
     }
 
+    pills.forEach(function (pill) {
+        pill.addEventListener('click', function () { sync(pill.dataset.type); });
+    });
     document.querySelectorAll('.pin-input').forEach(function (el) {
         el.addEventListener('input', function () { this.value = this.value.replace(/\D/g, '').slice(0, 4); });
     });
-
-    type.addEventListener('change', sync);
-    sync();
+    sync(typeInput.value || 'customer');
 })();
 </script>
 @endsection

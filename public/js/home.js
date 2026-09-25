@@ -161,16 +161,14 @@
     function renderSelected(events, monthIndex) {
         if (!selectedEl) return;
         if (!events || !events.length) {
-            selectedEl.innerHTML = '<p class="small muted mb-0">Select a marked day to read the harvest note.</p>';
+            selectedEl.innerHTML = '';
             return;
         }
-        selectedEl.innerHTML = '<h3 class="h6 mb-2">Selected Harvest Event</h3>' + events.map(function (event) {
-            const dateLabel = monthNames[monthIndex] + ' ' + event.day + ', ' + year;
+        selectedEl.innerHTML = events.map(function (event) {
             return '<article class="harvest-event">' +
                 '<span class="harvest-event-icon" aria-hidden="true">' + event.icon + '</span>' +
-                '<div><strong>' + event.crop + '</strong>' +
-                '<div class="small">' + event.type + ' · <time datetime="' + year + '-' + String(monthIndex + 1).padStart(2, '0') + '-' + String(event.day).padStart(2, '0') + '">' + dateLabel + '</time></div>' +
-                '<p class="mb-0 small">' + event.message + '</p></div></article>';
+                '<div><strong>' + event.crop + '</strong> · ' + event.type +
+                '<div class="small muted mb-0">' + event.message + '</div></div></article>';
         }).join('');
     }
 

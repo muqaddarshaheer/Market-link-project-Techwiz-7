@@ -58,7 +58,6 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:100', 'unique:users,email'],
             'phone' => ['required', 'string', 'max:20'],
-            'address' => ['required', 'string', 'max:500'],
             'password' => ['required', 'digits:4', 'confirmed'],
         ]);
 
@@ -66,7 +65,7 @@ class AuthController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'phone' => $data['phone'],
-            'address' => $data['address'],
+            'address' => '',
             'password' => $data['password'],
             'role' => 'customer',
             'status' => 'active',
@@ -86,17 +85,18 @@ class AuthController extends Controller
             'contact_person' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:100', 'unique:users,email'],
             'phone' => ['required', 'string', 'max:20'],
-            'address' => ['required', 'string', 'max:500'],
-            'operating_days' => ['required', 'array', 'min:1'],
+            'operating_days' => ['nullable', 'array'],
             'operating_days.*' => ['in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday'],
             'password' => ['required', 'digits:4', 'confirmed'],
         ]);
+
+        $days = $data['operating_days'] ?? ['Saturday'];
 
         $user = User::query()->create([
             'name' => $data['contact_person'],
             'email' => $data['email'],
             'phone' => $data['phone'],
-            'address' => $data['address'],
+            'address' => '',
             'password' => $data['password'],
             'role' => 'farmer',
             'status' => 'pending',
@@ -107,8 +107,8 @@ class AuthController extends Controller
             'user_id' => $user->id,
             'stall_name' => $data['stall_name'],
             'contact_person' => $data['contact_person'],
-            'address' => $data['address'],
-            'operating_days' => $data['operating_days'],
+            'address' => '',
+            'operating_days' => $days,
             'approval_status' => 'pending',
             'pickup_slots' => [
                 ['label' => '08:00-10:00'],

@@ -8,23 +8,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="{{ asset('css/marketlink.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/marketlink.css') }}?v={{ @filemtime(public_path('css/marketlink.css')) }}" rel="stylesheet">
     <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ml-theme') || 'light');</script>
 </head>
-<body class="auth-body {{ request()->routeIs('register') ? 'auth-register' : 'auth-login' }}">
+<body class="auth-body {{ request()->routeIs('register*') ? 'auth-register' : 'auth-login' }}">
 <div class="auth-shell">
     <aside class="auth-panel">
         <a href="{{ route('home') }}" class="d-inline-flex align-items-center gap-2 text-white text-decoration-none mb-4">
             <img class="brand-logo" src="{{ asset('images/logo.svg') }}" alt="" width="44" height="44">
             <strong class="fs-4">{{ $siteName ?? 'MarketLink' }}</strong>
         </a>
-        <h1 class="display-6">Fresh food, short miles.</h1>
-        <p>Reserve a basket from a local stall and pay the farmer when you pick it up.</p>
-        <ol>
-            <li>Browse markets and growers.</li>
-            <li>Pre-order before the cutoff.</li>
-            <li>Collect and pay at the stall.</li>
-        </ol>
+        @yield('auth_panel')
     </aside>
     <main class="auth-form">
         @include('partials.flashes')

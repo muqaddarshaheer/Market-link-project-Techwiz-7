@@ -3,12 +3,12 @@
         <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
             <div>
                 <strong>MarketLink AI</strong>
-                <div class="small muted">Ask anything — produce, pickup, cooking, or general help</div>
+                <div class="small muted">Markets, farmers, produce, pickup & Rs only</div>
             </div>
             <button class="btn btn-sm" @click="open=false" aria-label="Close chat">&times;</button>
         </div>
         <div class="chat-log" x-ref="log">
-            <div class="bubble">Hi — ask about markets, Rs prices, farmers, pickup, or anything else.</div>
+            <div class="bubble">Ask about MarketLink markets, stalls, produce, or pickup — I stay on that only.</div>
             <template x-for="(row, i) in history" :key="i">
                 <div>
                     <div class="bubble me" x-text="row.q"></div>
@@ -23,7 +23,7 @@
             </div>
         </div>
         <form class="p-2 d-flex gap-2" @submit.prevent="send()">
-            <input class="form-control" x-model="message" placeholder="Ask anything…" required :disabled="busy" maxlength="800">
+            <input class="form-control" x-model="message" placeholder="Ask about MarketLink…" required :disabled="busy" maxlength="500">
             <button class="btn btn-ml" type="submit" :disabled="busy">Send</button>
         </form>
     </div>
@@ -35,7 +35,7 @@
     function chatBot() {
         return {
             open: false, busy: false, message: '', history: [],
-            suggestions: ['How does pickup work?', 'What costs Rs today?', 'Which farmers are open?', 'Cooking tip for tomatoes'],
+            suggestions: ['How does pickup work?', 'What costs Rs today?', 'Which farmers are open?', 'How do I create an account?'],
             async send() {
                 if (!this.message || this.busy) return;
                 const q = this.message;
@@ -49,7 +49,7 @@
                     });
                     const data = await res.json();
                     this.history.push({q, a: data.answer || 'Something went wrong. Please try again.'});
-                    this.suggestions = data.suggestions || this.suggestions;
+                    this.suggestions = data.suggestions?.length ? data.suggestions : this.suggestions;
                 } catch (e) {
                     this.history.push({q, a: 'Could not reach the helper. Try again.'});
                 }
