@@ -40,6 +40,12 @@ class ImageStore
         }
 
         $key = strtolower($name);
+        foreach (self::farmerCatalog() as $needle => $file) {
+            if (str_contains($key, $needle) && is_file(public_path('images/farmers/'.$file))) {
+                return asset('images/farmers/'.$file);
+            }
+        }
+
         foreach (self::catalog() as $needle => $file) {
             if (str_contains($key, $needle) && is_file(public_path('images/produce/'.$file))) {
                 return asset('images/produce/'.$file);
@@ -47,6 +53,18 @@ class ImageStore
         }
 
         return asset('images/placeholder.svg');
+    }
+
+    private static function farmerCatalog(): array
+    {
+        return [
+            'green row' => 'farmer-harper.jpg',
+            'harper' => 'farmer-harper.jpg',
+            'ortega' => 'farmer-miles.jpg',
+            'miles' => 'farmer-miles.jpg',
+            'shah' => 'male-farmer.jpg',
+            'herbs' => 'male-farmer.jpg',
+        ];
     }
 
     private static function catalog(): array
@@ -75,9 +93,6 @@ class ImageStore
             'downtown' => 'market.jpg',
             'eastside' => 'field.jpg',
             'oak hill' => 'farm.jpg',
-            'green row' => 'farm.jpg',
-            'ortega' => 'honey-stall.jpg',
-            'shah' => 'herbs.jpg',
         ];
     }
 

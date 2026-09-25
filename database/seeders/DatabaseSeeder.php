@@ -65,9 +65,9 @@ class DatabaseSeeder extends Seeder
         ];
 
         $farmerUsers = [
-            ['Harper Green', 'farmer@marketlink.com', 'Green Row Farm', 'approved', 'active'],
-            ['Miles Ortega', 'miles@marketlink.com', 'Ortega Honey', 'approved', 'active'],
-            ['Priya Shah', 'priya@marketlink.com', 'Shah Herbs', 'pending', 'pending'],
+            ['Harper Green', 'farmer@marketlink.com', 'Green Row Farm', 'approved', 'active', 'images/farmers/farmer-harper.jpg', '0322066091'],
+            ['Miles Ortega', 'miles@marketlink.com', 'Ortega Honey', 'approved', 'active', 'images/farmers/farmer-miles.jpg', '03401227617'],
+            ['Priya Shah', 'priya@marketlink.com', 'Shah Herbs', 'approved', 'active', 'images/farmers/male-farmer.jpg', '03001234567'],
         ];
 
         $farmers = [];
@@ -75,7 +75,7 @@ class DatabaseSeeder extends Seeder
             $user = User::query()->create([
                 'name' => $row[0],
                 'email' => $row[1],
-                'phone' => '555-02'.(10 + $i),
+                'phone' => $row[6],
                 'address' => (20 + $i).' Farm Road',
                 'password' => 'Farmer@123',
                 'role' => 'farmer',
@@ -92,6 +92,7 @@ class DatabaseSeeder extends Seeder
                 'latitude' => 30.2672 + ($i * 0.01),
                 'longitude' => -97.7431 + ($i * 0.01),
                 'approval_status' => $row[3],
+                'logo' => $row[5],
                 'pickup_slots' => [['label' => '08:00-10:00'], ['label' => '10:00-12:00']],
                 'cutoff_hours' => 12,
             ]);
