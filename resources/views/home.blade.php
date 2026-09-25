@@ -180,19 +180,23 @@
 <section class="mb-4 home-block reveal-up">
     <h2 class="section-title mb-1">Loved at local pickup</h2>
     <p class="home-sub">Notes from customers after collecting at the stall.</p>
-    <div class="row g-3 stagger-children">
-        @forelse($reviews as $review)
-            <div class="col-md-4">
-                <article class="home-quote">
-                    @include('partials.star-rating', ['rating' => $review->rating])
-                    <p class="mt-2 mb-2">{{ $review->comment }}</p>
-                    <div class="small muted">{{ $review->customer->name }}</div>
-                </article>
+    @if($reviews->isNotEmpty())
+        <div class="review-marquee" aria-label="Customer reviews">
+            <div class="review-marquee-track">
+                @foreach([0, 1] as $loopCopy)
+                    @foreach($reviews as $review)
+                        <article class="home-quote review-marquee-card">
+                            @include('partials.star-rating', ['rating' => $review->rating])
+                            <p class="mt-2 mb-2">{{ $review->comment }}</p>
+                            <div class="small muted">{{ $review->customer->name }}</div>
+                        </article>
+                    @endforeach
+                @endforeach
             </div>
-        @empty
-            <p class="muted">Reviews from completed pickups will show up here.</p>
-        @endforelse
-    </div>
+        </div>
+    @else
+        <p class="muted">Reviews from completed pickups will show up here.</p>
+    @endif
 </section>
 
 <section class="home-cta-band mb-2 reveal-scale">
