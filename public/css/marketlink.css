@@ -685,3 +685,67 @@ a.card-ml:hover, .card-ml:hover { transform: translateY(-2px); box-shadow: 0 10p
   .ml-motion .stagger-children > * { opacity: 1 !important; transform: none !important; }
   .floating-leaf, .pulse-soft, .harvest-grid.is-switching, .harvest-modal.is-open .harvest-modal-card, .harvest-modal.is-open .harvest-modal-backdrop { animation: none !important; }
 }
+.panel-banner { border-radius: 18px; overflow: hidden; border: 1px solid #d9e2dc; box-shadow: 0 8px 20px rgba(14,59,46,.06); }
+.panel-carousel .carousel-item { height: 168px; }
+.panel-carousel img { width: 100%; height: 168px; object-fit: cover; display: block; filter: brightness(.82); }
+.panel-banner-copy {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: .9rem 1.1rem;
+  background: linear-gradient(180deg, transparent, rgba(11,47,36,.88));
+  color: #f4fff8; display: flex; flex-direction: column; gap: .15rem;
+}
+.panel-banner-copy strong { font-size: 1.05rem; }
+.panel-banner-copy span { font-size: .86rem; opacity: .9; }
+.panel-carousel .carousel-indicators { margin-bottom: .4rem; }
+.panel-carousel .carousel-control-prev,
+.panel-carousel .carousel-control-next { width: 8%; opacity: .75; }
+.ml-alert { animation: ml-alert-in .18s ease both; border-radius: 12px; }
+@keyframes ml-alert-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.contact-progress { height: 6px; background: #e7f3ec; border-radius: 999px; overflow: hidden; }
+.contact-progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #1f6b45, #c9a227); transition: width .18s ease; }
+.topic-chip.is-on { background: #1f6b45; color: #fff; border-color: transparent; }
+.contact-form-card.is-alive { transition: box-shadow .15s ease, transform .15s ease; }
+.contact-form-card.is-alive:focus-within { box-shadow: 0 12px 28px rgba(14,59,46,.1); transform: translateY(-1px); }
+.harvest-toolbar { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: space-between; }
+.harvest-search { max-width: 180px; }
+.harvest-filter { max-width: 150px; }
+.harvest-legend { display: flex; flex-wrap: wrap; gap: .4rem; }
+.harvest-legend-item {
+  font-size: .72rem; font-weight: 800; border-radius: 999px; padding: .2rem .55rem;
+  background: #eef2ef; color: #0e3b2e;
+}
+.harvest-legend-item.is-harvest { background: #d8f0e2; }
+.harvest-legend-item.is-arrival { background: #d9e8f8; }
+.harvest-legend-item.is-pickup { background: #f8e7c4; }
+.harvest-legend-item.is-season { background: #f6d7d7; }
+.harvest-day.is-harvest { box-shadow: inset 0 -3px 0 #1f6b45; }
+.harvest-day.is-arrival { box-shadow: inset 0 -3px 0 #3d8bfd; }
+.harvest-day.is-pickup { box-shadow: inset 0 -3px 0 #c9a227; }
+.harvest-day.is-season { box-shadow: inset 0 -3px 0 #b4473a; }
+.harvest-chips { display: flex; flex-wrap: wrap; gap: .35rem; }
+.harvest-chip {
+  border: 1px solid #d7e9de; background: #fff; border-radius: 999px;
+  padding: .25rem .65rem; font-size: .78rem; font-weight: 700;
+}
+.harvest-chip:hover { border-color: #1f6b45; background: #e7f3ec; }
+.harvest-list { display: grid; gap: .5rem; }
+.harvest-list-row {
+  display: flex; align-items: flex-start; gap: .75rem; text-align: left;
+  border: 1px solid #d9e2dc; background: #fff; border-radius: 14px; padding: .75rem .9rem;
+  transition: border-color .1s ease, transform .1s ease;
+}
+.harvest-list-row:hover { border-color: #1f6b45; transform: translateY(-1px); }
+.harvest-list-day {
+  width: 36px; height: 36px; border-radius: 10px; background: #e7f3ec;
+  display: grid; place-items: center; font-weight: 800; flex: none;
+}
+.admin-body .table-responsive.card-ml,
+.admin-body .card-ml.panel-card { animation: ml-rise .2s ease both; }
+@keyframes ml-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.admin-nav a { transition: background .12s ease, transform .12s ease; }
+.admin-nav a:hover { transform: translateX(2px); }
+.auth-pane { animation: ml-rise .18s ease both; }
+@media (max-width: 700px) {
+  .panel-carousel .carousel-item, .panel-carousel img { height: 132px; }
+  .harvest-search, .harvest-filter { max-width: 100%; }
+}
+

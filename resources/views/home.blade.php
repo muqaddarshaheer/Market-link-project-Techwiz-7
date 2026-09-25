@@ -80,18 +80,41 @@
         <span class="harvest-status">Updated for 2026</span>
     </div>
     <h2 class="section-title mb-1" id="harvest-title">What’s Growing in 2026?</h2>
-    <p class="home-sub">Explore our seasonal harvest calendar and see which fresh produce is expected from local farms each month.</p>
+    <p class="home-sub">Explore the seasonal harvest calendar — jump months, filter crop types, search crops, and open day details.</p>
     <div class="harvest-shell card-ml">
+        <div class="harvest-toolbar mb-3">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <button type="button" class="btn btn-outline-ml btn-sm" id="harvestPrev" aria-label="Previous month"><i class="bi bi-chevron-left"></i></button>
+                <button type="button" class="btn btn-ml btn-sm" id="harvestToday">Today</button>
+                <button type="button" class="btn btn-outline-ml btn-sm" id="harvestNext" aria-label="Next month"><i class="bi bi-chevron-right"></i></button>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center flex-grow-1 justify-content-end">
+                <input class="form-control form-control-sm harvest-search" id="harvestSearch" type="search" placeholder="Search crop…" aria-label="Search crop">
+                <select class="form-select form-select-sm harvest-filter" id="harvestTypeFilter" aria-label="Filter by type">
+                    <option value="">All types</option>
+                    <option value="Harvest">Harvest</option>
+                    <option value="Arrival">Arrival</option>
+                    <option value="Pickup">Pickup</option>
+                    <option value="Season">Season</option>
+                </select>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Calendar view">
+                    <button type="button" class="btn btn-outline-ml active" id="harvestViewGrid">Grid</button>
+                    <button type="button" class="btn btn-outline-ml" id="harvestViewList">List</button>
+                </div>
+            </div>
+        </div>
+        <div class="harvest-legend mb-2" id="harvestLegend" aria-label="Event legend"></div>
         <div class="harvest-months" id="harvestMonths" role="tablist" aria-label="2026 months"></div>
         <div class="d-flex justify-content-between align-items-end gap-2 mb-2">
             <p class="harvest-kicker mb-0" id="harvestMonthLabel">January 2026</p>
             <p class="small muted mb-0"><strong id="harvestCount">0</strong> events · click a marked day</p>
         </div>
         <p id="harvestMessage" class="visually-hidden"></p>
-        <div id="harvestChips" hidden></div>
-        <div id="harvestSelected" hidden></div>
-        <div class="harvest-weekdays" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+        <div id="harvestChips" class="harvest-chips mb-2"></div>
+        <div id="harvestSelected" class="harvest-selected mb-2"></div>
+        <div class="harvest-weekdays" id="harvestWeekdays" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
         <div class="harvest-grid" id="harvestGrid" role="grid" aria-label="2026 harvest calendar"></div>
+        <div class="harvest-list" id="harvestList" hidden></div>
     </div>
 </section>
 <div id="harvestEventModalRoot"></div>

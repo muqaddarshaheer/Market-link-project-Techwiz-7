@@ -1,11 +1,14 @@
 @extends('layouts.farmer')
 @section('title', 'Products')
 @section('content')
-<div class="d-flex justify-content-between flex-wrap gap-2">
-    <h1 class="section-title">Products</h1>
+<div class="panel-head mb-4">
     <div>
-        <form class="d-inline" method="POST" action="{{ route('farmer.products.template.save') }}">@csrf<button class="btn btn-outline-ml btn-sm">Save weekly template</button></form>
-        <form class="d-inline" method="POST" action="{{ route('farmer.products.template.apply') }}">@csrf<button class="btn btn-outline-ml btn-sm">Apply template</button></form>
+        <p class="panel-kicker mb-1">Stall</p>
+        <h1 class="section-title mb-0">Products</h1>
+    </div>
+    <div class="panel-actions">
+        <form class="d-inline" method="POST" action="{{ route('farmer.products.template.save') }}">@csrf<button class="btn btn-outline-ml btn-sm" type="submit">Save weekly template</button></form>
+        <form class="d-inline" method="POST" action="{{ route('farmer.products.template.apply') }}">@csrf<button class="btn btn-outline-ml btn-sm" type="submit">Apply template</button></form>
     </div>
 </div>
 @if($farmer->isApproved() && $markets->isNotEmpty())
@@ -26,7 +29,7 @@
     <button class="btn btn-ml mt-2">Add product</button>
 </form>
 @else
-    <div class="alert alert-info">Join at least one market on your profile, and wait for approval, before listing products.</div>
+    <div class="alert alert-info alert-dismissible fade show">Join at least one market on your profile, and wait for approval, before listing products.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
 @endif
 <div class="table-responsive card-ml">
 <table class="table align-middle mb-0">

@@ -66,6 +66,14 @@
         </div>
         <div class="p-3 p-md-4">
             @include('partials.flashes')
+            @include('partials.panel-banner', [
+                'carouselId' => 'customerBanner',
+                'slides' => [
+                    ['img' => 'images/produce/cherry-tomatoes.jpg', 'title' => 'Your pickups', 'text' => 'Reserve produce, then pay the farmer at the stall.'],
+                    ['img' => 'images/produce/peaches.jpg', 'title' => 'Seasonal favourites', 'text' => 'Save stalls and products you want again.'],
+                    ['img' => 'images/produce/sweet-corn.jpg', 'title' => 'Market mornings', 'text' => 'Browse markets and collect in person.'],
+                ],
+            ])
             @yield('content')
         </div>
     </div>

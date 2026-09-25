@@ -71,6 +71,14 @@
         </div>
         <div class="p-3 p-md-4">
             @include('partials.flashes')
+            @include('partials.panel-banner', [
+                'carouselId' => 'adminBanner',
+                'slides' => [
+                    ['img' => 'images/produce/farm.jpg', 'title' => 'Admin control', 'text' => 'Approve stalls, watch orders, and keep markets honest.'],
+                    ['img' => 'images/produce/market.jpg', 'title' => 'Pickup operations', 'text' => 'Revenue is recorded in Rs after in-person payment.'],
+                    ['img' => 'images/produce/field.jpg', 'title' => 'Growers network', 'text' => 'Pending farmers wait here for a quick review.'],
+                ],
+            ])
             @yield('content')
         </div>
     </div>

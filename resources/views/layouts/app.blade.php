@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
     <link href="{{ asset('css/marketlink.css') }}?v={{ @filemtime(public_path('css/marketlink.css')) }}" rel="stylesheet">
     <script>
         (function () {
@@ -25,8 +24,9 @@
 @if(($liveAnnouncements ?? collect())->isNotEmpty())
     <div class="container mt-3">
         @foreach($liveAnnouncements as $announcement)
-            <div class="alert {{ $announcement->priority === 'high' ? 'alert-warning' : 'alert-success' }} py-2 mb-2">
+            <div class="alert alert-dismissible fade show {{ $announcement->priority === 'high' ? 'alert-warning' : 'alert-success' }} py-2 mb-2 ml-alert" role="alert">
                 <strong>{{ $announcement->title }}.</strong> {{ $announcement->message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endforeach
     </div>
@@ -47,10 +47,8 @@
 @include('partials.footer')
 @include('partials.chatbot')
 <div class="toast-stack" id="toastStack"></div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
     window.mlTheme = function () {
         const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';

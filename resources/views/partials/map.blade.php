@@ -1,5 +1,13 @@
+@once
+@push('head')
+<link href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+@endpush
+@endonce
 <div id="{{ $id ?? 'map' }}" class="map-box"></div>
 @push('scripts')
+@once
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+@endonce
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const points = @json($points);

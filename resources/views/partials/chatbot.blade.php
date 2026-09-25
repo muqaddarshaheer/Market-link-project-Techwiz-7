@@ -1,14 +1,14 @@
 <div class="chat-widget" x-data="chatBot()" x-cloak>
-    <div class="chat-panel mb-2" x-show="open" x-transition.opacity.duration.100ms>
+    <div class="chat-panel mb-2" x-show="open" x-transition.opacity.duration.120ms>
         <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
             <div>
                 <strong>MarketLink AI</strong>
-                <div class="small muted">Ask about produce, prices in Rs, pickup, farmers</div>
+                <div class="small muted">Ask anything — produce, pickup, cooking, or general help</div>
             </div>
             <button class="btn btn-sm" @click="open=false" aria-label="Close chat">&times;</button>
         </div>
         <div class="chat-log" x-ref="log">
-            <div class="bubble">Ask anything about MarketLink markets and stalls.</div>
+            <div class="bubble">Hi — ask about markets, Rs prices, farmers, pickup, or anything else.</div>
             <template x-for="(row, i) in history" :key="i">
                 <div>
                     <div class="bubble me" x-text="row.q"></div>
@@ -23,11 +23,11 @@
             </div>
         </div>
         <form class="p-2 d-flex gap-2" @submit.prevent="send()">
-            <input class="form-control" x-model="message" placeholder="Ask in any way…" required :disabled="busy">
+            <input class="form-control" x-model="message" placeholder="Ask anything…" required :disabled="busy" maxlength="800">
             <button class="btn btn-ml" type="submit" :disabled="busy">Send</button>
         </form>
     </div>
-    <button class="btn btn-ml rounded-circle" style="width:56px;height:56px" @click="open=!open" aria-label="Open chat">
+    <button class="btn btn-ml rounded-circle chat-fab" style="width:56px;height:56px" @click="open=!open" aria-label="Open chat">
         <i class="bi bi-chat-dots"></i>
     </button>
 </div>
@@ -35,7 +35,7 @@
     function chatBot() {
         return {
             open: false, busy: false, message: '', history: [],
-            suggestions: ['What costs Rs today?', 'How does pickup work?', 'Which farmers are open?'],
+            suggestions: ['How does pickup work?', 'What costs Rs today?', 'Which farmers are open?', 'Cooking tip for tomatoes'],
             async send() {
                 if (!this.message || this.busy) return;
                 const q = this.message;

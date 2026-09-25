@@ -42,7 +42,9 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended($user->dashboardRoute());
+        return redirect()->intended($user->dashboardRoute())->withHeaders([
+            'Cache-Control' => 'no-store',
+        ]);
     }
 
     public function showRegister()
@@ -126,7 +128,9 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('home');
+        return redirect('/')->withHeaders([
+            'Cache-Control' => 'no-store, no-cache, must-revalidate',
+        ]);
     }
 
     public function showForgot()

@@ -1,8 +1,9 @@
 @extends('layouts.admin')
 @section('title', 'Customers')
 @section('content')
-<div class="desk-head">
+<div class="desk-head panel-head mb-4">
     <div>
+        <p class="panel-kicker mb-1">People</p>
         <h1 class="section-title mb-1">Customers</h1>
         <p class="muted mb-0">Accounts that reserve produce for market pickup.</p>
     </div>

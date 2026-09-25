@@ -68,6 +68,14 @@
         </div>
         <div class="p-3 p-md-4">
             @include('partials.flashes')
+            @include('partials.panel-banner', [
+                'carouselId' => 'farmerBanner',
+                'slides' => [
+                    ['img' => 'images/farmers/farmer-harper.jpg', 'title' => 'Your stall desk', 'text' => 'Update stock, accept orders, and track Rs revenue.'],
+                    ['img' => 'images/produce/honey-stall.jpg', 'title' => 'Market ready', 'text' => 'Pack reserved baskets before pickup windows.'],
+                    ['img' => 'images/farmers/farmer-miles.jpg', 'title' => 'Grower tools', 'text' => 'Slots, insights, and reviews in one place.'],
+                ],
+            ])
             @yield('content')
         </div>
     </div>

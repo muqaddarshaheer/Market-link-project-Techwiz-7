@@ -124,14 +124,38 @@
     const year = 2026;
     const monthsEl = document.getElementById('harvestMonths');
     const gridEl = document.getElementById('harvestGrid');
+    const listEl = document.getElementById('harvestList');
     const labelEl = document.getElementById('harvestMonthLabel');
     const messageEl = document.getElementById('harvestMessage');
     const countEl = document.getElementById('harvestCount');
     const chipsEl = document.getElementById('harvestChips');
     const selectedEl = document.getElementById('harvestSelected');
+    const searchEl = document.getElementById('harvestSearch');
+    const typeFilterEl = document.getElementById('harvestTypeFilter');
+    const legendEl = document.getElementById('harvestLegend');
+    const weekdaysEl = document.getElementById('harvestWeekdays');
+    let currentMonth = 1;
+    let viewMode = 'grid';
 
     function daysInMonth(monthIndex) {
         return new Date(year, monthIndex + 1, 0).getDate();
+    }
+
+    function filteredEvents(monthNumber) {
+        const q = ((searchEl && searchEl.value) || '').trim().toLowerCase();
+        const type = (typeFilterEl && typeFilterEl.value) || '';
+        return (marketLinkHarvestEvents[monthNumber] || []).filter(function (event) {
+            if (type && event.type !== type) return false;
+            if (!q) return true;
+            return (event.crop + ' ' + event.type + ' ' + event.message).toLowerCase().indexOf(q) !== -1;
+        });
+    }
+
+    function renderLegend() {
+        if (!legendEl) return;
+        legendEl.innerHTML = ['Harvest', 'Arrival', 'Pickup', 'Season'].map(function (type) {
+            return '<span class="harvest-legend-item is-' + type.toLowerCase() + '">' + type + '</span>';
+        }).join('');
     }
 
     function renderSelected(events, monthIndex) {
@@ -150,10 +174,34 @@
         }).join('');
     }
 
+    function renderList(monthNumber, events) {
+        if (!listEl) return;
+        if (!events.length) {
+            listEl.innerHTML = '<p class="muted mb-0">No events match this filter.</p>';
+            return;
+        }
+        listEl.innerHTML = events.slice().sort(function (a, b) { return a.day - b.day; }).map(function (event) {
+            return '<button type="button" class="harvest-list-row" data-day="' + event.day + '">' +
+                '<span class="harvest-list-day">' + event.day + '</span>' +
+                '<span class="harvest-event-icon" aria-hidden="true">' + event.icon + '</span>' +
+                '<span><strong>' + event.crop + '</strong> · ' + event.type +
+                '<div class="small muted">' + event.message + '</div></span></button>';
+        }).join('');
+        listEl.querySelectorAll('.harvest-list-row').forEach(function (row) {
+            row.addEventListener('click', function () {
+                const day = Number(row.getAttribute('data-day'));
+                const dayEvents = events.filter(function (e) { return e.day === day; });
+                renderSelected(dayEvents, monthNumber - 1);
+                openHarvestEventModal(dayEvents, 0, row, monthNumber - 1);
+            });
+        });
+    }
+
     function renderMonth(monthNumber) {
         if (!gridEl || !monthsEl) return;
+        currentMonth = monthNumber;
         const monthIndex = monthNumber - 1;
-        const events = marketLinkHarvestEvents[monthNumber] || [];
+        const events = filteredEvents(monthNumber);
         const byDay = {};
         events.forEach(function (event) {
             byDay[event.day] = byDay[event.day] || [];
@@ -171,43 +219,64 @@
         if (countEl) countEl.textContent = String(events.length);
         if (chipsEl) {
             const crops = [];
+            const seen = {};
             events.forEach(function (event) {
-                if (crops.indexOf(event.crop) === -1) crops.push(event.icon + ' ' + event.crop);
+                if (seen[event.crop]) return;
+                seen[event.crop] = true;
+                crops.push({ crop: event.crop, icon: event.icon });
             });
-            chipsEl.innerHTML = crops.map(function (crop) {
-                return '<span class="harvest-chip">' + crop + '</span>';
-            }).join('');
+            chipsEl.innerHTML = crops.map(function (row) {
+                return '<button type="button" class="harvest-chip" data-crop="' + row.crop + '">' + row.icon + ' ' + row.crop + '</button>';
+            }).join('') || '<span class="small muted">No crops for this filter</span>';
+            chipsEl.querySelectorAll('[data-crop]').forEach(function (chip) {
+                chip.addEventListener('click', function () {
+                    if (searchEl) {
+                        searchEl.value = chip.getAttribute('data-crop');
+                        renderMonth(currentMonth);
+                    }
+                });
+            });
         }
-        let html = '';
-        for (let i = 0; i < firstWeekday; i++) html += '<span class="harvest-pad"></span>';
-        for (let day = 1; day <= total; day++) {
-            const dayEvents = byDay[day] || [];
-            if (!dayEvents.length) {
-                html += '<span class="harvest-day" role="gridcell"><span>' + day + '</span></span>';
-                continue;
+
+        if (viewMode === 'list') {
+            if (weekdaysEl) weekdaysEl.hidden = true;
+            gridEl.hidden = true;
+            if (listEl) { listEl.hidden = false; renderList(monthNumber, events); }
+        } else {
+            if (weekdaysEl) weekdaysEl.hidden = false;
+            gridEl.hidden = false;
+            if (listEl) listEl.hidden = true;
+            let html = '';
+            for (let i = 0; i < firstWeekday; i++) html += '<span class="harvest-pad"></span>';
+            for (let day = 1; day <= total; day++) {
+                const dayEvents = byDay[day] || [];
+                if (!dayEvents.length) {
+                    html += '<span class="harvest-day" role="gridcell"><span>' + day + '</span></span>';
+                    continue;
+                }
+                const icons = dayEvents.slice(0, 2).map(function (event) { return event.icon; }).join('');
+                const more = dayEvents.length > 2 ? '<span class="harvest-more">+' + (dayEvents.length - 2) + '</span>' : '';
+                const title = dayEvents.map(function (event) {
+                    return event.crop + ' · ' + event.type + ' · ' + monthNames[monthIndex] + ' ' + day;
+                }).join('; ');
+                html += '<button class="harvest-day is-event is-' + dayEvents[0].type.toLowerCase() + '" type="button" role="gridcell" data-day="' + day + '" title="' + title + '" aria-label="' + title + '"><span>' + day + '</span><span class="harvest-icons" aria-hidden="true">' + icons + more + '</span></button>';
             }
-            const icons = dayEvents.slice(0, 2).map(function (event) { return event.icon; }).join('');
-            const more = dayEvents.length > 2 ? '<span class="harvest-more">+' + (dayEvents.length - 2) + '</span>' : '';
-            const title = dayEvents.map(function (event) {
-                return event.crop + ' · ' + event.type + ' · ' + monthNames[monthIndex] + ' ' + day;
-            }).join('; ');
-            html += '<button class="harvest-day is-event" type="button" role="gridcell" data-day="' + day + '" title="' + title + '" aria-label="' + title + '"><span>' + day + '</span><span class="harvest-icons" aria-hidden="true">' + icons + more + '</span></button>';
-        }
-        gridEl.innerHTML = html;
-        gridEl.classList.remove('is-switching');
-        void gridEl.offsetWidth;
-        gridEl.classList.add('is-switching');
-        renderSelected(null, monthIndex);
-        gridEl.querySelectorAll('.is-event').forEach(function (button) {
-            button.addEventListener('click', function () {
-                const dayEvents = byDay[Number(button.getAttribute('data-day'))] || [];
-                if (!dayEvents.length) return;
-                gridEl.querySelectorAll('.is-event').forEach(function (item) { item.classList.remove('is-selected'); });
-                button.classList.add('is-selected');
-                renderSelected(dayEvents, monthIndex);
-                openHarvestEventModal(dayEvents, 0, button, monthIndex);
+            gridEl.innerHTML = html;
+            gridEl.classList.remove('is-switching');
+            void gridEl.offsetWidth;
+            gridEl.classList.add('is-switching');
+            gridEl.querySelectorAll('.is-event').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const dayEvents = byDay[Number(button.getAttribute('data-day'))] || [];
+                    if (!dayEvents.length) return;
+                    gridEl.querySelectorAll('.is-event').forEach(function (item) { item.classList.remove('is-selected'); });
+                    button.classList.add('is-selected');
+                    renderSelected(dayEvents, monthIndex);
+                    openHarvestEventModal(dayEvents, 0, button, monthIndex);
+                });
             });
-        });
+        }
+        renderSelected(null, monthIndex);
     }
 
     const modalRoot = document.getElementById('harvestEventModalRoot');
@@ -341,6 +410,7 @@
     });
 
     if (monthsEl && gridEl) {
+        renderLegend();
         monthNames.forEach(function (name, index) {
             const button = document.createElement('button');
             button.type = 'button';
@@ -352,8 +422,36 @@
             monthsEl.appendChild(button);
         });
         const today = new Date();
-        const startMonth = today.getFullYear() === 2026 ? today.getMonth() + 1 : 1;
+        const startMonth = today.getFullYear() === 2026 ? today.getMonth() + 1 : Math.min(12, today.getMonth() + 1);
         renderMonth(startMonth);
+
+        const prevBtn = document.getElementById('harvestPrev');
+        const nextBtn = document.getElementById('harvestNext');
+        const todayBtn = document.getElementById('harvestToday');
+        const gridBtn = document.getElementById('harvestViewGrid');
+        const listBtn = document.getElementById('harvestViewList');
+        if (prevBtn) prevBtn.addEventListener('click', function () { renderMonth(currentMonth <= 1 ? 12 : currentMonth - 1); });
+        if (nextBtn) nextBtn.addEventListener('click', function () { renderMonth(currentMonth >= 12 ? 1 : currentMonth + 1); });
+        if (todayBtn) todayBtn.addEventListener('click', function () {
+            const now = new Date();
+            renderMonth(now.getFullYear() === 2026 ? now.getMonth() + 1 : startMonth);
+        });
+        if (searchEl) searchEl.addEventListener('input', function () { renderMonth(currentMonth); });
+        if (typeFilterEl) typeFilterEl.addEventListener('change', function () { renderMonth(currentMonth); });
+        if (gridBtn && listBtn) {
+            gridBtn.addEventListener('click', function () {
+                viewMode = 'grid';
+                gridBtn.classList.add('active');
+                listBtn.classList.remove('active');
+                renderMonth(currentMonth);
+            });
+            listBtn.addEventListener('click', function () {
+                viewMode = 'list';
+                listBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+                renderMonth(currentMonth);
+            });
+        }
     }
 
     const videoHost = document.getElementById('storyVideo');
