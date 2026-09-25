@@ -77,7 +77,7 @@ class DatabaseSeeder extends Seeder
                 'email' => $row[1],
                 'phone' => $row[6],
                 'address' => (20 + $i).' Farm Road',
-                'password' => 'Farmer@123',
+                'password' => '1111',
                 'role' => 'farmer',
                 'status' => $row[4],
                 'email_verified_at' => now(),

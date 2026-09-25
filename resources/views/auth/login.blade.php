@@ -61,30 +61,55 @@
     </div>
 
     <div class="login-demo">
-        <span>Demo</span>
-        <code>admin@marketlink.com / 0000</code>
-        <code>farmer@… / 1111</code>
-        <code>customer@… / 2222</code>
+        <span>Demo PIN</span>
+        <code>admin@marketlink.com → 0000</code>
+        <code>farmer@marketlink.com → 1111</code>
+        <code>customer@marketlink.com → 2222</code>
     </div>
 </div>
 <script>
 (function () {
+    const form = document.getElementById('loginForm');
+    const email = document.getElementById('email');
     const pin = document.getElementById('pin');
+    const button = document.getElementById('loginBtn');
     const dots = Array.from(document.querySelectorAll('#pinDots span'));
+    let submitting = false;
+
     function paintDots() {
         const len = pin.value.length;
         dots.forEach(function (dot, i) { dot.classList.toggle('is-on', i < len); });
     }
+
+    function emailOk() {
+        return email.checkValidity() && email.value.trim().length > 3;
+    }
+
+    function tryAutoLogin() {
+        if (submitting) return;
+        if (! emailOk() || pin.value.length !== 4) return;
+        submitting = true;
+        button.disabled = true;
+        button.textContent = 'Signing in…';
+        form.requestSubmit ? form.requestSubmit() : form.submit();
+    }
+
     pin.addEventListener('input', function () {
         this.value = this.value.replace(/\D/g, '').slice(0, 4);
         paintDots();
+        tryAutoLogin();
     });
-    paintDots();
-    document.getElementById('loginForm').addEventListener('submit', function () {
-        const button = document.getElementById('loginBtn');
+
+    email.addEventListener('change', tryAutoLogin);
+    email.addEventListener('blur', tryAutoLogin);
+
+    form.addEventListener('submit', function () {
+        submitting = true;
         button.disabled = true;
         button.textContent = 'Signing in…';
     });
+
+    paintDots();
 })();
 </script>
 @endsection
