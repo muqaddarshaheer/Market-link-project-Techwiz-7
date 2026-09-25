@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Cache;
 
 class Announcement extends Model
 {
@@ -17,6 +18,12 @@ class Announcement extends Model
             'published_at' => 'datetime',
             'expires_at' => 'datetime',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => Cache::forget('announcements.live'));
+        static::deleted(fn () => Cache::forget('announcements.live'));
     }
 
     public function publisher(): BelongsTo

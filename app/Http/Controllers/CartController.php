@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CartController extends Controller
 {
@@ -32,6 +33,7 @@ class CartController extends Controller
         }
         $item->quantity = $next;
         $item->save();
+        Cache::forget('user.'.auth()->id().'.cart_qty');
 
         return back()->with('success', $product->name.' added to your cart.');
     }
@@ -44,6 +46,7 @@ class CartController extends Controller
             return back()->withErrors(['quantity' => 'Only '.$product->stock_quantity.' available.']);
         }
         $item->update(['quantity' => $data['quantity']]);
+        Cache::forget('user.'.auth()->id().'.cart_qty');
 
         return back()->with('success', 'Cart updated.');
     }
@@ -51,6 +54,7 @@ class CartController extends Controller
     public function remove(Product $product)
     {
         $this->cart()->items()->where('product_id', $product->id)->delete();
+        Cache::forget('user.'.auth()->id().'.cart_qty');
 
         return back()->with('success', 'Item removed.');
     }

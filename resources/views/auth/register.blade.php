@@ -1,19 +1,27 @@
 @extends('layouts.guest')
 @section('title', 'Create an account')
 @section('auth_panel')
-    <h1 class="display-6">Join in a minute.</h1>
-    <p>Shop as a customer, or apply for a stall. Farmers go live after a quick admin check.</p>
-    <ol>
-        <li>Pick customer or farmer.</li>
-        <li>Add a few details + PIN.</li>
-        <li>Start browsing or waiting for approval.</li>
-    </ol>
+    <div class="auth-panel-copy">
+        <p class="auth-panel-kicker">Join the market</p>
+        <h1 class="auth-brand-title">MarketLink</h1>
+        <p class="auth-panel-lead">Shop as a customer, or apply for a stall. Farmers go live after a quick admin check.</p>
+        <ul class="auth-steps">
+            <li><span>1</span><div><strong>Choose a role</strong><small>Customer or farmer</small></div></li>
+            <li><span>2</span><div><strong>Add basics</strong><small>Details + 4-digit PIN</small></div></li>
+            <li><span>3</span><div><strong>Start</strong><small>Browse or wait for approval</small></div></li>
+        </ul>
+    </div>
 @endsection
 @section('content')
-<div class="login-card card-ml p-4 p-md-5">
-    <p class="login-kicker">Join MarketLink</p>
-    <h1 class="h3 mb-1">Create an account</h1>
-    <p class="muted mb-3">Only the basics — you can fill the rest later.</p>
+<div class="login-card card-ml">
+    <div class="login-card-head">
+        <img class="brand-logo" src="{{ asset('images/logo.svg') }}" alt="" width="40" height="40">
+        <div>
+            <p class="login-kicker">Join MarketLink</p>
+            <h1 class="login-title">Create an account</h1>
+        </div>
+    </div>
+    <p class="login-sub">Only the basics — you can fill the rest later.</p>
     @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show">
             <ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>

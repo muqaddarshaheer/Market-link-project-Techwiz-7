@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Sign in') · {{ $siteName ?? 'MarketLink' }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="{{ asset('css/marketlink.css') }}?v={{ @filemtime(public_path('css/marketlink.css')) }}" rel="stylesheet">
@@ -14,11 +15,15 @@
 <body class="auth-body {{ request()->routeIs('register*') ? 'auth-register' : 'auth-login' }}">
 <div class="auth-shell">
     <aside class="auth-panel">
-        <a href="{{ route('home') }}" class="d-inline-flex align-items-center gap-2 text-white text-decoration-none mb-4">
-            <img class="brand-logo" src="{{ asset('images/logo.svg') }}" alt="" width="44" height="44">
-            <strong class="fs-4">{{ $siteName ?? 'MarketLink' }}</strong>
-        </a>
-        @yield('auth_panel')
+        <div class="auth-panel-media" aria-hidden="true"></div>
+        <div class="auth-panel-shade" aria-hidden="true"></div>
+        <div class="auth-panel-content">
+            <a href="{{ route('home') }}" class="auth-panel-home">
+                <img class="brand-logo" src="{{ asset('images/logo.svg') }}" alt="" width="44" height="44">
+                <span>Back to home</span>
+            </a>
+            @yield('auth_panel')
+        </div>
     </aside>
     <main class="auth-form">
         @include('partials.flashes')

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 class Product extends Model
 {
@@ -55,7 +56,23 @@ class Product extends Model
 
     public function averageRating(): float
     {
+        if (array_key_exists('rating_avg', $this->attributes) && $this->attributes['rating_avg'] !== null) {
+            return round((float) $this->attributes['rating_avg'], 1);
+        }
+
         return round((float) $this->reviews()->where('status', 'approved')->avg('rating'), 1);
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => static::bustPublicCaches());
+        static::deleted(fn () => static::bustPublicCaches());
+    }
+
+    public static function bustPublicCaches(): void
+    {
+        Cache::forget('home.payload.v2');
+        Cache::forget('about.payload.v1');
     }
 
     public function canPurchase(): bool

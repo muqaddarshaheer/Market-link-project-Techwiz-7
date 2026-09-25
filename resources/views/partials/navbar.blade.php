@@ -105,8 +105,10 @@
                 this.items = data.items;
                 @endauth
             },
-            start() { this.pull(); setInterval(() => this.pull(), 30000); }
+            start() {
+                this.pull();
+                setInterval(() => this.pull(), 60000);
+            }
         };
     }
 </script>
-<style>[x-cloak]{display:none !important}</style>

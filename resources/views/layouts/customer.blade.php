@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Dashboard') · {{ $siteName ?? 'MarketLink' }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="{{ asset('css/marketlink.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="{{ asset('css/marketlink.css') }}?v={{ @filemtime(public_path('css/marketlink.css')) }}" rel="stylesheet">
     <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ml-theme') || 'light');</script>
 </head>
 <body class="admin-body desk-customer">
@@ -66,19 +66,11 @@
         </div>
         <div class="p-3 p-md-4">
             @include('partials.flashes')
-            @include('partials.panel-banner', [
-                'carouselId' => 'customerBanner',
-                'slides' => [
-                    ['img' => 'images/produce/cherry-tomatoes.jpg', 'title' => 'Your pickups', 'text' => 'Reserve produce, then pay the farmer at the stall.'],
-                    ['img' => 'images/produce/peaches.jpg', 'title' => 'Seasonal favourites', 'text' => 'Save stalls and products you want again.'],
-                    ['img' => 'images/produce/sweet-corn.jpg', 'title' => 'Market mornings', 'text' => 'Browse markets and collect in person.'],
-                ],
-            ])
             @yield('content')
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 <script>
 window.mlTheme = function () {
     const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';

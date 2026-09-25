@@ -4,17 +4,7 @@
 <div class="home-page">
 <section class="home-hero" aria-label="MarketLink intro">
     <div class="home-hero-media">
-        <img src="{{ asset('images/produce/farm.jpg') }}" alt="" width="1600" height="900" fetchpriority="high">
-    </div>
-    <div class="home-hero-scrim"></div>
-    <div class="home-hero-copy">
-        <p class="home-hero-brand">MarketLink</p>
-        <h1>Fresh from the field. Pickup at the market.</h1>
-        <p class="home-hero-lead">Reserve produce in Rs, collect at the stall, and pay the farmer in person.</p>
-        <div class="home-hero-actions">
-            <a class="btn btn-light rounded-pill px-4" href="{{ route('markets.index') }}">Explore markets</a>
-            <a class="btn btn-outline-light rounded-pill px-4" href="{{ route('products.index') }}">Browse produce</a>
-        </div>
+        <img src="{{ asset('images/banners/marketlink-hero.jpg') }}?v=6" alt="MarketLink" width="1024" height="512" fetchpriority="high" decoding="sync">
     </div>
 </section>
 
@@ -70,32 +60,37 @@
 
 <section class="mb-5 home-block reveal-up" id="harvest-calendar" data-products-url="{{ route('products.index') }}" aria-labelledby="harvest-title">
 <script type="application/json" id="harvest-growers">@json($harvestGrowers)</script>
-    <div class="harvest-compact">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+    <div class="hc">
+        <div class="hc-head">
             <div>
-                <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                    <span class="harvest-badge pulse-soft">Harvest 2026</span>
-                    <span class="harvest-status">Click a day</span>
-                </div>
-                <h2 class="section-title mb-0" id="harvest-title">What’s Growing?</h2>
+                <span class="harvest-badge">Harvest 2026</span>
+                <h2 class="section-title mt-2 mb-1" id="harvest-title">What’s Growing?</h2>
+                <p class="home-sub mb-0" id="harvestMessage">Season guide for stall pickup — no delivery.</p>
             </div>
-            <p class="small muted mb-0"><strong id="harvestCount">0</strong> events · <span id="harvestMonthLabel">January 2026</span></p>
+            <div class="hc-stat">
+                <strong id="harvestCount">0</strong>
+                <span id="harvestMonthLabel">January 2026</span>
+            </div>
         </div>
-        <div class="harvest-shell card-ml">
-            <div class="harvest-toolbar">
-                <div class="d-flex flex-wrap gap-1 align-items-center">
+
+        <div class="hc-card">
+            <div class="hc-toolbar">
+                <div class="hc-toolbar-left">
                     <button type="button" class="btn btn-outline-ml btn-sm" id="harvestPrev" aria-label="Previous month"><i class="bi bi-chevron-left"></i></button>
                     <button type="button" class="btn btn-ml btn-sm" id="harvestToday">Today</button>
                     <button type="button" class="btn btn-outline-ml btn-sm" id="harvestNext" aria-label="Next month"><i class="bi bi-chevron-right"></i></button>
+                    <button type="button" class="btn btn-outline-ml btn-sm" id="harvestNextEvent">Next event</button>
+                    <span class="hc-hint" id="harvestStatus">Pick a highlighted day</span>
                 </div>
-                <div class="d-flex flex-wrap gap-1 align-items-center">
-                    <input class="form-control form-control-sm harvest-search" id="harvestSearch" type="search" placeholder="Crop…" aria-label="Search crop">
-                    <select class="form-select form-select-sm harvest-filter" id="harvestTypeFilter" aria-label="Filter by type">
-                        <option value="">All</option>
+                <div class="hc-toolbar-right">
+                    <input class="form-control form-control-sm" id="harvestSearch" type="search" placeholder="Search crop…" aria-label="Search crop">
+                    <select class="form-select form-select-sm" id="harvestTypeFilter" aria-label="Filter by type">
+                        <option value="">All types</option>
                         <option value="Harvest">Harvest</option>
                         <option value="Arrival">Arrival</option>
                         <option value="Pickup">Pickup</option>
                         <option value="Season">Season</option>
+                        <option value="fav">★ Saved</option>
                     </select>
                     <div class="btn-group btn-group-sm" role="group" aria-label="Calendar view">
                         <button type="button" class="btn btn-outline-ml active" id="harvestViewGrid">Grid</button>
@@ -103,14 +98,33 @@
                     </div>
                 </div>
             </div>
-            <div class="harvest-legend" id="harvestLegend" aria-label="Event legend"></div>
-            <div class="harvest-months" id="harvestMonths" role="tablist" aria-label="2026 months"></div>
-            <p id="harvestMessage" class="visually-hidden"></p>
-            <div id="harvestChips" class="harvest-chips"></div>
-            <div class="harvest-weekdays" id="harvestWeekdays" aria-hidden="true"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
-            <div class="harvest-grid" id="harvestGrid" role="grid" aria-label="2026 harvest calendar"></div>
-            <div class="harvest-list" id="harvestList" hidden></div>
-            <div id="harvestSelected" class="harvest-selected"></div>
+
+            <div class="hc-months" id="harvestMonths" role="tablist" aria-label="2026 months"></div>
+            <div class="hc-progress" aria-hidden="true"><span id="harvestSeasonFill"></span></div>
+            <div class="hc-legend" id="harvestLegend" aria-label="Event legend"></div>
+
+            <div class="hc-weekdays" id="harvestWeekdays" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+            <div class="hc-grid" id="harvestGrid" role="grid" aria-label="2026 harvest calendar"></div>
+            <div class="hc-list" id="harvestList" hidden></div>
+
+            <div class="hc-footer">
+                <div id="harvestChips" class="hc-chips"></div>
+                <div class="hc-upcoming-wrap">
+                    <p class="hc-label">Coming up</p>
+                    <div id="harvestUpcoming" class="hc-upcoming"></div>
+                </div>
+            </div>
+
+            <div id="harvestSelected" class="hc-selected"></div>
+
+            {{-- Keep JS hooks without cluttering the UI --}}
+            <div class="visually-hidden" aria-hidden="true">
+                <div id="harvestWeekStrip"></div>
+                <div id="harvestFavorites"></div>
+                <button type="button" id="harvestClearFavs"></button>
+                <button type="button" id="harvestCopyMonth"></button>
+                <button type="button" id="harvestPrintMonth"></button>
+            </div>
         </div>
     </div>
 </section>

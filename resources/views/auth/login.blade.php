@@ -1,19 +1,28 @@
 @extends('layouts.guest')
 @section('title', 'Log in')
 @section('auth_panel')
-    <h1 class="display-6">Back to the stall.</h1>
-    <p>Email and a 4-digit PIN open your dashboard — admin, farmer, or customer.</p>
-    <ol>
-        <li>Sign in with your PIN.</li>
-        <li>Reserve or manage pickup orders.</li>
-        <li>Pay the farmer in person.</li>
-    </ol>
+    <div class="auth-panel-copy">
+        <p class="auth-panel-kicker">Local · Pickup · Pay at stall</p>
+        <h1 class="auth-brand-title">MarketLink</h1>
+        <p class="auth-panel-lead">Reserve fresh produce from verified growers, then collect and pay at the market.</p>
+        <ul class="auth-steps">
+            <li><span>1</span><div><strong>Sign in</strong><small>Email + 4-digit PIN</small></div></li>
+            <li><span>2</span><div><strong>Reserve</strong><small>Pick a market slot</small></div></li>
+            <li><span>3</span><div><strong>Collect</strong><small>Pay the farmer in person</small></div></li>
+        </ul>
+    </div>
 @endsection
 @section('content')
-<div class="login-card card-ml p-4 p-md-5">
-    <p class="login-kicker">MarketLink</p>
-    <h1 class="h3 mb-1">Welcome back</h1>
-    <p class="muted mb-4">Email + 4-digit PIN. We send you to the right panel.</p>
+<div class="login-card card-ml">
+    <div class="login-card-head">
+        <img class="brand-logo" src="{{ asset('images/logo.svg') }}" alt="" width="40" height="40">
+        <div>
+            <p class="login-kicker">Welcome back</p>
+            <h1 class="login-title">Log in to MarketLink</h1>
+        </div>
+    </div>
+    <p class="login-sub">Use your email and PIN. We’ll open the right panel for you.</p>
+
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show">{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
     @endif
@@ -23,29 +32,54 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-    <form method="POST" action="{{ route('login') }}" id="loginForm">
+
+    <form method="POST" action="{{ route('login') }}" id="loginForm" class="login-form">
         @csrf
         <label class="form-label" for="email">Email</label>
         <div class="login-field mb-3">
-            <i class="bi bi-envelope"></i>
+            <i class="bi bi-envelope" aria-hidden="true"></i>
             <input class="form-control" id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" placeholder="you@email.com">
         </div>
+
         <label class="form-label" for="pin">4-digit PIN</label>
-        <div class="login-field mb-3">
-            <i class="bi bi-lock"></i>
-            <input class="form-control" id="pin" name="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required autocomplete="current-password" placeholder="••••">
+        <div class="login-field login-field-pin mb-2">
+            <i class="bi bi-shield-lock" aria-hidden="true"></i>
+            <input class="form-control pin-input" id="pin" name="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required autocomplete="current-password" placeholder="••••" aria-describedby="pinHelp">
         </div>
-        <div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="remember" id="remember" value="1"><label class="form-check-label" for="remember">Remember me</label></div>
-        <button class="btn btn-ml w-100" id="loginBtn" type="submit">Log in</button>
+        <div class="pin-dots" id="pinDots" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+        </div>
+        <p class="small muted mb-3" id="pinHelp">Four numbers only — same PIN you set at signup.</p>
+
+        <div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="remember" id="remember" value="1"><label class="form-check-label" for="remember">Keep me signed in</label></div>
+        <button class="btn btn-ml w-100 login-submit" id="loginBtn" type="submit">Log in</button>
     </form>
-    <a class="btn btn-outline-ml w-100 mt-3" href="{{ route('register') }}">Create new account</a>
-    <a class="btn btn-link w-100 mt-2" href="{{ route('products.index') }}">Continue as guest</a>
-    <p class="small muted mt-3 mb-0">Demo: admin@marketlink.com / 0000 · farmer@… / 1111 · customer@… / 2222</p>
+
+    <div class="login-alt">
+        <a class="btn btn-outline-ml w-100" href="{{ route('register') }}">Create new account</a>
+        <a class="login-guest" href="{{ route('products.index') }}">Continue browsing as guest</a>
+    </div>
+
+    <div class="login-demo">
+        <span>Demo</span>
+        <code>admin@marketlink.com / 0000</code>
+        <code>farmer@… / 1111</code>
+        <code>customer@… / 2222</code>
+    </div>
 </div>
 <script>
 (function () {
     const pin = document.getElementById('pin');
-    pin.addEventListener('input', function () { this.value = this.value.replace(/\D/g, '').slice(0, 4); });
+    const dots = Array.from(document.querySelectorAll('#pinDots span'));
+    function paintDots() {
+        const len = pin.value.length;
+        dots.forEach(function (dot, i) { dot.classList.toggle('is-on', i < len); });
+    }
+    pin.addEventListener('input', function () {
+        this.value = this.value.replace(/\D/g, '').slice(0, 4);
+        paintDots();
+    });
+    paintDots();
     document.getElementById('loginForm').addEventListener('submit', function () {
         const button = document.getElementById('loginBtn');
         button.disabled = true;

@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Review;
 use App\Support\ImageStore;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
 class CustomerDashboardController extends Controller
@@ -63,6 +64,7 @@ class CustomerDashboardController extends Controller
     {
         abort_unless($notification->user_id === auth()->id(), 403);
         $notification->update(['is_read' => true]);
+        Cache::forget('user.'.auth()->id().'.unread');
 
         return back();
     }
@@ -70,6 +72,7 @@ class CustomerDashboardController extends Controller
     public function readAll()
     {
         auth()->user()->appNotifications()->where('is_read', false)->update(['is_read' => true]);
+        Cache::forget('user.'.auth()->id().'.unread');
 
         return back()->with('success', 'All notifications marked as read.');
     }

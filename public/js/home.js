@@ -122,6 +122,7 @@
     ];
 
     const year = 2026;
+    const monthShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const monthsEl = document.getElementById('harvestMonths');
     const gridEl = document.getElementById('harvestGrid');
     const listEl = document.getElementById('harvestList');
@@ -134,18 +135,60 @@
     const typeFilterEl = document.getElementById('harvestTypeFilter');
     const legendEl = document.getElementById('harvestLegend');
     const weekdaysEl = document.getElementById('harvestWeekdays');
+    const weekStripEl = document.getElementById('harvestWeekStrip');
+    const upcomingEl = document.getElementById('harvestUpcoming');
+    const favoritesEl = document.getElementById('harvestFavorites');
+    const seasonFillEl = document.getElementById('harvestSeasonFill');
+    const statusEl = document.getElementById('harvestStatus');
     let currentMonth = 1;
     let viewMode = 'grid';
+    const favKey = 'ml-harvest-favs';
+
+    function loadFavs() {
+        try { return JSON.parse(localStorage.getItem(favKey) || '[]'); } catch (e) { return []; }
+    }
+    function saveFavs(list) {
+        localStorage.setItem(favKey, JSON.stringify(list));
+    }
+    function isFav(crop) {
+        return loadFavs().indexOf(crop) !== -1;
+    }
+    function toggleFav(crop) {
+        const list = loadFavs();
+        const i = list.indexOf(crop);
+        if (i === -1) list.push(crop); else list.splice(i, 1);
+        saveFavs(list);
+    }
 
     function daysInMonth(monthIndex) {
         return new Date(year, monthIndex + 1, 0).getDate();
+    }
+
+    function allFlatEvents() {
+        const rows = [];
+        Object.keys(marketLinkHarvestEvents).forEach(function (monthKey) {
+            (marketLinkHarvestEvents[monthKey] || []).forEach(function (event) {
+                rows.push({
+                    month: Number(monthKey),
+                    day: event.day,
+                    crop: event.crop,
+                    icon: event.icon,
+                    type: event.type,
+                    message: event.message
+                });
+            });
+        });
+        return rows.sort(function (a, b) {
+            return a.month === b.month ? a.day - b.day : a.month - b.month;
+        });
     }
 
     function filteredEvents(monthNumber) {
         const q = ((searchEl && searchEl.value) || '').trim().toLowerCase();
         const type = (typeFilterEl && typeFilterEl.value) || '';
         return (marketLinkHarvestEvents[monthNumber] || []).filter(function (event) {
-            if (type && event.type !== type) return false;
+            if (type === 'fav' && !isFav(event.crop)) return false;
+            if (type && type !== 'fav' && event.type !== type) return false;
             if (!q) return true;
             return (event.crop + ' ' + event.type + ' ' + event.message).toLowerCase().indexOf(q) !== -1;
         });
@@ -158,7 +201,7 @@
         }).join('');
     }
 
-    function renderSelected(events, monthIndex) {
+    function renderSelected(events) {
         if (!selectedEl) return;
         if (!events || !events.length) {
             selectedEl.innerHTML = '';
@@ -170,6 +213,119 @@
                 '<div><strong>' + event.crop + '</strong> · ' + event.type +
                 '<div class="small muted mb-0">' + event.message + '</div></div></article>';
         }).join('');
+    }
+
+    function renderFavorites() {
+        if (!favoritesEl) return;
+        const favs = loadFavs();
+        if (!favs.length) {
+            favoritesEl.innerHTML = '<p class="small muted mb-0">No saved crops yet.</p>';
+            return;
+        }
+        const icons = {};
+        allFlatEvents().forEach(function (row) { if (!icons[row.crop]) icons[row.crop] = row.icon; });
+        favoritesEl.innerHTML = favs.slice(0, 4).map(function (crop) {
+            return '<button type="button" class="harvest-fav-row" data-crop="' + crop + '">' +
+                '<span aria-hidden="true">' + (icons[crop] || '★') + '</span>' +
+                '<span><strong>' + crop + '</strong></span></button>';
+        }).join('');
+        favoritesEl.querySelectorAll('[data-crop]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                if (searchEl) searchEl.value = btn.getAttribute('data-crop');
+                if (typeFilterEl) typeFilterEl.value = '';
+                renderMonth(currentMonth);
+            });
+        });
+    }
+
+    function renderUpcoming(monthNumber) {
+        if (!upcomingEl) return;
+        const now = new Date();
+        const fromMonth = monthNumber;
+        const rows = allFlatEvents().filter(function (row) {
+            if (row.month < fromMonth) return false;
+            if (row.month === fromMonth && now.getFullYear() === year && now.getMonth() + 1 === fromMonth) {
+                return row.day >= now.getDate();
+            }
+            return true;
+        }).slice(0, 4);
+        if (!rows.length) {
+            upcomingEl.innerHTML = '<p class="small muted mb-0">No upcoming events.</p>';
+            return;
+        }
+        upcomingEl.innerHTML = rows.map(function (row) {
+            return '<button type="button" class="harvest-upcoming-row" data-month="' + row.month + '" data-day="' + row.day + '">' +
+                '<span class="harvest-upcoming-day">' + monthShort[row.month - 1] + '<br>' + row.day + '</span>' +
+                '<span><strong>' + row.icon + ' ' + row.crop + '</strong><div class="small muted">' + row.type + '</div></span></button>';
+        }).join('');
+        upcomingEl.querySelectorAll('.harvest-upcoming-row').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const m = Number(btn.getAttribute('data-month'));
+                const d = Number(btn.getAttribute('data-day'));
+                renderMonth(m);
+                const dayEvents = filteredEvents(m).filter(function (e) { return e.day === d; });
+                if (dayEvents.length) openHarvestEventModal(dayEvents, 0, btn, m - 1);
+            });
+        });
+    }
+
+    function renderWeekStrip() {
+        if (!weekStripEl) return;
+        const now = new Date();
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const cards = [];
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(start);
+            date.setDate(start.getDate() + i);
+            const m = date.getMonth() + 1;
+            const d = date.getDate();
+            const y = date.getFullYear();
+            const events = y === year ? (marketLinkHarvestEvents[m] || []).filter(function (e) { return e.day === d; }) : [];
+            const label = date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' });
+            if (!events.length) {
+                cards.push('<div class="harvest-week-card is-empty"><strong>' + label + '</strong><span>Quiet</span></div>');
+            } else {
+                cards.push('<button type="button" class="harvest-week-card" data-month="' + m + '" data-day="' + d + '"><strong>' + label + '</strong><span>' +
+                    events.map(function (e) { return e.icon + ' ' + e.crop; }).join(', ') + '</span></button>');
+            }
+        }
+        weekStripEl.innerHTML = cards.join('');
+        weekStripEl.querySelectorAll('[data-month]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const m = Number(btn.getAttribute('data-month'));
+                const d = Number(btn.getAttribute('data-day'));
+                if (m < 1 || m > 12) return;
+                renderMonth(m);
+                const dayEvents = (marketLinkHarvestEvents[m] || []).filter(function (e) { return e.day === d; });
+                if (dayEvents.length) openHarvestEventModal(dayEvents, 0, btn, m - 1);
+            });
+        });
+    }
+
+    function jumpNextEvent() {
+        const now = new Date();
+        const next = allFlatEvents().find(function (row) {
+            if (now.getFullYear() !== year) return row.month >= currentMonth;
+            if (row.month > now.getMonth() + 1) return true;
+            if (row.month === now.getMonth() + 1 && row.day >= now.getDate()) return true;
+            return false;
+        }) || allFlatEvents()[0];
+        if (!next) return;
+        renderMonth(next.month);
+        const dayEvents = (marketLinkHarvestEvents[next.month] || []).filter(function (e) { return e.day === next.day; });
+        if (dayEvents.length) openHarvestEventModal(dayEvents, 0, null, next.month - 1);
+        if (statusEl) statusEl.textContent = 'Next: ' + next.crop;
+    }
+
+    function copyMonthList() {
+        const events = filteredEvents(currentMonth).slice().sort(function (a, b) { return a.day - b.day; });
+        const text = monthNames[currentMonth - 1] + ' ' + year + ' · MarketLink harvest\n' +
+            events.map(function (e) { return e.day + ' · ' + e.crop + ' · ' + e.type + ' — ' + e.message; }).join('\n');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function () {
+                if (statusEl) statusEl.textContent = 'Month list copied';
+            });
+        }
     }
 
     function renderList(monthNumber, events) {
@@ -189,7 +345,7 @@
             row.addEventListener('click', function () {
                 const day = Number(row.getAttribute('data-day'));
                 const dayEvents = events.filter(function (e) { return e.day === day; });
-                renderSelected(dayEvents, monthNumber - 1);
+                renderSelected(dayEvents);
                 openHarvestEventModal(dayEvents, 0, row, monthNumber - 1);
             });
         });
@@ -207,6 +363,8 @@
         });
         const firstWeekday = new Date(year, monthIndex, 1).getDay();
         const total = daysInMonth(monthIndex);
+        const today = new Date();
+        const isCurrentYearMonth = today.getFullYear() === year && today.getMonth() === monthIndex;
         monthsEl.querySelectorAll('[data-month]').forEach(function (button) {
             const on = Number(button.getAttribute('data-month')) === monthNumber;
             button.classList.toggle('is-active', on);
@@ -215,6 +373,9 @@
         if (labelEl) labelEl.textContent = monthNames[monthIndex] + ' ' + year;
         if (messageEl) messageEl.textContent = monthNotes[monthIndex];
         if (countEl) countEl.textContent = String(events.length);
+        if (statusEl) statusEl.textContent = events.length ? 'Tap a highlighted day' : 'No matches';
+        if (seasonFillEl) seasonFillEl.style.width = Math.round((monthNumber / 12) * 100) + '%';
+
         if (chipsEl) {
             const crops = [];
             const seen = {};
@@ -224,7 +385,10 @@
                 crops.push({ crop: event.crop, icon: event.icon });
             });
             chipsEl.innerHTML = crops.map(function (row) {
-                return '<button type="button" class="harvest-chip" data-crop="' + row.crop + '">' + row.icon + ' ' + row.crop + '</button>';
+                const on = isFav(row.crop);
+                return '<span class="harvest-chip' + (on ? ' is-fav' : '') + '">' +
+                    '<button type="button" class="harvest-chip-star' + (on ? ' is-on' : '') + '" data-star="' + row.crop + '" aria-label="Save ' + row.crop + '">' + (on ? '★' : '☆') + '</button>' +
+                    '<button type="button" data-crop="' + row.crop + '">' + row.icon + ' ' + row.crop + '</button></span>';
             }).join('') || '<span class="small muted">No crops for this filter</span>';
             chipsEl.querySelectorAll('[data-crop]').forEach(function (chip) {
                 chip.addEventListener('click', function () {
@@ -232,6 +396,14 @@
                         searchEl.value = chip.getAttribute('data-crop');
                         renderMonth(currentMonth);
                     }
+                });
+            });
+            chipsEl.querySelectorAll('[data-star]').forEach(function (star) {
+                star.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    toggleFav(star.getAttribute('data-star'));
+                    renderMonth(currentMonth);
+                    renderFavorites();
                 });
             });
         }
@@ -248,8 +420,9 @@
             for (let i = 0; i < firstWeekday; i++) html += '<span class="harvest-pad"></span>';
             for (let day = 1; day <= total; day++) {
                 const dayEvents = byDay[day] || [];
+                const todayClass = isCurrentYearMonth && today.getDate() === day ? ' is-today' : '';
                 if (!dayEvents.length) {
-                    html += '<span class="harvest-day" role="gridcell"><span>' + day + '</span></span>';
+                    html += '<span class="harvest-day' + todayClass + '" role="gridcell"><span>' + day + '</span></span>';
                     continue;
                 }
                 const icons = dayEvents.slice(0, 2).map(function (event) { return event.icon; }).join('');
@@ -257,7 +430,7 @@
                 const title = dayEvents.map(function (event) {
                     return event.crop + ' · ' + event.type + ' · ' + monthNames[monthIndex] + ' ' + day;
                 }).join('; ');
-                html += '<button class="harvest-day is-event is-' + dayEvents[0].type.toLowerCase() + '" type="button" role="gridcell" data-day="' + day + '" title="' + title + '" aria-label="' + title + '"><span>' + day + '</span><span class="harvest-icons" aria-hidden="true">' + icons + more + '</span></button>';
+                html += '<button class="harvest-day is-event is-' + dayEvents[0].type.toLowerCase() + todayClass + '" type="button" role="gridcell" data-day="' + day + '" title="' + title + '" aria-label="' + title + '"><span>' + day + '</span><span class="harvest-icons" aria-hidden="true">' + icons + more + '</span></button>';
             }
             gridEl.innerHTML = html;
             gridEl.classList.remove('is-switching');
@@ -269,12 +442,14 @@
                     if (!dayEvents.length) return;
                     gridEl.querySelectorAll('.is-event').forEach(function (item) { item.classList.remove('is-selected'); });
                     button.classList.add('is-selected');
-                    renderSelected(dayEvents, monthIndex);
+                    renderSelected(dayEvents);
                     openHarvestEventModal(dayEvents, 0, button, monthIndex);
                 });
             });
         }
-        renderSelected(null, monthIndex);
+        renderSelected(null);
+        renderUpcoming(monthNumber);
+        renderFavorites();
     }
 
     const modalRoot = document.getElementById('harvestEventModalRoot');
@@ -409,13 +584,15 @@
 
     if (monthsEl && gridEl) {
         renderLegend();
+        renderWeekStrip();
         monthNames.forEach(function (name, index) {
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'harvest-month';
             button.setAttribute('role', 'tab');
             button.setAttribute('data-month', String(index + 1));
-            button.textContent = name;
+            button.setAttribute('title', name);
+            button.textContent = monthShort[index];
             button.addEventListener('click', function () { renderMonth(index + 1); });
             monthsEl.appendChild(button);
         });
@@ -426,6 +603,10 @@
         const prevBtn = document.getElementById('harvestPrev');
         const nextBtn = document.getElementById('harvestNext');
         const todayBtn = document.getElementById('harvestToday');
+        const nextEventBtn = document.getElementById('harvestNextEvent');
+        const copyBtn = document.getElementById('harvestCopyMonth');
+        const printBtn = document.getElementById('harvestPrintMonth');
+        const clearFavBtn = document.getElementById('harvestClearFavs');
         const gridBtn = document.getElementById('harvestViewGrid');
         const listBtn = document.getElementById('harvestViewList');
         if (prevBtn) prevBtn.addEventListener('click', function () { renderMonth(currentMonth <= 1 ? 12 : currentMonth - 1); });
@@ -433,6 +614,14 @@
         if (todayBtn) todayBtn.addEventListener('click', function () {
             const now = new Date();
             renderMonth(now.getFullYear() === 2026 ? now.getMonth() + 1 : startMonth);
+        });
+        if (nextEventBtn) nextEventBtn.addEventListener('click', jumpNextEvent);
+        if (copyBtn) copyBtn.addEventListener('click', copyMonthList);
+        if (printBtn) printBtn.addEventListener('click', function () { window.print(); });
+        if (clearFavBtn) clearFavBtn.addEventListener('click', function () {
+            saveFavs([]);
+            renderMonth(currentMonth);
+            renderFavorites();
         });
         if (searchEl) searchEl.addEventListener('input', function () { renderMonth(currentMonth); });
         if (typeFilterEl) typeFilterEl.addEventListener('change', function () { renderMonth(currentMonth); });

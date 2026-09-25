@@ -22,23 +22,30 @@
                     ?: ($farmer->products->first()?->category?->name ?: 'Seasonal produce');
                 $line = \Illuminate\Support\Str::limit($farmer->business_description ?: 'Approved stall. Reserve produce and pay at pickup.', 90);
                 $phone = $farmer->user->phone ?? '';
+                $markets = $farmer->markets->map(fn ($m) => trim($m->name . ($m->pivot->stall_number ? ' · Stall '.$m->pivot->stall_number : '')))->filter()->values()->all();
+                $days = collect($farmer->operating_days ?? [])->filter()->values()->all();
+                $productNames = $farmer->products->pluck('name')->filter()->take(8)->values()->all();
+                $rating = $farmer->rating_avg ? round((float) $farmer->rating_avg, 1) : null;
                 $payload = [
                     'name' => $farmer->contact_person ?: ($farmer->user->name ?? $farmer->stall_name),
                     'farm' => $farmer->stall_name,
-                    'location' => $farmer->address ?: ($farmer->markets->pluck('name')->filter()->implode(', ') ?: 'Local market'),
+                    'location' => $farmer->address ?: (implode(', ', $markets) ?: 'Local market'),
                     'crop' => $crop,
                     'bio' => $farmer->business_description ?: 'This grower sells at the market. Reserve ahead, then pick up and pay in person.',
                     'photo' => $photo,
                     'phone' => $phone,
-                    'days' => implode(', ', $farmer->operating_days ?? []) ?: 'See stall for market days',
-                    'products' => $farmer->products->pluck('name')->take(6)->implode(', ') ?: 'Seasonal produce',
+                    'days' => $days,
+                    'markets' => $markets,
+                    'products' => $productNames,
                     'count' => (int) ($farmer->products_count ?? $farmer->products->count()),
+                    'rating' => $rating,
                     'profile' => route('farmers.show', $farmer),
+                    'shop' => route('products.index', ['farmer' => $farmer->id]),
                     'contact' => route('contact'),
                 ];
             @endphp
             <div class="col-12 col-md-6 col-lg-4">
-                <article class="farmer-dir-card is-live" data-farmer='@json($payload)' role="button" tabindex="0">
+                <article class="farmer-dir-card is-live" data-farmer="{{ json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}" role="button" tabindex="0" aria-haspopup="dialog">
                     <span class="farmer-dir-cover">
                         <img src="{{ $photo }}" alt="{{ $farmer->stall_name }}" width="640" height="360" loading="lazy" decoding="async">
                         <span class="farmer-dir-badge">Verified</span>
@@ -64,21 +71,30 @@
     </div>
     <div class="mt-3">{{ $farmers->links() }}</div>
 </section>
-<div id="farmerProfileModal" hidden></div>
 @endsection
 @push('scripts')
 <script>
 (function () {
-    const root = document.getElementById('farmerProfileModal');
-    const cards = Array.from(document.querySelectorAll('.farmer-dir-card'));
-    if (!root || !cards.length) return;
+    const cards = Array.from(document.querySelectorAll('.farmer-dir-card[data-farmer]'));
+    if (!cards.length) return;
+
+    let root = document.getElementById('farmerProfileModal');
+    if (!root) {
+        root = document.createElement('div');
+        root.id = 'farmerProfileModal';
+        root.hidden = true;
+        document.body.appendChild(root);
+    } else if (root.parentElement !== document.body) {
+        document.body.appendChild(root);
+    }
+
     let lastTrigger = null;
     let currentIndex = 0;
 
     function closeModal() {
         root.hidden = true;
         root.innerHTML = '';
-        document.body.style.overflow = '';
+        document.body.classList.remove('farmer-modal-open');
         if (lastTrigger) lastTrigger.focus();
     }
 
@@ -88,50 +104,95 @@
         });
     }
 
+    function readData(card) {
+        try {
+            return JSON.parse(card.getAttribute('data-farmer') || '{}');
+        } catch (err) {
+            return null;
+        }
+    }
+
+    function listHtml(items, emptyText) {
+        const list = Array.isArray(items) ? items.filter(Boolean) : String(items || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        if (!list.length) return '<span class="farmer-modal-empty">' + esc(emptyText) + '</span>';
+        return '<ul class="farmer-modal-chips">' + list.map(function (item) {
+            return '<li>' + esc(item) + '</li>';
+        }).join('') + '</ul>';
+    }
+
+    function starsHtml(rating) {
+        if (!rating) return '';
+        const full = Math.round(Number(rating));
+        let html = '<span class="farmer-modal-stars" aria-label="' + esc(rating) + ' out of 5">';
+        for (let i = 1; i <= 5; i++) {
+            html += '<i class="bi bi-star' + (i <= full ? '-fill' : '') + '" aria-hidden="true"></i>';
+        }
+        html += '<span>' + esc(rating) + '</span></span>';
+        return html;
+    }
+
     function openModal(data, trigger) {
+        if (!data) return;
         lastTrigger = trigger || null;
         root.hidden = false;
-        document.body.style.overflow = 'hidden';
+        document.body.classList.add('farmer-modal-open');
+
         const phone = esc(data.phone || '');
         const tel = phone.replace(/\s+/g, '');
-        data = {
-            name: esc(data.name), farm: esc(data.farm), location: esc(data.location),
-            crop: esc(data.crop), bio: esc(data.bio), photo: esc(data.photo),
-            days: esc(data.days), products: esc(data.products), count: esc(data.count),
-            phone: phone, profile: esc(data.profile), contact: esc(data.contact)
-        };
+        const name = esc(data.name);
+        const farm = esc(data.farm);
+        const location = esc(data.location);
+        const bio = esc(data.bio);
+        const photo = esc(data.photo);
+        const count = esc(data.count);
+        const profile = esc(data.profile);
+        const shop = esc(data.shop || data.profile);
+        const contact = esc(data.contact);
+        const days = listHtml(data.days, 'See stall for market days');
+        const markets = listHtml(data.markets, 'Ask at the stall');
+        const products = listHtml(data.products, 'Seasonal produce');
+        const rating = starsHtml(data.rating);
+
         root.innerHTML =
             '<div class="farmer-modal" role="dialog" aria-modal="true" aria-labelledby="farmer-modal-title">' +
-            '<div class="farmer-modal-backdrop" data-close></div>' +
+            '<div class="farmer-modal-backdrop" data-close tabindex="-1"></div>' +
             '<div class="farmer-modal-card">' +
-            '<div class="farmer-modal-cover"><img src="' + data.photo + '" alt="' + data.farm + '"></div>' +
-            '<button type="button" class="farmer-modal-x" data-close aria-label="Close farmer profile">×</button>' +
+            '<button type="button" class="farmer-modal-x" data-close aria-label="Close farmer profile">&times;</button>' +
+            '<div class="farmer-modal-cover"><img src="' + photo + '" alt="' + farm + '"></div>' +
             '<div class="farmer-modal-body">' +
-            '<h2 id="farmer-modal-title">' + data.name + ' <span class="farmer-dir-badge">Verified</span></h2>' +
-            '<p class="farmer-dir-farm">' + data.farm + '</p>' +
-            '<p class="farmer-dir-meta"><i class="bi bi-geo-alt" aria-hidden="true"></i> ' + data.location + '</p>' +
-            (phone ? '<a class="farmer-dir-phone mb-2 d-inline-flex" href="tel:' + tel + '"><i class="bi bi-telephone-fill" aria-hidden="true"></i> ' + phone + '</a>' : '') +
-            '<p class="farmer-dir-crop">' + data.crop + '</p>' +
-            '<p>' + data.bio + '</p>' +
-            '<dl class="farmer-modal-facts">' +
-            '<div><dt>Market days</dt><dd>' + data.days + '</dd></div>' +
-            '<div><dt>Phone</dt><dd>' + (phone || 'Ask at the stall') + '</dd></div>' +
-            '<div><dt>Products</dt><dd>' + data.products + '</dd></div>' +
-            '<div><dt>Listed items</dt><dd>' + data.count + '</dd></div>' +
-            '</dl>' +
+            '<div class="farmer-modal-topline"><span class="farmer-modal-verified"><i class="bi bi-patch-check-fill" aria-hidden="true"></i> Verified</span>' + rating + '</div>' +
+            '<h2 id="farmer-modal-title">' + name + '</h2>' +
+            '<p class="farmer-modal-stall">' + farm + '</p>' +
+            '<p class="farmer-modal-bio">' + bio + '</p>' +
+            '<div class="farmer-modal-contact">' +
+            '<div><i class="bi bi-geo-alt-fill" aria-hidden="true"></i><span>' + location + '</span></div>' +
+            (phone
+                ? '<div><i class="bi bi-telephone-fill" aria-hidden="true"></i><a href="tel:' + tel + '">' + phone + '</a></div>'
+                : '<div><i class="bi bi-telephone" aria-hidden="true"></i><span>Ask at the stall</span></div>') +
+            '<div><i class="bi bi-basket2-fill" aria-hidden="true"></i><span>' + count + ' listed items</span></div>' +
+            '</div>' +
+            '<div class="farmer-modal-grid">' +
+            '<section><h3>Market days</h3>' + days + '</section>' +
+            '<section><h3>Markets</h3>' + markets + '</section>' +
+            '<section class="farmer-modal-products"><h3>Products</h3>' + products + '</section>' +
+            '</div>' +
             '<div class="farmer-modal-nav">' +
             '<button type="button" class="btn btn-outline-ml" data-prev' + (cards.length < 2 ? ' disabled' : '') + '>Previous</button>' +
             '<span>' + (currentIndex + 1) + ' of ' + cards.length + '</span>' +
             '<button type="button" class="btn btn-outline-ml" data-next' + (cards.length < 2 ? ' disabled' : '') + '>Next</button>' +
             '</div>' +
-            '<div class="d-flex gap-2 flex-wrap">' +
-            (phone ? '<a class="btn btn-ml" href="tel:' + tel + '">Call farmer</a>' : '') +
-            '<a class="btn btn-outline-ml" href="' + data.profile + '">View products</a>' +
-            '<a class="btn btn-outline-ml" href="' + data.contact + '">Message MarketLink</a>' +
+            '<div class="farmer-modal-actions">' +
+            (phone ? '<a class="btn btn-ml" href="tel:' + tel + '"><i class="bi bi-telephone-fill" aria-hidden="true"></i> Call farmer</a>' : '') +
+            '<a class="btn btn-outline-ml" href="' + shop + '">Browse products</a>' +
+            '<a class="btn btn-outline-ml" href="' + profile + '">Full profile</a>' +
+            '<a class="btn btn-outline-ml" href="' + contact + '">Message MarketLink</a>' +
             '</div></div></div></div>';
-        const dialog = root.querySelector('.farmer-modal');
-        dialog.addEventListener('click', function (event) {
-            if (event.target.closest('[data-close]')) closeModal();
+
+        root.querySelector('.farmer-modal').addEventListener('click', function (event) {
+            if (event.target.closest('[data-close]')) {
+                closeModal();
+                return;
+            }
             if (event.target.closest('[data-prev]')) showAt(currentIndex - 1);
             if (event.target.closest('[data-next]')) showAt(currentIndex + 1);
         });
@@ -142,20 +203,20 @@
         const total = cards.length;
         currentIndex = (index + total) % total;
         const card = cards[currentIndex];
-        lastTrigger = card;
-        openModal(JSON.parse(card.getAttribute('data-farmer')), card);
+        openModal(readData(card), card);
     }
 
     cards.forEach(function (card, index) {
-        card.addEventListener('click', function () {
+        card.addEventListener('click', function (event) {
+            if (event.target.closest('a')) return;
             currentIndex = index;
-            openModal(JSON.parse(card.getAttribute('data-farmer')), card);
+            openModal(readData(card), card);
         });
         card.addEventListener('keydown', function (event) {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
                 currentIndex = index;
-                openModal(JSON.parse(card.getAttribute('data-farmer')), card);
+                openModal(readData(card), card);
             }
         });
     });

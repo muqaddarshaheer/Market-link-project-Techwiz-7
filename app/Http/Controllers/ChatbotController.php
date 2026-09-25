@@ -14,21 +14,30 @@ class ChatbotController extends Controller
 {
     public function ask(Request $request)
     {
-        $message = $request->validate(['message' => ['required', 'string', 'max:500']])['message'];
+        $data = $request->validate([
+            'message' => ['required', 'string', 'max:500'],
+            'lang' => ['nullable', 'in:en,ur'],
+        ]);
+        $message = $data['message'];
+        $lang = $data['lang'] ?? 'en';
         $faqs = ChatbotFaq::query()->take(12)->get();
 
         if (! $this->isMarketLinkTopic($message)) {
             return response()->json([
-                'answer' => 'I only help with MarketLink — markets, farmers, produce, pickup, prices in Rs, accounts, and orders. Ask something about the platform.',
-                'suggestions' => ['How does pickup work?', 'What costs Rs today?', 'Which farmers are open?', 'How do I create an account?'],
+                'answer' => $lang === 'ur'
+                    ? 'میں صرف MarketLink میں مدد کرتا ہوں — مارکیٹ، کسان، پیداوار، پک اپ، روپے کی قیمتیں، اکاؤنٹ اور آرڈرز۔ پلیٹ فارم کے بارے میں پوچھیں۔'
+                    : 'I only help with MarketLink — markets, farmers, produce, pickup, prices in Rs, accounts, and orders. Ask something about the platform.',
+                'suggestions' => $lang === 'ur'
+                    ? ['پک اپ کیسے ہوتا ہے؟', 'آج قیمتیں کیا ہیں؟', 'کون سے کسان کھلے ہیں؟', 'اکاؤنٹ کیسے بنائیں؟']
+                    : ['How does pickup work?', 'What costs Rs today?', 'Which farmers are open?', 'How do I create an account?'],
                 'provider' => 'guard',
             ]);
         }
 
-        $answer = $this->fromGroq($message)
-            ?? $this->fromGemini($message)
-            ?? $this->fromOpenAi($message)
-            ?? $this->smartLocal($message, $faqs);
+        $answer = $this->fromGroq($message, $lang)
+            ?? $this->fromGemini($message, $lang)
+            ?? $this->fromOpenAi($message, $lang)
+            ?? $this->smartLocal($message, $faqs, $lang);
 
         $history = session('chat_history', []);
         $history[] = ['q' => $message, 'a' => $answer];
@@ -57,6 +66,10 @@ class ChatbotController extends Controller
             'harvest', 'crop', 'tomato', 'honey', 'egg', 'bread', 'vegetable', 'fruit', 'organic',
             'delivery', 'payment', 'pay', 'reservation', 'reserve', 'cutoff', 'slot', 'quality',
             'admin', 'dashboard', 'favorite', 'review', 'contact', 'bazaar', 'farm',
+            // Urdu / Roman Urdu
+            'مارکیٹ', 'کسان', 'پیداوار', 'پک اپ', 'آرڈر', 'قیمت', 'روپے', 'اکاؤنٹ', 'لاگ ان',
+            'منڈی', 'سبزی', 'پھل', 'ادائیگی', 'جمع', 'رزرو',
+            'kisaan', 'mandi', 'qeemat', 'rupay', 'account', 'pickup', 'sabzi', 'phal',
         ];
 
         foreach ($needles as $word) {
@@ -77,7 +90,7 @@ class ChatbotController extends Controller
         return false;
     }
 
-    private function systemPrompt(): string
+    private function systemPrompt(string $lang = 'en'): string
     {
         $catalog = Product::query()
             ->where('is_available', true)
@@ -91,13 +104,18 @@ class ChatbotController extends Controller
         $markets = Market::query()->where('status', 'active')->take(8)->pluck('name')->implode(', ');
         $farmers = FarmerProfile::query()->where('approval_status', 'approved')->take(8)->pluck('stall_name')->implode(', ');
 
+        $language = $lang === 'ur'
+            ? 'Reply in clear Urdu (Urdu script). Keep MarketLink English names as-is when useful.'
+            : 'Reply in clear simple English.';
+
         return 'You are MarketLink helper only. Answer ONLY about MarketLink: markets, farmers, produce, pickup, Rs prices, accounts, and orders. '
-            .'If the question is off-topic (news, homework, jokes, coding, general knowledge), politely refuse and steer back to MarketLink. '
+            .'If the question is off-topic, politely refuse and steer back to MarketLink. '
+            .$language.' '
             .'Currency is Pakistani Rupees (Rs). Pickup and pay at the stall — no delivery, no online payment. Be short and clear. '
             .'Markets: '.$markets.'. Farmers: '.$farmers.". Catalog:\n".$catalog;
     }
 
-    private function fromGroq(string $message): ?string
+    private function fromGroq(string $message, string $lang = 'en'): ?string
     {
         $key = config('services.groq.key') ?: env('GROQ_API_KEY');
         if (! $key) {
@@ -112,7 +130,7 @@ class ChatbotController extends Controller
                     'temperature' => 0.3,
                     'max_tokens' => 280,
                     'messages' => [
-                        ['role' => 'system', 'content' => $this->systemPrompt()],
+                        ['role' => 'system', 'content' => $this->systemPrompt($lang)],
                         ['role' => 'user', 'content' => $message],
                     ],
                 ]);
@@ -134,7 +152,7 @@ class ChatbotController extends Controller
         return null;
     }
 
-    private function fromGemini(string $message): ?string
+    private function fromGemini(string $message, string $lang = 'en'): ?string
     {
         $key = config('services.gemini.key') ?: env('GEMINI_API_KEY');
         if (! $key) {
@@ -146,7 +164,7 @@ class ChatbotController extends Controller
             $response = Http::timeout(10)
                 ->post('https://generativelanguage.googleapis.com/v1beta/models/'.$model.':generateContent?key='.$key, [
                     'contents' => [[
-                        'parts' => [['text' => $this->systemPrompt()."\n\nUser: ".$message]],
+                        'parts' => [['text' => $this->systemPrompt($lang)."\n\nUser: ".$message]],
                     ]],
                     'generationConfig' => ['temperature' => 0.3, 'maxOutputTokens' => 280],
                 ]);
@@ -168,7 +186,7 @@ class ChatbotController extends Controller
         return null;
     }
 
-    private function fromOpenAi(string $message): ?string
+    private function fromOpenAi(string $message, string $lang = 'en'): ?string
     {
         $key = config('services.openai.key') ?: env('OPENAI_API_KEY');
         if (! $key) {
@@ -183,7 +201,7 @@ class ChatbotController extends Controller
                     'temperature' => 0.3,
                     'max_tokens' => 280,
                     'messages' => [
-                        ['role' => 'system', 'content' => $this->systemPrompt()],
+                        ['role' => 'system', 'content' => $this->systemPrompt($lang)],
                         ['role' => 'user', 'content' => $message],
                     ],
                 ]);
@@ -205,46 +223,60 @@ class ChatbotController extends Controller
         return null;
     }
 
-    private function smartLocal(string $message, $faqs): string
+    private function smartLocal(string $message, $faqs, string $lang = 'en'): string
     {
         $this->lastProvider = 'local';
+        $ur = $lang === 'ur';
         $text = strtolower(trim($message));
 
-        if (preg_match('/^(hi|hello|hey|salam|assalam|aoa)\b/u', $text)) {
-            return 'Hi — I help with MarketLink only: markets, farmers, produce, pickup, and Rs prices. What do you need?';
+        if (preg_match('/^(hi|hello|hey|salam|assalam|aoa|السلام|سلام)\b/u', $text)) {
+            return $ur
+                ? 'السلام علیکم — میں صرف MarketLink میں مدد کرتا ہوں: مارکیٹ، کسان، پیداوار، پک اپ اور روپے کی قیمتیں۔ کیا پوچھنا ہے؟'
+                : 'Hi — I help with MarketLink only: markets, farmers, produce, pickup, and Rs prices. What do you need?';
         }
 
-        if (str_contains($text, 'pickup') || str_contains($text, 'collect') || str_contains($text, 'delivery')) {
-            return 'MarketLink is pickup only. Reserve online, collect at the stall, and pay the farmer in person in Rs. No delivery, no online payment.';
+        if (str_contains($text, 'pickup') || str_contains($text, 'collect') || str_contains($text, 'delivery')
+            || str_contains($text, 'پک اپ') || str_contains($text, 'جمع')) {
+            return $ur
+                ? 'MarketLink صرف پک اپ ہے۔ آن لائن ریزرو کریں، سٹال پر جائیں، اور کسان کو روپے میں ادا کریں۔ ڈیلیوری یا آن لائن ادائیگی نہیں۔'
+                : 'MarketLink is pickup only. Reserve online, collect at the stall, and pay the farmer in person in Rs. No delivery, no online payment.';
         }
 
-        if (str_contains($text, 'price') || str_contains($text, 'rs') || str_contains($text, 'rupee') || str_contains($text, 'cost')) {
+        if (str_contains($text, 'price') || str_contains($text, 'rs') || str_contains($text, 'rupee') || str_contains($text, 'cost')
+            || str_contains($text, 'قیمت') || str_contains($text, 'روپے')) {
             $items = Product::query()->where('is_available', true)->orderBy('price')->take(5)->get(['name', 'price', 'unit']);
             if ($items->isEmpty()) {
-                return 'Prices are shown in Pakistani Rupees (Rs) on each product page.';
+                return $ur
+                    ? 'قیمتیں ہر پروڈکٹ پیج پر پاکستانی روپے (Rs) میں لکھی ہوتی ہیں۔'
+                    : 'Prices are shown in Pakistani Rupees (Rs) on each product page.';
             }
 
-            return "Live prices in Rs:\n".$items->map(fn ($p) => '• '.$p->name.' — Rs '.number_format((float) $p->price, 0).'/'.$p->unit)->implode("\n");
+            $lines = $items->map(fn ($p) => '• '.$p->name.' — Rs '.number_format((float) $p->price, 0).'/'.$p->unit)->implode("\n");
+
+            return ($ur ? "آج کی قیمتیں (Rs):\n" : "Live prices in Rs:\n").$lines;
         }
 
-        if (str_contains($text, 'farmer') || str_contains($text, 'stall')) {
+        if (str_contains($text, 'farmer') || str_contains($text, 'stall') || str_contains($text, 'کسان') || str_contains($text, 'kisaan')) {
             $list = FarmerProfile::query()->where('approval_status', 'approved')->take(5)->pluck('stall_name')->implode(', ');
 
             return $list !== ''
-                ? 'Approved stalls: '.$list.'. Open Farmers to call or browse products.'
-                : 'Farmer applications wait for admin approval before going live.';
+                ? ($ur ? 'منظور شدہ سٹالز: '.$list.'۔ Farmers صفحہ کھول کر کال یا پروڈکٹس دیکھیں۔' : 'Approved stalls: '.$list.'. Open Farmers to call or browse products.')
+                : ($ur ? 'کسان کی درخواستیں ایڈمن کی منظوری کے بعد لائیو ہوتی ہیں۔' : 'Farmer applications wait for admin approval before going live.');
         }
 
-        if (str_contains($text, 'market') || str_contains($text, 'bazaar')) {
+        if (str_contains($text, 'market') || str_contains($text, 'bazaar') || str_contains($text, 'مارکیٹ') || str_contains($text, 'منڈی')) {
             $names = Market::query()->where('status', 'active')->take(6)->pluck('name')->implode(', ');
 
             return $names !== ''
-                ? 'Active markets: '.$names.'. Check days on each market page before you reserve.'
-                : 'Browse the Markets page for nearby pickup days.';
+                ? ($ur ? 'فعال مارکیٹس: '.$names.'۔ ریزرو سے پہلے دن چیک کریں۔' : 'Active markets: '.$names.'. Check days on each market page before you reserve.')
+                : ($ur ? 'قریبی پک اپ دنوں کے لیے Markets صفحہ دیکھیں۔' : 'Browse the Markets page for nearby pickup days.');
         }
 
-        if (str_contains($text, 'pin') || str_contains($text, 'login') || str_contains($text, 'account') || str_contains($text, 'register')) {
-            return 'Sign up with email + a 4-digit PIN. Customers shop right away; farmers need admin approval.';
+        if (str_contains($text, 'pin') || str_contains($text, 'login') || str_contains($text, 'account') || str_contains($text, 'register')
+            || str_contains($text, 'اکاؤنٹ') || str_contains($text, 'لاگ ان')) {
+            return $ur
+                ? 'ای میل + 4 ہندسوں کا PIN سے سائن اپ کریں۔ کسٹمر فوراً خرید سکتا ہے؛ کسان کو ایڈمن منظوری درکار ہے۔'
+                : 'Sign up with email + a 4-digit PIN. Customers shop right away; farmers need admin approval.';
         }
 
         $faq = $this->fromFaqs($message, $faqs);
@@ -256,12 +288,17 @@ class ChatbotController extends Controller
         if ($token && strlen($token) > 2) {
             $product = Product::query()->where('is_available', true)->where('name', 'like', '%'.$token.'%')->with('farmer')->first();
             if ($product) {
-                return $product->name.' is Rs '.number_format((float) $product->price, 0).'/'.$product->unit
-                    .' from '.$product->farmer->stall_name.'. Open the product page to reserve pickup.';
+                $line = $product->name.' Rs '.number_format((float) $product->price, 0).'/'.$product->unit.' — '.$product->farmer->stall_name;
+
+                return $ur
+                    ? $line.'۔ پک اپ ریزرو کرنے کے لیے پروڈکٹ پیج کھولیں۔'
+                    : $line.'. Open the product page to reserve pickup.';
             }
         }
 
-        return 'Ask about MarketLink markets, farmers, produce, pickup, or Rs prices — that is what I can help with.';
+        return $ur
+            ? 'MarketLink مارکیٹ، کسان، پیداوار، پک اپ یا روپے کی قیمتوں کے بارے میں پوچھیں — یہی میری مدد ہے۔'
+            : 'Ask about MarketLink markets, farmers, produce, pickup, or Rs prices — that is what I can help with.';
     }
 
     private function fromFaqs(string $message, $faqs): ?string
