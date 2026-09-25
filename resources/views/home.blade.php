@@ -9,20 +9,35 @@
 </section>
 
 <section class="mb-5 home-block reveal-up home-strip">
-    <div class="row g-3 text-center">
-        <div class="col-md-4"><div class="home-strip-item"><strong>No delivery</strong><span>You collect at the stall</span></div></div>
-        <div class="col-md-4"><div class="home-strip-item"><strong>Pay in person</strong><span>Rs paid to the farmer</span></div></div>
-        <div class="col-md-4"><div class="home-strip-item"><strong>Approved growers</strong><span>Stalls checked by admin</span></div></div>
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="home-strip-item">
+                <i class="bi bi-shop" aria-hidden="true"></i>
+                <div><strong>No delivery</strong><span>You collect at the stall</span></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="home-strip-item">
+                <i class="bi bi-cash-coin" aria-hidden="true"></i>
+                <div><strong>Pay in person</strong><span>Rs paid to the farmer</span></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="home-strip-item">
+                <i class="bi bi-patch-check" aria-hidden="true"></i>
+                <div><strong>Approved growers</strong><span>Stalls checked by admin</span></div>
+            </div>
+        </div>
     </div>
 </section>
 
 <section class="mb-5 home-block reveal-up">
-    <div class="d-flex justify-content-between align-items-end mb-3 gap-3">
+    <div class="section-head">
         <div>
             <h2 class="section-title mb-1">Featured markets</h2>
             <p class="home-sub mb-0">Nearby market days for reserved pickup.</p>
         </div>
-        <a href="{{ route('markets.index') }}">See all</a>
+        <a class="section-more" href="{{ route('markets.index') }}">See all</a>
     </div>
     <div class="row g-3 stagger-children">
         @foreach($markets as $market)
@@ -32,12 +47,12 @@
 </section>
 
 <section class="mb-5 home-block reveal-up">
-    <div class="d-flex justify-content-between align-items-end mb-3 gap-3">
+    <div class="section-head">
         <div>
             <h2 class="section-title mb-1">Growers this week</h2>
             <p class="home-sub mb-0">Trusted stalls packing for the weekend.</p>
         </div>
-        <a href="{{ route('farmers.index') }}">See all</a>
+        <a class="section-more" href="{{ route('farmers.index') }}">See all</a>
     </div>
     <div class="row g-3 stagger-children">
         @foreach($farmers as $farmer)

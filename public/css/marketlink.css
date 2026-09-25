@@ -52,7 +52,22 @@ a { color: var(--ml-green-dark); text-decoration-thickness: 1px; text-underline-
   border-radius: 999px;
   padding: .4rem .75rem !important;
 }
-.navbar-ml .nav-link:hover { background: var(--ml-green-soft); color: var(--ml-green-dark); }
+.navbar-ml .nav-link:hover,
+.navbar-ml .nav-link.active {
+  background: var(--ml-green-soft);
+  color: var(--ml-green-dark);
+}
+.nav-search { position: relative; min-width: min(280px, 70vw); }
+.nav-search > i {
+  position: absolute; left: .85rem; top: 50%; transform: translateY(-50%);
+  color: var(--ml-muted); pointer-events: none; z-index: 1;
+}
+.nav-search .form-control {
+  padding-left: 2.2rem; border-radius: 999px; background: var(--ml-surface);
+  border: 1px solid var(--ml-line); min-height: 40px;
+}
+.nav-actions { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.nav-icon-btn { width: 40px; height: 40px; padding: 0; display: inline-grid; place-items: center; }
 .brand-logo { width: 40px; height: 40px; display: block; }
 .brand-mark {
   width: 40px; height: 40px; border-radius: 14px;
@@ -273,13 +288,40 @@ body:has(.home-page) main.py-4 { padding-top: .35rem !important; padding-bottom:
 }
 .home-strip { max-width: 920px; margin-left: auto; margin-right: auto; }
 .home-strip-item {
-  padding: 1rem; border-radius: 16px; background: #fff; border: 1px solid #d9e2dc;
-  display: flex; flex-direction: column; gap: .2rem;
+  padding: .95rem 1rem; border-radius: 16px; background: #fff; border: 1px solid #d9e2dc;
+  display: flex; align-items: flex-start; gap: .75rem; height: 100%;
 }
-.home-strip-item strong { color: #0e3b2e; }
+.home-strip-item > i {
+  width: 2.4rem; height: 2.4rem; border-radius: 12px; flex: none;
+  display: grid; place-items: center; background: #e7f3ec; color: #1f6b45; font-size: 1.1rem;
+}
+.home-strip-item strong { display: block; color: #0e3b2e; }
 .home-strip-item span { color: #5a675f; font-size: .9rem; }
+.section-head {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  gap: 1rem; margin-bottom: 1rem;
+}
+.section-more {
+  flex: none; font-weight: 800; color: var(--ml-green-dark);
+  text-decoration: none; white-space: nowrap;
+}
+.section-more:hover { text-decoration: underline; text-underline-offset: 3px; }
+.product-card-body { padding: 1rem 1.05rem 1.05rem; display: grid; gap: .35rem; }
+.product-card-meta { display: flex; flex-wrap: wrap; gap: .35rem; }
+.product-card-title { margin: 0; font-size: 1.05rem; line-height: 1.25; }
+.product-card-title a { color: inherit; text-decoration: none; }
+.product-card-title a:hover { color: var(--ml-green-dark); }
+.product-card-stall { margin: 0; color: var(--ml-muted); font-size: .88rem; }
+.product-card-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: .65rem; flex-wrap: wrap; margin-top: .35rem;
+}
+.product-card-foot strong span { font-size: .85rem; font-weight: 600; color: var(--ml-muted); }
+.product-card-actions { display: flex; gap: .35rem; flex-wrap: wrap; }
+.product-card .thumb { display: block; color: inherit; text-decoration: none; }
 .home-quote {
   padding: 1rem 1.1rem; border-left: 3px solid #1f6b45; background: #f4faf6;
+  border-radius: 0 14px 14px 0; height: 100%;
 }
 .home-cta-band {
   border-radius: 24px; padding: 1.6rem 1.4rem;
@@ -712,6 +754,11 @@ body.farmer-modal-open { overflow: hidden; }
 .farmer-card-photo { height: 160px; overflow: hidden; background: #e7f3ec; }
 .farmer-card-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .12s ease; }
 .farmer-card:hover .farmer-card-photo img { transform: scale(1.04); }
+.farmer-card-body { padding: 1rem 1.05rem 1.1rem; }
+.farmer-card-body h3 { margin: 0 0 .25rem; font-size: 1.05rem; }
+.farmer-card-days,
+.farmer-card-count { margin: 0; color: var(--ml-muted); font-size: .88rem; }
+.farmer-card-phone { margin: .3rem 0; color: #1f6b45; font-weight: 700; font-size: .9rem; }
 .farmer-profile-hero { position: relative; overflow: hidden; border-radius: 24px; }
 .farmer-profile-hero img { width: 100%; height: min(420px, 58vw); object-fit: cover; display: block; }
 .farmer-profile-hero-copy {
@@ -874,6 +921,7 @@ body.farmer-modal-open { overflow: hidden; }
   .floating-leaf, .pulse-soft, .harvest-grid.is-switching, .harvest-modal.is-open .harvest-modal-card, .harvest-modal.is-open .harvest-modal-backdrop { animation: none !important; }
 }
 .ml-alert { animation: ml-alert-in .18s ease both; border-radius: 12px; }
+.ml-alert { margin-bottom: .55rem !important; }
 @keyframes ml-alert-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 .contact-progress { height: 6px; background: #e7f3ec; border-radius: 999px; overflow: hidden; }
 .contact-progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #1f6b45, #c9a227); transition: width .18s ease; }

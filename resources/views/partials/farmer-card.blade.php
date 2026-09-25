@@ -3,12 +3,12 @@
     <div class="farmer-card-photo">
         <img src="{{ ImageStore::picture($farmer->logo, $farmer->stall_name) }}" alt="{{ $farmer->stall_name }}" width="640" height="280" loading="lazy" decoding="async">
     </div>
-    <div class="p-3">
-        <h3 class="h5 mb-1">{{ $farmer->stall_name }}</h3>
-        <div class="small muted mb-1">{{ implode(', ', $farmer->operating_days ?? []) }}</div>
+    <div class="farmer-card-body">
+        <h3>{{ $farmer->stall_name }}</h3>
+        <p class="farmer-card-days">{{ implode(', ', $farmer->operating_days ?? []) ?: 'Market days TBA' }}</p>
         @if($farmer->user->phone ?? null)
-            <div class="farmer-dir-phone small mb-1"><i class="bi bi-telephone-fill" aria-hidden="true"></i> {{ $farmer->user->phone }}</div>
+            <p class="farmer-card-phone"><i class="bi bi-telephone-fill" aria-hidden="true"></i> {{ $farmer->user->phone }}</p>
         @endif
-        <div class="small">{{ $farmer->products_count ?? $farmer->products->count() }} products</div>
+        <p class="farmer-card-count">{{ $farmer->products_count ?? $farmer->products->count() }} products</p>
     </div>
 </a>

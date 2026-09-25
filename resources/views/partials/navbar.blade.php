@@ -9,23 +9,24 @@
         </button>
         <div class="collapse navbar-collapse" id="navMain">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('markets.index') }}">Markets</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('farmers.index') }}">Farmers</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('products.index') }}">Products</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('about') }}">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('contact') }}">Contact</a></li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a></li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('markets.*') ? 'active' : '' }}" href="{{ route('markets.index') }}">Markets</a></li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('farmers.*') ? 'active' : '' }}" href="{{ route('farmers.index') }}">Farmers</a></li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('products.index') }}">Products</a></li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">About</a></li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">Contact</a></li>
             </ul>
-            <form class="d-flex position-relative me-2 my-2 my-lg-0" action="{{ route('products.index') }}" method="GET" x-data="searchBox()" @click.outside="open=false">
-                <input class="form-control" name="q" placeholder="Search products, farmers or markets..." autocomplete="off" x-model="q" @input.debounce.250ms="lookup()">
+            <form class="nav-search me-2 my-2 my-lg-0" action="{{ route('products.index') }}" method="GET" x-data="searchBox()" @click.outside="open=false" role="search">
+                <i class="bi bi-search" aria-hidden="true"></i>
+                <input class="form-control" name="q" placeholder="Search products, farmers or markets..." autocomplete="off" x-model="q" @input.debounce.250ms="lookup()" aria-label="Search">
                 <div class="search-pop mt-1" x-show="open" x-cloak>
                     <template x-for="item in items" :key="item.url">
                         <a class="d-block px-3 py-2 text-decoration-none" :href="item.url" x-text="item.label"></a>
                     </template>
                 </div>
             </form>
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-outline-ml btn-sm" type="button" onclick="mlTheme()" aria-label="Toggle dark mode"><i class="bi bi-moon-stars"></i></button>
+            <div class="nav-actions">
+                <button class="btn btn-outline-ml btn-sm nav-icon-btn" type="button" onclick="mlTheme()" aria-label="Toggle dark mode"><i class="bi bi-moon-stars"></i></button>
                 @auth
                     <div class="dropdown">
                         <button class="btn btn-outline-ml btn-sm position-relative" data-bs-toggle="dropdown" aria-label="Notifications">
