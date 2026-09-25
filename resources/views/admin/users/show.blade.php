@@ -26,7 +26,7 @@
 <h2 class="h5">Order history</h2>
 @forelse($user->orders as $order)
     <a class="card-ml p-3 mb-2 d-block text-decoration-none text-reset" href="{{ route('admin.orders.show', $order) }}">
-        <strong>{{ $order->order_number }}</strong> · {{ $order->farmer->stall_name ?? '' }} · ${{ number_format($order->total_amount, 2) }} · {{ $order->status }}
+        <strong>{{ $order->order_number }}</strong> · {{ $order->farmer->stall_name ?? '' }} · {{ money($order->total_amount) }} · {{ $order->status }}
     </a>
 @empty
     <p class="muted">This customer has no orders yet. Their account can still be updated without deleting history.</p>

@@ -29,7 +29,7 @@
             <td>{{ $order->farmer->stall_name }}</td>
             <td>{{ $order->market->name }}</td>
             <td>{{ $order->pickup_date }} {{ $order->pickup_slot }}</td>
-            <td>${{ number_format($order->total_amount, 2) }}</td>
+            <td>{{ money($order->total_amount) }}</td>
             <td>@include('partials.order-status-badge', ['status'=>$order->status])</td>
             <td><a href="{{ route('admin.orders.show', $order) }}">View</a></td>
         </tr>

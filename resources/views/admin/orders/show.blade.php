@@ -9,10 +9,10 @@
     <div class="col-lg-7">
         <div class="card-ml p-3">
             @foreach($order->items as $item)
-                <div class="d-flex justify-content-between"><span>{{ $item->product_name }} × {{ $item->quantity }}</span><span>${{ number_format($item->subtotal, 2) }}</span></div>
+                <div class="d-flex justify-content-between"><span>{{ $item->product_name }} × {{ $item->quantity }}</span><span>{{ money($item->subtotal) }}</span></div>
             @endforeach
             <hr>
-            <strong>Pay at pickup ${{ number_format($order->total_amount, 2) }}</strong>
+            <strong>Pay at pickup {{ money($order->total_amount) }}</strong>
             <form method="POST" action="{{ route('admin.orders.payment', $order) }}" class="d-flex gap-2 mt-2">@csrf
                 <select class="form-select" name="payment_status">
                     <option value="unpaid" @selected($order->payment_status==='unpaid')>Unpaid</option>

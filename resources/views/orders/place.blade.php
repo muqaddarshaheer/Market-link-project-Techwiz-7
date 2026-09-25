@@ -24,10 +24,10 @@
             <div class="card-ml p-3">
                 <h2 class="h6">Summary</h2>
                 @foreach($cart->items as $item)
-                    <div class="d-flex justify-content-between"><span>{{ $item->product->name }} × {{ $item->quantity }}</span><span>${{ number_format($item->quantity * $item->product->price, 2) }}</span></div>
+                    <div class="d-flex justify-content-between"><span>{{ $item->product->name }} × {{ $item->quantity }}</span><span>{{ money($item->quantity * $item->product->price) }}</span></div>
                 @endforeach
                 <hr>
-                <strong>Due at pickup: ${{ number_format($cart->total(), 2) }}</strong>
+                <strong>Due at pickup: {{ money($cart->total()) }}</strong>
             </div>
         </div>
     </div>

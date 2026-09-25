@@ -18,7 +18,7 @@
     <div class="card-ml p-3 mb-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
             <a href="{{ route('customer.orders.show', $order) }}"><strong>{{ $order->order_number }}</strong></a>
-            <div class="small muted">{{ $order->farmer->stall_name }} · {{ $order->pickup_date->format('M j') }} · ${{ number_format($order->total_amount, 2) }}</div>
+            <div class="small muted">{{ $order->farmer->stall_name }} · {{ $order->pickup_date->format('M j') }} · {{ money($order->total_amount) }}</div>
         </div>
         <div class="d-flex gap-2 align-items-center">
             @include('partials.order-status-badge', ['status' => $order->status])

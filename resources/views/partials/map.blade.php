@@ -13,7 +13,7 @@
         points.forEach(p => {
             const marker = L.marker([p.lat, p.lng]).addTo(map);
             const dir = `https://www.openstreetmap.org/directions?to=${p.lat}%2C${p.lng}`;
-            marker.bindPopup(`<strong>${p.title}</strong><br>${p.subtitle || ''}<br><a target="_blank" rel="noopener" href="${dir}">Directions</a>`);
+            marker.bindPopup(`<div class="map-pop"><strong>${p.title}</strong><div>${p.subtitle || ''}</div><a target="_blank" rel="noopener" href="${dir}">Open directions</a></div>`);
             bounds.push([p.lat, p.lng]);
         });
         if (bounds.length > 1) map.fitBounds(bounds, {padding: [24, 24]});

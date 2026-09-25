@@ -8,7 +8,6 @@ use App\Models\Review;
 use App\Support\ImageStore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 
 class CustomerDashboardController extends Controller
 {
@@ -109,11 +108,16 @@ class CustomerDashboardController extends Controller
     public function updatePassword(Request $request)
     {
         $data = $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', 'confirmed', Password::min(8)],
+            'current_password' => ['required', 'digits:4'],
+            'password' => ['required', 'digits:4', 'confirmed'],
         ]);
-        $request->user()->update(['password' => Hash::make($data['password'])]);
 
-        return back()->with('success', 'Password changed.');
+        if (! Hash::check($data['current_password'], $request->user()->password)) {
+            return back()->withErrors(['current_password' => 'Current PIN is incorrect.']);
+        }
+
+        $request->user()->update(['password' => $data['password']]);
+
+        return back()->with('success', 'PIN updated.');
     }
 }

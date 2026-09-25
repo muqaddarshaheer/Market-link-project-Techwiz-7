@@ -69,6 +69,7 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
     Route::post('/reviews/{review}/helpful', [ReviewController::class, 'helpful'])->name('reviews.helpful');
 });
 
+Route::post('/guest/quick/{product}', [OrderController::class, 'guestQuick'])->middleware('throttle:12,1')->name('guest.quick');
 Route::get('/guest/cart', [CartController::class, 'guestIndex'])->name('guest.cart');
 Route::post('/guest/cart/{product}', [CartController::class, 'guestAdd'])->name('guest.cart.add');
 Route::post('/guest/cart/{product}/remove', [CartController::class, 'guestRemove'])->name('guest.cart.remove');

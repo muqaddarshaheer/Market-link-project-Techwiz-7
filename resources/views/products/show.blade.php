@@ -6,51 +6,50 @@
     $rating = $product->reviews->where('status','approved')->avg('rating');
     $reviewCount = $product->reviews->where('status','approved')->count();
 @endphp
-<div class="product-view">
-    <div class="product-photo card-ml">
+<div class="product-stage">
+    <div class="product-stage-media">
         <img src="{{ \App\Support\ImageStore::picture($product->image, $product->name) }}" alt="{{ $product->name }}" width="960" height="720">
+        <div class="product-stage-tags">
+            <span>{{ $product->category->name }}</span>
+            <span>{{ ucfirst($product->quality ?? 'fresh') }}</span>
+            <span class="{{ $available ? 'is-live' : 'is-out' }}">{{ $available ? 'In stock' : 'Unavailable' }}</span>
+        </div>
     </div>
-    <div>
-        <span class="badge badge-soft">{{ $product->category->name }}</span>
-        <span class="badge badge-soft">{{ ucfirst($product->quality ?? 'fresh') }}</span>
-        @if($available)
-            <span class="badge text-bg-success">Available</span>
-        @else
-            <span class="badge text-bg-secondary">Unavailable</span>
-        @endif
+    <div class="product-stage-copy">
+        <p class="story-kicker">{{ $product->farmer->stall_name }}</p>
         <h1 class="section-title">{{ $product->name }}</h1>
         @include('partials.star-rating', ['rating' => $rating, 'count' => $reviewCount])
-        <p class="product-price">${{ number_format($product->price, 2) }} <span>/ {{ $product->unit }}</span></p>
+        <p class="product-price">{{ money($product->price) }} <span>/ {{ $product->unit }}</span></p>
         <p>{{ $product->description }}</p>
         <div class="product-grid">
             <div><span>Stock</span><strong>{{ $product->stock_quantity }} {{ $product->unit }}</strong></div>
             <div><span>Farmer</span><strong><a href="{{ route('farmers.show', $product->farmer) }}">{{ $product->farmer->stall_name }}</a></strong></div>
             <div><span>Phone</span><strong>{{ $product->farmer->user->phone ?: 'Ask at the stall' }}</strong></div>
-            <div><span>Quality</span><strong>{{ ucfirst($product->quality ?? 'fresh') }}</strong></div>
             <div><span>Market</span><strong><a href="{{ route('markets.show', $product->market) }}">{{ $product->market->name }}</a></strong></div>
-            <div><span>Pay</span><strong>At the stall, in person</strong></div>
         </div>
         @auth
             @if(auth()->user()->isCustomer() && $available)
-                <form method="POST" action="{{ route('cart.add', $product) }}" class="d-flex gap-2 mb-2" id="addForm">
+                <form method="POST" action="{{ route('cart.add', $product) }}" class="product-buy" id="addForm">
                     @csrf
-                    <input class="form-control" style="max-width:100px" type="number" name="quantity" value="1" min="1" max="{{ $product->stock_quantity }}">
+                    <input class="form-control" type="number" name="quantity" value="1" min="1" max="{{ $product->stock_quantity }}">
                     <button class="btn btn-ml" id="addBtn" type="submit">Add to cart</button>
                 </form>
-                <form method="POST" action="{{ route('customer.favorites.toggle') }}">@csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    <button class="btn btn-outline-ml btn-sm">Save product</button>
-                </form>
-            @elseif(! auth()->user()->isCustomer())
-                <p class="muted mb-0">Customers can pre-order this from their account.</p>
             @endif
         @else
-            <form method="POST" action="{{ route('guest.cart.add', $product) }}" class="d-flex gap-2 mb-2">
+            @if($available)
+            <form method="POST" action="{{ route('guest.quick', $product) }}" class="guest-quick card-ml p-3" id="guestQuick">
                 @csrf
-                <input class="form-control" style="max-width:100px" type="number" name="quantity" value="1" min="1" max="{{ max(1, $product->stock_quantity) }}">
-                <button class="btn btn-ml" type="submit" @disabled(! $available)>Add as guest</button>
+                <h2 class="h6 mb-2">Order in one step · no account</h2>
+                <div class="row g-2">
+                    <div class="col-md-4"><input class="form-control" name="name" placeholder="Your name" required value="{{ old('name') }}"></div>
+                    <div class="col-md-4"><input class="form-control" name="phone" placeholder="Phone" required value="{{ old('phone') }}"></div>
+                    <div class="col-md-2"><input class="form-control" type="number" name="quantity" value="1" min="1" max="{{ $product->stock_quantity }}" required></div>
+                    <div class="col-md-2"><button class="btn btn-ml w-100" type="submit">Order</button></div>
+                </div>
+                <p class="small muted mb-0 mt-2">Pickup tomorrow at the stall. Pay in Rs to the farmer.</p>
             </form>
-            <a href="{{ route('login') }}">Or log in</a>
+            @endif
+            <a class="btn btn-outline-ml btn-sm mt-2" href="{{ route('login') }}">Or log in</a>
         @endauth
     </div>
 </div>
@@ -68,15 +67,4 @@
     <h2 class="h5 mt-4">More in {{ $product->category->name }}</h2>
     <div class="row g-3">@foreach($related as $item)<div class="col-md-6 col-lg-3">@include('partials.product-card', ['product' => $item])</div>@endforeach</div>
 @endif
-@auth
-@if(auth()->user()->isCustomer() && $available)
-<script>
-document.getElementById('addForm').addEventListener('submit', function () {
-    const button = document.getElementById('addBtn');
-    button.disabled = true;
-    button.textContent = 'Adding…';
-});
-</script>
-@endif
-@endauth
 @endsection

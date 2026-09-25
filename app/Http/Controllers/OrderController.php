@@ -142,6 +142,28 @@ class OrderController extends Controller
         return view('orders.invoice', compact('order'));
     }
 
+    public function guestQuick(Request $request, Product $product)
+    {
+        abort_unless($product->canPurchase(), 422);
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'phone' => ['required', 'string', 'max:20'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:99'],
+        ]);
+        abort_if($data['quantity'] > $product->stock_quantity, 422);
+        $slot = collect($product->farmer->slots())->pluck('label')->first() ?: '08:00-10:00';
+        $pickup = now()->addDay()->toDateString();
+        $placed = $this->orders->placeGuest(
+            [$product->id => $data['quantity']],
+            ['name' => $data['name'], 'phone' => $data['phone'], 'address' => 'Will confirm at stall'],
+            $pickup,
+            $slot,
+            'Quick guest order'
+        );
+
+        return redirect()->route('home')->with('success', 'Order '.$placed[0]->order_number.' placed. Pay at the stall in Rs. Pickup '.$pickup.' · '.$slot);
+    }
+
     public function guestCreate()
     {
         $lines = array_map('intval', session('ml_guest_cart', []));

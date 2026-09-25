@@ -35,7 +35,7 @@
 @foreach($products as $product)
 <tr>
 <td>{{ $product->name }}<div class="small muted">{{ $product->market->name }}</div></td>
-<td>${{ number_format($product->price,2) }}/{{ $product->unit }}</td>
+<td>{{ money($product->price) }}/{{ $product->unit }}</td>
 <td colspan="4">
 <form method="POST" action="{{ route('farmer.products.update', $product) }}" class="row g-1 align-items-center" enctype="multipart/form-data">
 @csrf @method('PUT')

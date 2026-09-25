@@ -11,7 +11,7 @@
             <tbody>
             @foreach($cart->items as $item)
                 <tr>
-                    <td>{{ $item->product->name }}<div class="small muted">${{ number_format($item->product->price, 2) }}/{{ $item->product->unit }}</div></td>
+                    <td>{{ $item->product->name }}<div class="small muted">{{ money($item->product->price) }}/{{ $item->product->unit }}</div></td>
                     <td>{{ $item->product->farmer->stall_name }}<div class="small muted">{{ $item->product->market->name }}</div></td>
                     <td>
                         <div class="d-flex gap-1">
@@ -20,7 +20,7 @@
                             <form method="POST" action="{{ route('cart.update', $item->product) }}">@csrf @method('PUT')<button class="btn btn-outline-ml btn-sm" name="quantity" value="{{ min($item->product->stock_quantity, $item->quantity + 1) }}">+</button></form>
                         </div>
                     </td>
-                    <td>${{ number_format($item->quantity * $item->product->price, 2) }}</td>
+                    <td>{{ money($item->quantity * $item->product->price) }}</td>
                     <td>
                         <form method="POST" action="{{ route('cart.remove', $item->product) }}">@csrf @method('DELETE')<button class="btn btn-link text-danger">Remove</button></form>
                     </td>
@@ -30,7 +30,7 @@
         </table>
     </div>
     <div class="d-flex justify-content-between align-items-center mt-3">
-        <strong>Total ${{ number_format($cart->total(), 2) }}</strong>
+        <strong>Total {{ money($cart->total()) }}</strong>
         <a class="btn btn-ml" href="{{ route('orders.create') }}">Choose pickup</a>
     </div>
     <p class="small muted mt-2">You pay the farmer in person. No delivery.</p>

@@ -7,7 +7,7 @@
     <div class="card-ml p-3 mb-2 d-flex justify-content-between align-items-center gap-2">
         <div>
             <strong>{{ $product->name }}</strong>
-            <div class="small muted">{{ $product->farmer->stall_name }} · ${{ number_format($product->price, 2) }} × {{ $lines[$product->id] ?? 0 }}</div>
+            <div class="small muted">{{ $product->farmer->stall_name }} · {{ money($product->price) }} × {{ $lines[$product->id] ?? 0 }}</div>
         </div>
         <form method="POST" action="{{ route('guest.cart.remove', $product) }}">@csrf<button class="btn btn-outline-ml btn-sm">Remove</button></form>
     </div>

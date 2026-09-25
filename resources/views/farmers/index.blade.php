@@ -6,7 +6,7 @@
     <header class="farmer-dir-head">
         <p class="farmer-dir-trust"><i class="bi bi-patch-check-fill" aria-hidden="true"></i> Verified growers</p>
         <h1 class="section-title mb-1">Trusted Farmers</h1>
-        <p class="farmer-dir-sub">Discover verified farmers and connect directly with the people who grow your food.</p>
+        <p class="farmer-dir-sub">Tap a card for products, market days, and direct stall contact.</p>
     </header>
     <form class="farmer-dir-search" method="GET" role="search">
         <label class="visually-hidden" for="farmer-q">Search farmers or crops</label>
@@ -17,12 +17,11 @@
     <div class="row g-3">
         @forelse($farmers as $farmer)
             @php
-                $photo = $farmer->logo
-                    ? ImageStore::picture($farmer->logo, $farmer->stall_name)
-                    : asset('images/farmers/male-farmer.jpg');
+                $photo = ImageStore::picture($farmer->logo, $farmer->stall_name);
                 $crop = $farmer->products->take(3)->pluck('name')->filter()->implode(', ')
                     ?: ($farmer->products->first()?->category?->name ?: 'Seasonal produce');
                 $line = \Illuminate\Support\Str::limit($farmer->business_description ?: 'Approved stall. Reserve produce and pay at pickup.', 90);
+                $phone = $farmer->user->phone ?? '';
                 $payload = [
                     'name' => $farmer->contact_person ?: ($farmer->user->name ?? $farmer->stall_name),
                     'farm' => $farmer->stall_name,
@@ -30,7 +29,7 @@
                     'crop' => $crop,
                     'bio' => $farmer->business_description ?: 'This grower sells at the market. Reserve ahead, then pick up and pay in person.',
                     'photo' => $photo,
-                    'phone' => $farmer->user->phone ?? '',
+                    'phone' => $phone,
                     'days' => implode(', ', $farmer->operating_days ?? []) ?: 'See stall for market days',
                     'products' => $farmer->products->pluck('name')->take(6)->implode(', ') ?: 'Seasonal produce',
                     'count' => (int) ($farmer->products_count ?? $farmer->products->count()),
@@ -39,7 +38,7 @@
                 ];
             @endphp
             <div class="col-12 col-md-6 col-lg-4">
-                <button type="button" class="farmer-dir-card" data-farmer='@json($payload)'>
+                <article class="farmer-dir-card is-live" data-farmer='@json($payload)' role="button" tabindex="0">
                     <span class="farmer-dir-cover">
                         <img src="{{ $photo }}" alt="{{ $farmer->stall_name }}" width="640" height="360" loading="lazy" decoding="async">
                         <span class="farmer-dir-badge">Verified</span>
@@ -49,11 +48,15 @@
                         <span class="farmer-dir-farm">{{ $farmer->stall_name }}</span>
                         <span class="farmer-dir-meta"><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ $payload['location'] }}</span>
                         <span class="farmer-dir-crop">{{ $crop }}</span>
-                        <span class="farmer-dir-meta">{{ $farmer->user->phone ?? '' }}</span>
+                        @if($phone)
+                            <a class="farmer-dir-phone" href="tel:{{ preg_replace('/\s+/', '', $phone) }}" onclick="event.stopPropagation()">
+                                <i class="bi bi-telephone-fill" aria-hidden="true"></i> {{ $phone }}
+                            </a>
+                        @endif
                         <span class="farmer-dir-line">{{ $line }}</span>
-                        <span class="farmer-dir-cta">View Profile</span>
+                        <span class="farmer-dir-cta">Open profile</span>
                     </span>
-                </button>
+                </article>
             </div>
         @empty
             <div class="empty-state"><i class="bi bi-shop"></i><p>No stalls match that search.</p></div>
@@ -89,11 +92,13 @@
         lastTrigger = trigger || null;
         root.hidden = false;
         document.body.style.overflow = 'hidden';
+        const phone = esc(data.phone || '');
+        const tel = phone.replace(/\s+/g, '');
         data = {
             name: esc(data.name), farm: esc(data.farm), location: esc(data.location),
             crop: esc(data.crop), bio: esc(data.bio), photo: esc(data.photo),
             days: esc(data.days), products: esc(data.products), count: esc(data.count),
-            phone: esc(data.phone || ''), profile: esc(data.profile), contact: esc(data.contact)
+            phone: phone, profile: esc(data.profile), contact: esc(data.contact)
         };
         root.innerHTML =
             '<div class="farmer-modal" role="dialog" aria-modal="true" aria-labelledby="farmer-modal-title">' +
@@ -105,11 +110,12 @@
             '<h2 id="farmer-modal-title">' + data.name + ' <span class="farmer-dir-badge">Verified</span></h2>' +
             '<p class="farmer-dir-farm">' + data.farm + '</p>' +
             '<p class="farmer-dir-meta"><i class="bi bi-geo-alt" aria-hidden="true"></i> ' + data.location + '</p>' +
+            (phone ? '<a class="farmer-dir-phone mb-2 d-inline-flex" href="tel:' + tel + '"><i class="bi bi-telephone-fill" aria-hidden="true"></i> ' + phone + '</a>' : '') +
             '<p class="farmer-dir-crop">' + data.crop + '</p>' +
             '<p>' + data.bio + '</p>' +
             '<dl class="farmer-modal-facts">' +
             '<div><dt>Market days</dt><dd>' + data.days + '</dd></div>' +
-            '<div><dt>Phone</dt><dd>' + (data.phone || 'Ask at the stall') + '</dd></div>' +
+            '<div><dt>Phone</dt><dd>' + (phone || 'Ask at the stall') + '</dd></div>' +
             '<div><dt>Products</dt><dd>' + data.products + '</dd></div>' +
             '<div><dt>Listed items</dt><dd>' + data.count + '</dd></div>' +
             '</dl>' +
@@ -119,8 +125,9 @@
             '<button type="button" class="btn btn-outline-ml" data-next' + (cards.length < 2 ? ' disabled' : '') + '>Next</button>' +
             '</div>' +
             '<div class="d-flex gap-2 flex-wrap">' +
-            '<a class="btn btn-ml" href="' + data.contact + '">Contact Farmer</a>' +
-            '<a class="btn btn-outline-ml" href="' + data.profile + '">View Products</a>' +
+            (phone ? '<a class="btn btn-ml" href="tel:' + tel + '">Call farmer</a>' : '') +
+            '<a class="btn btn-outline-ml" href="' + data.profile + '">View products</a>' +
+            '<a class="btn btn-outline-ml" href="' + data.contact + '">Message MarketLink</a>' +
             '</div></div></div></div>';
         const dialog = root.querySelector('.farmer-modal');
         dialog.addEventListener('click', function (event) {
@@ -144,30 +151,20 @@
             currentIndex = index;
             openModal(JSON.parse(card.getAttribute('data-farmer')), card);
         });
+        card.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                currentIndex = index;
+                openModal(JSON.parse(card.getAttribute('data-farmer')), card);
+            }
+        });
     });
 
     document.addEventListener('keydown', function (event) {
-        const dialog = root.querySelector('.farmer-modal');
-        if (!dialog) return;
-        if (event.key === 'Escape') {
-            event.preventDefault();
-            closeModal();
-            return;
-        }
-        if (event.key === 'ArrowRight') { event.preventDefault(); showAt(currentIndex + 1); return; }
-        if (event.key === 'ArrowLeft') { event.preventDefault(); showAt(currentIndex - 1); return; }
-        if (event.key !== 'Tab') return;
-        const items = dialog.querySelectorAll('button, a[href]');
-        if (!items.length) return;
-        const first = items[0];
-        const last = items[items.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-            event.preventDefault();
-            last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-            event.preventDefault();
-            first.focus();
-        }
+        if (root.hidden) return;
+        if (event.key === 'Escape') closeModal();
+        if (event.key === 'ArrowLeft') showAt(currentIndex - 1);
+        if (event.key === 'ArrowRight') showAt(currentIndex + 1);
     });
 })();
 </script>

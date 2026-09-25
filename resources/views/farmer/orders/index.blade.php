@@ -8,7 +8,7 @@
     <div class="d-flex justify-content-between"><strong>{{ $order->order_number }}</strong>@include('partials.order-status-badge', ['status'=>$order->status])</div>
     <div class="small muted">{{ $order->customer->name }} · {{ $order->pickup_date->format('M j') }} {{ $order->pickup_slot }} · {{ $order->market->name }}</div>
     <ul class="mb-2">@foreach($order->items as $item)<li>{{ $item->product_name }} × {{ $item->quantity }}</li>@endforeach</ul>
-    <strong>${{ number_format($order->total_amount, 2) }}</strong>
+    <strong>{{ money($order->total_amount) }}</strong>
     @if($order->customer_note)<div>Note: {{ $order->customer_note }}</div>@endif
     @if($order->status === 'placed')
         <form method="POST" action="{{ route('farmer.orders.accept', $order) }}" class="d-flex gap-2 mt-2">@csrf<input class="form-control" name="farmer_notes" placeholder="Optional note"><button class="btn btn-ml">Accept</button></form>

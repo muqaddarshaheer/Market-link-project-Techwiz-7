@@ -12,8 +12,8 @@
             <label class="form-label">Market</label>
             <select class="form-select mb-2" name="market"><option value="">All</option>@foreach($markets as $market)<option value="{{ $market->id }}" @selected(request('market')==$market->id)>{{ $market->name }}</option>@endforeach</select>
             <div class="row g-2">
-                <div class="col"><input class="form-control" name="min_price" placeholder="Min $" value="{{ request('min_price') }}"></div>
-                <div class="col"><input class="form-control" name="max_price" placeholder="Max $" value="{{ request('max_price') }}"></div>
+                <div class="col"><input class="form-control" name="min_price" placeholder="Min Rs" value="{{ request('min_price') }}"></div>
+                <div class="col"><input class="form-control" name="max_price" placeholder="Max Rs" value="{{ request('max_price') }}"></div>
             </div>
             <label class="form-label mt-2">Day</label>
             <select class="form-select mb-2" name="day"><option value="">Any</option>@foreach(['Saturday','Sunday','Wednesday','Friday'] as $day)<option @selected(request('day')===$day)>{{ $day }}</option>@endforeach</select>

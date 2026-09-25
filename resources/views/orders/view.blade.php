@@ -11,10 +11,10 @@
 @include('partials.order-timeline')
 <div class="card-ml p-3 mb-3">
     @foreach($order->items as $item)
-        <div class="d-flex justify-content-between"><span>{{ $item->product_name }} × {{ $item->quantity }}</span><span>${{ number_format($item->subtotal, 2) }}</span></div>
+        <div class="d-flex justify-content-between"><span>{{ $item->product_name }} × {{ $item->quantity }}</span><span>{{ money($item->subtotal) }}</span></div>
     @endforeach
     <hr>
-    <strong>Total ${{ number_format($order->total_amount, 2) }}</strong>
+    <strong>Total {{ money($order->total_amount) }}</strong>
     @if($order->customer_note)<p class="mt-2 mb-0">Note: {{ $order->customer_note }}</p>@endif
     @if($order->farmer_notes)<p class="mb-0">Farmer: {{ $order->farmer_notes }}</p>@endif
     @if($order->cutoff_time)<p class="small muted mb-0">Changes allowed until {{ $order->cutoff_time->format('M j, g:i A') }}</p>@endif

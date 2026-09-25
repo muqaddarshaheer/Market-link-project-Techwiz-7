@@ -31,7 +31,7 @@
 <h2 class="h5">Markets</h2>
 <ul>@forelse($farmer->markets as $market)<li>{{ $market->name }} @if($market->pivot->stall_number) · stall {{ $market->pivot->stall_number }} @endif</li>@empty<li class="muted">No markets assigned.</li>@endforelse</ul>
 <h2 class="h5">Products ({{ $farmer->products->count() }})</h2>
-<ul>@foreach($farmer->products as $product)<li><a href="{{ route('products.show', $product) }}">{{ $product->name }}</a> · ${{ number_format($product->price, 2) }} · stock {{ $product->stock_quantity }}</li>@endforeach</ul>
+<ul>@foreach($farmer->products as $product)<li><a href="{{ route('products.show', $product) }}">{{ $product->name }}</a> · {{ money($product->price) }} · stock {{ $product->stock_quantity }}</li>@endforeach</ul>
 <h2 class="h5">Orders ({{ $farmer->orders->count() }})</h2>
 <ul>@foreach($farmer->orders->take(8) as $order)<li><a href="{{ route('admin.orders.show', $order) }}">{{ $order->order_number }}</a> · {{ $order->status }}</li>@endforeach</ul>
 @endsection

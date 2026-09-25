@@ -20,7 +20,7 @@
         <div class="small muted">{{ $product->farmer->stall_name ?? '' }} · {{ $product->market->name ?? '' }}</div>
         @include('partials.star-rating', ['rating' => $product->rating_avg ?? $product->averageRating()])
         <div class="d-flex justify-content-between align-items-center mt-2">
-            <strong>${{ number_format($product->price, 2) }} <span class="small muted">/ {{ $product->unit }}</span></strong>
+            <strong>{{ money($product->price) }} <span class="small muted">/ {{ $product->unit }}</span></strong>
             <div class="d-flex gap-1">
                 @auth
                     @if(auth()->user()->isCustomer())

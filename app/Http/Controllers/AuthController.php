@@ -57,11 +57,15 @@ class AuthController extends Controller
             'email' => ['required', 'email', 'max:100', 'unique:users,email'],
             'phone' => ['required', 'string', 'max:20'],
             'address' => ['required', 'string', 'max:500'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'digits:4', 'confirmed'],
         ]);
 
         $user = User::query()->create([
-            ...$data,
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'],
+            'address' => $data['address'],
+            'password' => $data['password'],
             'role' => 'customer',
             'status' => 'active',
             'email_verified_at' => now(),
@@ -83,7 +87,7 @@ class AuthController extends Controller
             'address' => ['required', 'string', 'max:500'],
             'operating_days' => ['required', 'array', 'min:1'],
             'operating_days.*' => ['in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'digits:4', 'confirmed'],
         ]);
 
         $user = User::query()->create([
@@ -156,7 +160,8 @@ class AuthController extends Controller
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user, string $password) {
-                $user->forceFill(['password' => Hash::make($password), 'remember_token' => Str::random(60)])->save();
+                // Cast hashes once — do not Hash::make here or login breaks.
+                $user->forceFill(['password' => $password, 'remember_token' => Str::random(60)])->save();
                 event(new PasswordReset($user));
             }
         );

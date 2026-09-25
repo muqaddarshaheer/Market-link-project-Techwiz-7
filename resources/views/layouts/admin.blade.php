@@ -59,10 +59,11 @@
         <div class="admin-top">
             <button class="btn btn-outline-ml btn-sm d-lg-none" type="button" onclick="document.getElementById('adminSide').classList.toggle('open')" aria-label="Open admin menu"><i class="bi bi-list"></i></button>
             <div>
-                <div class="admin-crumb">Admin</div>
+                <div class="admin-crumb">Admin panel</div>
                 <strong>@yield('title', 'Dashboard')</strong>
             </div>
             <div class="ms-auto d-flex align-items-center gap-2">
+                <span class="admin-role-pill d-none d-md-inline">Admin</span>
                 <button class="btn btn-outline-ml btn-sm" type="button" onclick="mlTheme()" aria-label="Toggle dark mode"><i class="bi bi-moon-stars"></i></button>
                 <a class="btn btn-outline-ml btn-sm" href="{{ route('home') }}">View site</a>
                 <span class="admin-user">{{ auth()->user()->name }}</span>
