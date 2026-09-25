@@ -1370,10 +1370,28 @@ body:has(.home-page) main.py-4 { padding-top: .35rem !important; }
   border-color: #2c3b33;
   opacity: 1;
 }
-[data-theme="dark"] .home-strip-item,
+[data-theme="dark"] .home-strip-item {
+  background: #18211c !important;
+  border-color: #2c3b33 !important;
+  color: #eef5f0 !important;
+}
+[data-theme="dark"] .home-strip-item > i {
+  background: #1c3328 !important;
+  color: #8fd6ae !important;
+}
+[data-theme="dark"] .home-strip-item strong {
+  color: #f3f7f4 !important;
+}
+[data-theme="dark"] .home-strip-item span,
 [data-theme="dark"] .home-sub,
+[data-theme="dark"] .farmer-card-days,
+[data-theme="dark"] .farmer-card-count,
+[data-theme="dark"] .market-card-meta,
+[data-theme="dark"] .product-card-stall {
+  color: #c5d6cc !important;
+}
 [data-theme="dark"] .thumb-label {
-  color: #eef5f0;
+  color: #fff !important;
 }
 [data-theme="dark"] .text-dark,
 [data-theme="dark"] .text-body,
@@ -1418,3 +1436,136 @@ body:has(.home-page) main.py-4 { padding-top: .35rem !important; }
   content-visibility: visible;
   contain: none;
 }
+/* Dark theme: keep every word readable */
+[data-theme="dark"] {
+  --ml-text: #f4faf6;
+  --ml-muted: #c5d6cc;
+  --ml-green-dark: #b8ebcb;
+}
+[data-theme="dark"] body,
+[data-theme="dark"] main,
+[data-theme="dark"] .container { color: #f4faf6; }
+[data-theme="dark"] a:not(.btn):not(.nav-link):not(.dropdown-item):not(.admin-nav a) { color: #9be0b8; }
+[data-theme="dark"] .navbar-ml .nav-link,
+[data-theme="dark"] .navbar-brand,
+[data-theme="dark"] .navbar-brand span { color: #f4faf6 !important; }
+[data-theme="dark"] .navbar-ml .nav-link.active,
+[data-theme="dark"] .navbar-ml .nav-link:hover {
+  background: #1c3328 !important; color: #b8ebcb !important;
+}
+[data-theme="dark"] .nav-search .form-control {
+  background: #101612 !important; color: #f4faf6 !important; border-color: #2c3b33 !important;
+}
+[data-theme="dark"] .nav-search .form-control::placeholder,
+[data-theme="dark"] .nav-search > i { color: #9bb0a5 !important; }
+[data-theme="dark"] .search-pop { background: #18211c !important; border-color: #2c3b33 !important; }
+[data-theme="dark"] .search-pop a { color: #f4faf6 !important; }
+[data-theme="dark"] .search-pop a:hover { background: #1c3328 !important; }
+[data-theme="dark"] .section-title,
+[data-theme="dark"] .product-card-title,
+[data-theme="dark"] .product-card-title a,
+[data-theme="dark"] .market-card-title,
+[data-theme="dark"] .farmer-card-body h3,
+[data-theme="dark"] .farmer-dir-name,
+[data-theme="dark"] .farmer-dir-farm,
+[data-theme="dark"] .farmer-dir-crop { color: #f4faf6 !important; }
+[data-theme="dark"] .section-more,
+[data-theme="dark"] .farmer-dir-cta,
+[data-theme="dark"] .farmer-card-phone,
+[data-theme="dark"] .farmer-dir-phone { color: #9be0b8 !important; }
+[data-theme="dark"] .market-card-hours { color: #9be0b8 !important; background: #1c3328 !important; }
+[data-theme="dark"] .alert-success,
+[data-theme="dark"] .alert-success * {
+  background: #1a3a2c !important; color: #e4fff0 !important; border-color: #2f6b4f !important;
+}
+[data-theme="dark"] .alert-warning,
+[data-theme="dark"] .alert-warning * {
+  background: #3d2c14 !important; color: #ffe7c2 !important; border-color: #8a5a20 !important;
+}
+[data-theme="dark"] .home-quote {
+  background: #1a2420 !important; border-left-color: #7dcea0 !important; color: #f4faf6 !important;
+}
+[data-theme="dark"] .home-cta-band {
+  background: linear-gradient(135deg, #163227, #1c2922) !important;
+  border-color: #2c3b33 !important; color: #f4faf6 !important;
+}
+[data-theme="dark"] .home-cta-band .section-title,
+[data-theme="dark"] .home-cta-band p { color: #f4faf6 !important; }
+[data-theme="dark"] .product-card-foot strong { color: #f4faf6 !important; }
+[data-theme="dark"] .product-card-foot strong span { color: #c5d6cc !important; }
+[data-theme="dark"] .badge-soft { background: #1c3328 !important; color: #c8f0d8 !important; }
+[data-theme="dark"] .farmer-dir-card,
+[data-theme="dark"] .farmer-dir-body { color: #f4faf6 !important; }
+[data-theme="dark"] .farmer-dir-line,
+[data-theme="dark"] .farmer-dir-meta { color: #c5d6cc !important; }
+[data-theme="dark"] .farmer-dir-badge { background: #1c3328 !important; color: #c8f0d8 !important; }
+[data-theme="dark"] .farmer-modal-stall,
+[data-theme="dark"] .farmer-modal-bio,
+[data-theme="dark"] .farmer-modal-empty,
+[data-theme="dark"] .farmer-modal-nav span,
+[data-theme="dark"] .farmer-modal-grid h3 { color: #c5d6cc !important; }
+[data-theme="dark"] .farmer-modal-body h2,
+[data-theme="dark"] .farmer-modal-contact,
+[data-theme="dark"] .farmer-modal-contact a { color: #f4faf6 !important; }
+[data-theme="dark"] .farmer-modal-grid section { background: #14201a !important; border-color: #2c3b33 !important; }
+[data-theme="dark"] .farmer-modal-chips li { background: #1c3328 !important; color: #c8f0d8 !important; }
+[data-theme="dark"] .story-steps li,
+[data-theme="dark"] .story-steps strong { color: #f4faf6 !important; }
+[data-theme="dark"] .story-steps p { color: #c5d6cc !important; }
+[data-theme="dark"] .panel-kicker,
+[data-theme="dark"] .login-kicker,
+[data-theme="dark"] .farmer-dir-trust { color: #9be0b8 !important; }
+[data-theme="dark"] .dropdown-menu { background: #18211c !important; border-color: #2c3b33 !important; }
+[data-theme="dark"] .dropdown-item { color: #f4faf6 !important; }
+[data-theme="dark"] .dropdown-item:hover { background: #1c3328 !important; color: #c8f0d8 !important; }
+[data-theme="dark"] .form-check-label { color: #f4faf6 !important; }
+[data-theme="dark"] .btn-outline-ml {
+  color: #f4faf6 !important; border-color: #3d5248 !important; background: transparent !important;
+}
+[data-theme="dark"] .btn-outline-ml:hover {
+  background: #1c3328 !important; color: #c8f0d8 !important;
+}
+[data-theme="dark"] .page-link {
+  background: #18211c !important; border-color: #2c3b33 !important; color: #c8f0d8 !important;
+}
+[data-theme="dark"] .page-item.active .page-link {
+  background: #2f9d62 !important; border-color: #2f9d62 !important; color: #fff !important;
+}
+[data-theme="dark"] .text-bg-success { background-color: #1f6b45 !important; color: #fff !important; }
+[data-theme="dark"] .text-bg-secondary { background-color: #3a4740 !important; color: #f4faf6 !important; }
+[data-theme="dark"] .text-bg-warning { background-color: #8a5a20 !important; color: #fff !important; }
+[data-theme="dark"] #harvest-calendar,
+[data-theme="dark"] #harvest-calendar .hc-card,
+[data-theme="dark"] #harvest-calendar .hc-label,
+[data-theme="dark"] #harvest-calendar .hc-hint,
+[data-theme="dark"] #harvest-calendar #harvestMonthLabel,
+[data-theme="dark"] #harvest-calendar #harvestStatus { color: #f4faf6 !important; }
+[data-theme="dark"] #harvest-calendar .hc-card,
+[data-theme="dark"] #harvest-calendar .harvest-day,
+[data-theme="dark"] #harvest-calendar .harvest-list-row,
+[data-theme="dark"] #harvest-calendar .harvest-chip,
+[data-theme="dark"] #harvest-calendar .hc-months button,
+[data-theme="dark"] #harvest-calendar #harvestSearch,
+[data-theme="dark"] #harvest-calendar #harvestTypeFilter {
+  background: #14201a !important; border-color: #2c3b33 !important; color: #f4faf6 !important;
+}
+[data-theme="dark"] #harvest-calendar .harvest-legend-item {
+  background: #1c3328 !important; color: #c8f0d8 !important;
+}
+[data-theme="dark"] .customer-nav a,
+[data-theme="dark"] .farmer-nav a,
+[data-theme="dark"] .role-nav a { color: #f4faf6 !important; }
+[data-theme="dark"] .footer-ml,
+[data-theme="dark"] .footer-ml p,
+[data-theme="dark"] .footer-ml .small,
+[data-theme="dark"] .footer-bar { color: #d7e6dc !important; }
+[data-theme="dark"] .footer-ml a { color: #f3f7f4 !important; }
+[data-theme="dark"] .footer-ml h5,
+[data-theme="dark"] .footer-ml h6 { color: #fff !important; }
+[data-theme="dark"] .star { color: #f0b429 !important; }
+[data-theme="dark"] .chat-panel .muted,
+[data-theme="dark"] #storyNote { color: #c5d6cc !important; }
+[data-theme="dark"] .muted,
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] .small.muted,
+[data-theme="dark"] .form-text { color: #c5d6cc !important; }
