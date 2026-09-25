@@ -832,7 +832,11 @@ body.farmer-modal-open { overflow: hidden; }
 .auth-tabs { gap: .35rem; }
 .auth-tabs .nav-link { border: 1px solid #d9e2dc; background: #f7f8f6; }
 .login-card .alert { border-radius: 12px; }
-.story-hero { background: linear-gradient(135deg, #eef8f1, #fff); border-radius: 28px; padding: 1.4rem; border: 1px solid #d7e9de; }
+.story-hero {
+  background: linear-gradient(135deg, var(--ml-green-soft), var(--ml-surface));
+  border-radius: 28px; padding: 1.4rem; border: 1px solid var(--ml-line);
+  color: var(--ml-text);
+}
 .story-photo { width: 100%; border-radius: 22px; object-fit: cover; max-height: 360px; }
 .story-points { padding-left: 1.1rem; }
 .story-step span { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #1f6b45; color: #fff; font-weight: 800; margin-bottom: .55rem; }
@@ -1706,4 +1710,142 @@ body:has(.home-page) main.py-4 { padding-top: .35rem !important; }
 [data-theme="dark"] #harvest-calendar .btn-outline-ml:hover {
   background: #e8f7ec !important;
   color: #1a4d2e !important;
+}
+
+/* About + global dark readability */
+[data-theme="dark"] .story-page,
+[data-theme="dark"] .story-page p,
+[data-theme="dark"] .story-page li,
+[data-theme="dark"] .story-page .section-title,
+[data-theme="dark"] .story-page h1,
+[data-theme="dark"] .story-page h2,
+[data-theme="dark"] .story-page h3 {
+  color: #f3f7f4 !important;
+}
+[data-theme="dark"] .story-hero {
+  background: linear-gradient(145deg, #1a2a22, #15201b) !important;
+  border-color: #2c3b33 !important;
+  color: #f3f7f4 !important;
+  box-shadow: 0 16px 36px rgba(0,0,0,.35);
+}
+[data-theme="dark"] .story-hero h1,
+[data-theme="dark"] .story-hero h2,
+[data-theme="dark"] .story-hero p,
+[data-theme="dark"] .story-hero .section-title,
+[data-theme="dark"] .story-hero li {
+  color: #f3f7f4 !important;
+}
+[data-theme="dark"] .story-hero .story-kicker,
+[data-theme="dark"] .story-page .story-kicker {
+  color: #8fd6ae !important;
+}
+[data-theme="dark"] .story-hero .btn-outline-ml {
+  color: #f3f7f4 !important;
+  border-color: #4a6356 !important;
+  background: transparent !important;
+}
+[data-theme="dark"] .story-hero .btn-outline-ml:hover {
+  background: #1c3328 !important;
+  color: #fff !important;
+}
+[data-theme="dark"] .story-points li {
+  color: #d7e6dc !important;
+}
+[data-theme="dark"] .story-step {
+  background: #18211c !important;
+  border-color: #2c3b33 !important;
+  color: #f3f7f4 !important;
+}
+[data-theme="dark"] .story-step h3,
+[data-theme="dark"] .story-step p {
+  color: #f3f7f4 !important;
+}
+[data-theme="dark"] .story-cta {
+  background: linear-gradient(145deg, #1c3328, #18211c) !important;
+  border-color: #2c3b33 !important;
+  color: #f3f7f4 !important;
+}
+[data-theme="dark"] .story-cta .section-title,
+[data-theme="dark"] .story-cta p {
+  color: #f3f7f4 !important;
+}
+[data-theme="dark"] .story-page a:not(.btn) {
+  color: #8fd6ae !important;
+}
+
+/* Contact / market / farmer list dark text sweep */
+[data-theme="dark"] .page-wrap p,
+[data-theme="dark"] .page-wrap .muted,
+[data-theme="dark"] main p,
+[data-theme="dark"] main .muted,
+[data-theme="dark"] main .form-label,
+[data-theme="dark"] main label {
+  color: #c5d6cc;
+}
+[data-theme="dark"] main h1,
+[data-theme="dark"] main h2,
+[data-theme="dark"] main h3,
+[data-theme="dark"] main .section-title {
+  color: #f4faf6 !important;
+}
+[data-theme="dark"] .topic-chip {
+  background: #18211c !important;
+  border-color: #2c3b33 !important;
+  color: #eef5f0 !important;
+}
+[data-theme="dark"] .contact-progress {
+  background: #1c3328 !important;
+}
+
+/* Calendar dark: stronger paper + clearer type */
+[data-theme="dark"] #harvest-calendar .hc-card {
+  border-width: 1px !important;
+  border-color: #9fd4ad !important;
+}
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-day,
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-month,
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-chip,
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-upcoming-row,
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-upcoming-row strong,
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-upcoming-row .small,
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-list-row,
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-list-row strong,
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-event,
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-event strong,
+[data-theme="dark"] #harvest-calendar .hc-card #harvestSelected,
+[data-theme="dark"] #harvest-calendar .hc-card #harvestSelected * {
+  color: #14532d !important;
+}
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-upcoming-row .small,
+[data-theme="dark"] #harvest-calendar .hc-card .hc-label,
+[data-theme="dark"] #harvest-calendar .hc-card .hc-hint,
+[data-theme="dark"] #harvest-calendar .hc-card #harvestStatus {
+  color: #3f5c4a !important;
+}
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-day.is-selected,
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-day.is-selected *,
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-month.is-active,
+[data-theme="dark"] #harvest-calendar .hc-card .harvest-month.is-active * {
+  color: #fff !important;
+}
+[data-theme="dark"] #harvest-calendar .hc-card .btn-ml {
+  background: linear-gradient(180deg, #248655, #145c38) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+}
+[data-theme="dark"] #harvest-calendar .hc-badge,
+[data-theme="dark"] #harvest-calendar .harvest-badge {
+  background: #1c3328 !important;
+  color: #8fd6ae !important;
+  border-color: #2f6b4f !important;
+}
+#harvestEventModalRoot .harvest-modal-backdrop {
+  background: rgba(6, 14, 10, .72) !important;
+}
+#harvestEventModalRoot .harvest-modal-card {
+  max-width: min(560px, calc(100vw - 2rem));
+}
+#harvestEventModalRoot .harvest-modal-card .btn-ml {
+  background: linear-gradient(180deg, #248655, #145c38) !important;
+  color: #fff !important;
 }
