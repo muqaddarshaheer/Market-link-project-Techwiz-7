@@ -759,6 +759,13 @@ body.farmer-modal-open { overflow: hidden; }
 .farmer-card-days,
 .farmer-card-count { margin: 0; color: var(--ml-muted); font-size: .88rem; }
 .farmer-card-phone { margin: .3rem 0; color: #1f6b45; font-weight: 700; font-size: .9rem; }
+.market-card-body { padding: 1rem 1.05rem 1.1rem; }
+.market-card-title { margin: 0 0 .3rem; font-size: 1.05rem; }
+.market-card-meta { margin: 0; color: var(--ml-muted); font-size: .88rem; }
+.market-card-hours {
+  display: inline-block; margin-top: .45rem; font-size: .8rem; font-weight: 800;
+  color: #1f6b45; background: #e7f3ec; border-radius: 999px; padding: .2rem .55rem;
+}
 .farmer-profile-hero { position: relative; overflow: hidden; border-radius: 24px; }
 .farmer-profile-hero img { width: 100%; height: min(420px, 58vw); object-fit: cover; display: block; }
 .farmer-profile-hero-copy {
