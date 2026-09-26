@@ -2,248 +2,247 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>MarketLink — Complete Project Documentation</title>
-<!-- Open this file in Microsoft Word: File → Open, or right-click → Open with Word, then Save As .docx -->
+<title>MarketLink — Project Documentation</title>
 <style>
-  body { font-family: Calibri, Arial, sans-serif; font-size: 12pt; line-height: 1.45; color: #1c2420; max-width: 820px; margin: 24px auto; padding: 0 20px; }
-  h1 { font-size: 20pt; color: #0e3b2e; border-bottom: 2px solid #1f6b45; padding-bottom: 6px; page-break-after: avoid; }
-  h2 { font-size: 14pt; color: #145c38; margin-top: 1.4em; page-break-after: avoid; }
-  h3 { font-size: 12pt; color: #1f6b45; page-break-after: avoid; }
-  .title { font-size: 28pt; font-weight: 700; color: #0e3b2e; margin-bottom: 0; }
-  .subtitle { font-size: 16pt; color: #5a675f; margin-top: 4px; }
-  .meta { color: #5a675f; margin: 8px 0 28px; }
-  ul { margin: 0.4em 0 1em 1.2em; }
-  li { margin: 0.25em 0; }
-  table { border-collapse: collapse; width: 100%; margin: 12px 0 20px; }
-  th, td { border: 1px solid #c9d6ce; padding: 8px 10px; text-align: left; vertical-align: top; }
-  th { background: #e7f3ec; color: #0e3b2e; }
-  code, .path { font-family: Consolas, monospace; font-size: 10.5pt; background: #f3f6f4; padding: 1px 4px; }
-  .box { background: #f4faf6; border-left: 4px solid #1f6b45; padding: 10px 14px; margin: 12px 0; }
-  .note { background: #fff8e8; border-left: 4px solid #c9a227; padding: 10px 14px; margin: 12px 0; }
-  @media print {
-    body { max-width: none; margin: 0; }
-    h1 { page-break-before: always; }
-    h1:first-of-type { page-break-before: avoid; }
-  }
+  body { font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: #222; max-width: 780px; margin: 28px auto; padding: 0 22px; }
+  h1 { font-family: Calibri, Arial, sans-serif; font-size: 16pt; color: #111; margin-top: 1.6em; border-bottom: 1px solid #999; padding-bottom: 4px; }
+  h2 { font-family: Calibri, Arial, sans-serif; font-size: 13pt; color: #222; margin-top: 1.25em; }
+  h3 { font-family: Calibri, Arial, sans-serif; font-size: 12pt; color: #333; margin-top: 1em; }
+  .title { font-family: Calibri, Arial, sans-serif; font-size: 22pt; font-weight: 700; margin-bottom: 0; }
+  .subtitle { font-size: 13pt; color: #444; margin-top: 6px; }
+  .meta { color: #555; margin: 10px 0 24px; font-size: 11pt; }
+  p { margin: 0.55em 0; text-align: justify; }
+  ul, ol { margin: 0.4em 0 0.9em 1.3em; }
+  li { margin: 0.28em 0; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0 18px; font-size: 11pt; }
+  th, td { border: 1px solid #888; padding: 7px 9px; text-align: left; vertical-align: top; }
+  th { background: #eee; }
+  code, .path { font-family: Consolas, "Courier New", monospace; font-size: 10pt; }
+  .tip { border: 1px solid #bbb; padding: 10px 12px; margin: 14px 0; background: #fafafa; font-size: 11pt; }
 </style>
 </head>
 <body>
 
 <p class="title">MarketLink</p>
-<p class="subtitle">Complete Project Documentation</p>
+<p class="subtitle">Project Documentation</p>
 <p class="meta">
-  Farmers Market Pickup Platform<br>
-  Stack: Laravel 11 · PHP 8.2+ · MySQL · Bootstrap 5 · Alpine.js<br>
-  Document date: 26 September 2026<br>
-  Project folder: <span class="path">marketlink-techwiz-7</span>
+  Local farmers market pickup platform<br>
+  Laravel 11 · PHP 8.2+ · MySQL · Bootstrap 5 · Alpine.js<br>
+  Folder: marketlink-techwiz-7<br>
+  Updated: 26 September 2026
 </p>
 
-<div class="box">
-  <strong>How to save as Word (.docx):</strong> Open this file in Microsoft Word
-  (right-click → Open with → Word). Then use <em>File → Save As → Word Document (*.docx)</em>.
-</div>
-
-<h1>1. Project Overview</h1>
-<p>
-  MarketLink is a web platform that connects local farmers-market growers with customers.
-  Customers browse markets and produce, reserve pickup pre-orders, and pay the farmer in person
-  at the stall. Farmers manage stall profiles, stock, and order workflow. Admins approve farmers,
-  moderate listings, and review platform reports.
+<p class="tip">
+  Tip: open this file in Microsoft Word, then use <b>File → Save As → Word Document (.docx)</b> if you need a fresh copy.
+  The matching .docx already sits in the same <span class="path">docs/</span> folder.
 </p>
-<div class="note">
-  <strong>Core scope rules</strong>
-  <ul>
-    <li>No online / card payment gateway — payment is always in person at pickup.</li>
-    <li>No delivery or courier — customers collect at the market stall.</li>
-    <li>Farmers must be approved by an admin before products appear publicly.</li>
-    <li>Reviews can be left after a completed pickup order.</li>
-  </ul>
-</div>
 
-<h1>2. Problem Statement</h1>
+<h1>1. What this project is</h1>
 <p>
-  Traditional farmers markets rely on paper lists, unclear stock, and weak communication between
-  growers and buyers. Customers do not know what will be available; farmers cannot plan packing;
-  admins lack one place to moderate stalls and announcements.
+  MarketLink is a web app for farmers markets. Buyers look at markets and produce, reserve what they want,
+  then pick it up at the stall and pay the farmer in cash (Rs). There is no courier and no card checkout on the site.
+  That choice was deliberate: the market already works that way in real life, and the software only organises
+  browsing, stock, and pickup timing.
 </p>
 <p>
-  MarketLink replaces that friction with digital browse, reserve, and pickup coordination while
-  keeping the real-world payment and collection model of a local market.
+  Three kinds of signed-in users exist. Customers place pre-orders. Farmers manage stock and the order queue.
+  Admins approve stalls, keep catalogues tidy, and pull reports. Guests can still browse and use a temporary cart
+  without creating an account first.
 </p>
 
-<h1>3. Objectives</h1>
+<h1>2. Why we built it</h1>
+<p>
+  At a busy weekend market it is easy to sell out of something popular, or to pack the wrong amounts.
+  Paper lists do not travel well between phone calls and the stall. MarketLink keeps a shared picture of what is
+  listed, what was reserved, and when the customer intends to arrive. Payment still happens face to face,
+  so the project stays out of payment-gateway complexity.
+</p>
+
+<h1>3. Scope boundaries</h1>
 <ul>
-  <li>Let customers discover markets, farmers, and seasonal produce quickly.</li>
-  <li>Allow pre-orders with stock checks and pickup date/slot selection.</li>
-  <li>Give farmers tools for inventory, slots, order accept/ready/complete, and reviews.</li>
-  <li>Give admins control over approvals, markets, categories, products, reviews, announcements, FAQs, and reports.</li>
-  <li>Provide a responsive, dark-mode capable, app-like shopping experience (AJAX cart, live filters, live search).</li>
+  <li>Pay at the stall only. No Stripe, JazzCash, or similar in this build.</li>
+  <li>Pickup only. No delivery routes or driver screens.</li>
+  <li>A farmer must be approved before products show on the public catalogue.</li>
+  <li>Reviews are meant for completed pickups, not random visitors.</li>
 </ul>
 
-<h1>4. Users and Roles</h1>
-
-<h2>4.1 Guest (not logged in)</h2>
-<ul>
-  <li>Browse home, about, contact, markets, farmers, products.</li>
-  <li>Live search suggestions and full search results page.</li>
-  <li>Guest cart and guest checkout (name, phone, address, pickup).</li>
-  <li>Quick one-step order on a product page.</li>
-  <li>Login / register as customer or farmer.</li>
-</ul>
-
-<h2>4.2 Customer</h2>
-<ul>
-  <li>Dashboard, favorites, notifications, profile, password.</li>
-  <li>Database cart, checkout, order history, cancel/reorder (when allowed), printable invoice.</li>
-  <li>Leave reviews on completed orders; mark reviews helpful.</li>
-</ul>
-
-<h2>4.3 Farmer</h2>
-<ul>
-  <li>Dashboard, product create/update/delete, weekly stock template.</li>
-  <li>Order queue: accept, decline, ready, complete.</li>
-  <li>Pickup slots, insights, review replies, stall profile.</li>
-  <li>Pending farmers cannot list products until admin approval.</li>
-</ul>
-
-<h2>4.4 Admin</h2>
-<ul>
-  <li>Users (status, PIN), farmers (approve / suspend / update / delete).</li>
-  <li>Markets, categories, products, review moderation.</li>
-  <li>Orders overview; payment status marking for cash-at-stall tracking.</li>
-  <li>Announcements, chatbot FAQs, settings, Chart.js reports and CSV export.</li>
-</ul>
-
-<h1>5. Technology Stack</h1>
-
+<h1>4. Tech choices (and why)</h1>
+<p>
+  Laravel 11 was used because routing, auth, validation, and Blade templates already cover most of a multi-role site.
+  MySQL holds the data. The public UI is Bootstrap 5 with a custom stylesheet so the brand does not look like a stock template.
+  Alpine.js handles small interactive pieces (search suggestions, notification badge, chatbot box) without spinning up a full SPA.
+  Leaflet draws market maps without a paid map key. Chart.js appears on the admin reports page.
+</p>
 <table>
-  <tr><th>Layer</th><th>Technology</th></tr>
-  <tr><td>Backend</td><td>PHP 8.2+, Laravel 11 (MVC, Eloquent, Blade, middleware)</td></tr>
-  <tr><td>Database</td><td>MySQL 8 / MariaDB (XAMPP compatible)</td></tr>
-  <tr><td>Frontend</td><td>Bootstrap 5.3, Bootstrap Icons, Alpine.js 3</td></tr>
-  <tr><td>Custom UI</td><td><span class="path">public/css/marketlink.css</span>, <span class="path">public/js/home.js</span>, <span class="path">public/js/shop.js</span></td></tr>
-  <tr><td>Maps</td><td>Leaflet.js + OpenStreetMap (no API key)</td></tr>
-  <tr><td>Admin charts</td><td>Chart.js</td></tr>
-  <tr><td>Services</td><td>OrderService, NotificationService, ImageStore</td></tr>
-  <tr><td>API</td><td>Read-only <span class="path">/api/markets</span>, <span class="path">/api/products</span></td></tr>
+  <tr><th>Piece</th><th>Where it lives / what it does</th></tr>
+  <tr><td>Backend</td><td>PHP + Laravel under <span class="path">app/</span></td></tr>
+  <tr><td>Views</td><td>Blade files in <span class="path">resources/views/</span></td></tr>
+  <tr><td>Styles</td><td><span class="path">public/css/marketlink.css</span></td></tr>
+  <tr><td>Home JS</td><td><span class="path">public/js/home.js</span> — harvest calendar, motion, story video helpers</td></tr>
+  <tr><td>Shop JS</td><td><span class="path">public/js/shop.js</span> — AJAX cart, live filters, toasts</td></tr>
+  <tr><td>Routes</td><td><span class="path">routes/web.php</span>, <span class="path">routes/api.php</span></td></tr>
+  <tr><td>Schema</td><td><span class="path">database/migrations/</span> and seeded demo data</td></tr>
 </table>
 
-<h1>6. System Architecture</h1>
-<p>MarketLink follows the Laravel MVC pattern:</p>
-<ul>
-  <li><strong>Routes:</strong> <span class="path">routes/web.php</span> (main UI), <span class="path">routes/api.php</span> (read-only lists).</li>
-  <li><strong>Controllers:</strong> public, auth, customer, farmer, and admin controllers under <span class="path">app/Http/Controllers</span>.</li>
-  <li><strong>Models:</strong> Eloquent models in <span class="path">app/Models</span> (User, FarmerProfile, Market, Product, Cart, Order, Review, etc.).</li>
-  <li><strong>Views:</strong> Blade templates in <span class="path">resources/views</span> with layouts for app, customer, farmer, admin, and auth.</li>
-  <li><strong>Middleware:</strong> role checks protect <span class="path">/customer/*</span>, <span class="path">/farmer/*</span>, <span class="path">/admin/*</span>.</li>
-  <li><strong>View composers:</strong> AppServiceProvider shares site settings, cart count, announcements, and unread notifications.</li>
-</ul>
+<h1>5. How the code is organised</h1>
+<p>
+  The layout follows normal Laravel practice. HTTP enters through routes, controllers decide what to load,
+  models talk to MySQL, and Blade renders HTML. Shared logic that does not belong in a controller sits in services—
+  mainly order placement and notifications—so those steps are not copy-pasted across customer and guest flows.
+</p>
 
-<h1>7. Main Features</h1>
+<h2>5.1 Routes</h2>
+<p>
+  <span class="path">routes/web.php</span> lists the pages people actually hit: home, catalogue, search, cart, checkout,
+  and the three dashboards. Guest cart routes sit outside the customer middleware so someone can add items before logging in.
+  Admin and farmer groups use a <span class="path">role:</span> middleware so a customer URL cannot open an admin screen by accident.
+  <span class="path">routes/api.php</span> only exposes simple product and market lists for possible later clients; the shop itself does not depend on them.
+</p>
 
-<h2>7.1 Public website</h2>
-<ul>
-  <li>Home: featured markets, farmers, products, harvest calendar, farmer story video, continuous review marquee, CTA.</li>
-  <li>About page with story sections and featured growers/produce.</li>
-  <li>Contact form (rate throttled).</li>
-  <li>Privacy, terms, sitemap.</li>
-  <li>Dark / light theme toggle (stored in localStorage).</li>
-  <li>FAQ keyword chatbot (floating widget).</li>
-</ul>
-
-<h2>7.2 Product browsing (shop UX)</h2>
-<ul>
-  <li>Product grid with <strong>live AJAX filters</strong> (category, market, price, day, rating, quality, farmer, in-stock, sort, search).</li>
-  <li>Partial HTML refresh — no full page reload while filtering.</li>
-  <li><strong>AJAX cart</strong> add / update / remove with toast + live badge.</li>
-  <li>Mobile filter drawer and bottom dock (Home, Browse, Cart, Account).</li>
-  <li>Card reveal animations (respects reduced-motion preference).</li>
-</ul>
-
-<h2>7.3 Search</h2>
-<ul>
-  <li>Navbar live suggest via <span class="path">/search/suggest</span> (products, farmers, markets).</li>
-  <li>Enter / “See all results” opens unified <span class="path">/search</span> page.</li>
-</ul>
-
-<h2>7.4 Cart and checkout</h2>
-<ul>
-  <li>Customer cart in database (<span class="path">carts</span>, <span class="path">cart_items</span>).</li>
-  <li>Guest cart in session (<span class="path">ml_guest_cart</span>).</li>
-  <li>Checkout: pickup date, slot, optional note.</li>
-  <li>OrderService splits cart into one order per farmer + market.</li>
-  <li>Stock reserved on place; copy reminds users to pay at the stall.</li>
-  <li>Multi-stall carts show a shared pickup-window warning.</li>
-</ul>
-
-<h2>7.5 Harvest calendar</h2>
-<ul>
-  <li>Interactive season guide on the home page (grid, filters, favorites, upcoming, modal).</li>
-  <li>Dark-theme readable cream card and high-contrast popup.</li>
-</ul>
-
-<h2>7.6 Authentication</h2>
-<ul>
-  <li>Customer and farmer registration.</li>
-  <li>Email/password login; optional 4-digit PIN login where seeded/configured.</li>
-  <li>Password reset (log mailer writes links to <span class="path">storage/logs/laravel.log</span> locally).</li>
-  <li>Throttled login and sensitive posts.</li>
-</ul>
-
-<h1>8. Order Lifecycle</h1>
-<ol>
-  <li>Customer/guest adds available products to cart.</li>
-  <li>Checkout chooses pickup date and time slot.</li>
-  <li>System creates order(s), updates stock, notifies farmer.</li>
-  <li>Farmer accepts (or declines) the order.</li>
-  <li>Farmer marks order ready for pickup.</li>
-  <li>Customer collects and pays in Pakistani Rupees (Rs) at the stall.</li>
-  <li>Farmer marks order complete.</li>
-  <li>Customer may leave a review; admin can moderate reviews.</li>
-</ol>
-
-<h1>9. Database (high level)</h1>
-<p>Core tables (full schema in migrations / <span class="path">database/marketlink.sql</span>):</p>
+<h2>5.2 Controllers (what each area does)</h2>
 <table>
-  <tr><th>Table group</th><th>Purpose</th></tr>
-  <tr><td>users</td><td>Accounts and roles</td></tr>
-  <tr><td>farmer_profiles</td><td>Stall details, approval status</td></tr>
-  <tr><td>markets</td><td>Locations, days/hours, map coordinates</td></tr>
-  <tr><td>categories, products</td><td>Catalog, stock, quality, images</td></tr>
-  <tr><td>carts, cart_items</td><td>Customer baskets</td></tr>
-  <tr><td>orders, order_items</td><td>Pre-orders, status, price snapshots</td></tr>
-  <tr><td>reviews, favorites</td><td>Ratings and saved products</td></tr>
-  <tr><td>notifications, announcements, faqs, settings</td><td>Comms and platform config</td></tr>
+  <tr><th>Controller</th><th>Job in plain language</th></tr>
+  <tr><td>HomeController</td><td>Home page data, about, contact, privacy, terms, sitemap.</td></tr>
+  <tr><td>ProductController</td><td>Catalogue, product detail, search page, suggest JSON, AJAX grid partial.</td></tr>
+  <tr><td>MarketController / FarmerController</td><td>Public market and stall listings and detail pages.</td></tr>
+  <tr><td>CartController</td><td>Customer DB cart and guest session cart; JSON answers when the request is AJAX.</td></tr>
+  <tr><td>OrderController</td><td>Checkout forms, place order, history, cancel/reorder, invoice, guest checkout.</td></tr>
+  <tr><td>AuthController</td><td>Login, register (customer/farmer), logout, password reset.</td></tr>
+  <tr><td>CustomerDashboardController</td><td>Customer home, favorites, profile, notifications poll.</td></tr>
+  <tr><td>FarmerDashboardController</td><td>Products, templates, orders workflow, slots, insights, reviews reply, profile.</td></tr>
+  <tr><td>AdminDashboardController</td><td>Users, farmers, markets, categories, products, reviews, reports, announcements, FAQs, settings.</td></tr>
+  <tr><td>ReviewController / FavoriteController / ChatbotController</td><td>Reviews, favorites toggle, FAQ chatbot answers.</td></tr>
 </table>
 
-<h1>10. Important Project Paths</h1>
+<h2>5.3 Models</h2>
+<p>
+  Models under <span class="path">app/Models</span> map to tables. The important relationships are the usual ones:
+  a user may own a farmer profile; products belong to a farmer and a market; cart items point at products;
+  orders keep item snapshots so later price edits do not rewrite history. Helpers on Product (for example
+  <span class="path">canPurchase()</span>) keep “is this buyable right now?” in one place instead of repeating stock checks in every form.
+</p>
+
+<h2>5.4 Services</h2>
+<p>
+  <span class="path">OrderService</span> is where cart lines become real orders. If the basket mixes two stalls,
+  the service splits them so each farmer gets their own order. Stock is checked again at that moment.
+  <span class="path">NotificationService</span> writes in-app alerts so farmers and customers see status changes without email being mandatory in local demo mode.
+</p>
+
+<h2>5.5 Views and layouts</h2>
+<p>
+  Public pages use <span class="path">layouts/app.blade.php</span> (navbar, footer, toasts, mobile dock, shop script).
+  Customer, farmer, and admin panels use their own layouts so the side navigation stays role-specific.
+  Cards for products and farmers live in <span class="path">resources/views/partials/</span> so home, about, and catalogue stay consistent.
+</p>
+
+<h2>5.6 Front-end scripts</h2>
+<p>
+  <span class="path">home.js</span> drives the harvest calendar modal, month switching, and the small motion helpers on the landing page.
+  It also keeps the calendar usable when dark mode is on by pairing with CSS that forces readable colours on the calendar card and popup.
+</p>
+<p>
+  <span class="path">shop.js</span> is the shopping layer. Forms marked <span class="path">data-ajax-cart</span> post with fetch,
+  show a toast, and update the bag badge. The products filter form uses <span class="path">data-live-filter</span>;
+  changing a select or typing in search reloads only the grid HTML from the server. On phones, a filter drawer and bottom dock keep navigation close to the thumb.
+</p>
+
+<h2>5.7 Stylesheet</h2>
+<p>
+  Almost all visual branding sits in <span class="path">marketlink.css</span>: colours, cards, dark theme overrides,
+  footer contrast, harvest calendar paper card, toasts, and the mobile dock. Dark mode flips a
+  <span class="path">data-theme</span> attribute on <span class="path">&lt;html&gt;</span>. A few surfaces (login card, harvest modal, calendar grid)
+  stay light on purpose so text never disappears against a dark background.
+</p>
+
+<h1>6. Main user flows (mapped to code)</h1>
+
+<h2>6.1 Browse and filter products</h2>
+<p>
+  Route <span class="path">products.index</span> hits ProductController@index. Filters come from the query string.
+  If the request is AJAX (or <span class="path">partial=1</span>), the controller returns
+  <span class="path">products/_grid.blade.php</span> instead of the full page. shop.js swaps that HTML into
+  <span class="path">#productResults</span> and updates the browser URL with history.replaceState so refresh still keeps the filters.
+</p>
+
+<h2>6.2 Add to cart without leaving the page</h2>
+<p>
+  Product cards and the product detail form post to CartController. When the request asks for JSON,
+  the controller replies with ok/message/count. shop.js reads that and updates every
+  <span class="path">[data-cart-badge]</span>. Guests use session storage; logged-in customers use the carts table.
+  AppServiceProvider shares the count into the navbar and mobile dock on each full page load.
+</p>
+
+<h2>6.3 Checkout</h2>
+<p>
+  Customer checkout is OrderController@create / @store with the Blade form in <span class="path">orders/place.blade.php</span>.
+  Guest checkout uses the guest routes and a similar form. Both end in OrderService. The place page warns when more than one stall is in the cart,
+  because one pickup window is applied across the resulting orders.
+</p>
+
+<h2>6.4 Farmer order desk</h2>
+<p>
+  After an order exists, FarmerDashboardController methods move it through accept, decline, ready, and complete.
+  Those actions are ordinary POST forms on the farmer order screens—not AJAX—because a full refresh is fine in a back-office queue and easier to audit.
+</p>
+
+<h2>6.5 Admin moderation</h2>
+<p>
+  AdminDashboardController covers approvals, catalogue edits, review moderation, announcements, FAQs, settings, and CSV export.
+  Farmer delete / suspend sits here as well so a bad stall can be removed without hunting through the database.
+</p>
+
+<h2>6.6 Harvest calendar on home</h2>
+<p>
+  The calendar markup is in <span class="path">home.blade.php</span>. Behaviour is entirely client-side in home.js
+  (month chips, event days, modal HTML injected into <span class="path">#harvestEventModalRoot</span>).
+  Grower hints for the modal come from a JSON script tag filled by HomeController. CSS keeps the modal and “Coming up” rows readable in dark theme.
+</p>
+
+<h2>6.7 Live search</h2>
+<p>
+  The navbar form posts to <span class="path">/search</span>. While typing, Alpine calls <span class="path">/search/suggest</span>
+  and shows a short dropdown. A “See all results” link is there when the query is long enough.
+</p>
+
+<h1>7. Database picture</h1>
+<p>
+  Migrations under <span class="path">database/migrations</span> create the tables. In short:
+  users and roles; farmer_profiles; markets; categories and products; carts and cart_items;
+  orders and order_items; reviews; favorites; notifications; announcements; faqs; settings.
+  Seeders fill demo markets, stalls, products, and login accounts so a marker can click through without inventing data.
+</p>
+
+<h1>8. Security that is actually in the code</h1>
 <ul>
-  <li><span class="path">app/Http/Controllers</span> — request handling</li>
-  <li><span class="path">app/Models</span> — Eloquent models</li>
-  <li><span class="path">app/Services</span> — OrderService, NotificationService</li>
-  <li><span class="path">app/Support/ImageStore.php</span> — image URLs / placeholders</li>
-  <li><span class="path">resources/views</span> — Blade UI</li>
-  <li><span class="path">public/css/marketlink.css</span> — branding and dark theme</li>
-  <li><span class="path">public/js/home.js</span>, <span class="path">public/js/shop.js</span> — front-end behaviour</li>
-  <li><span class="path">routes/web.php</span>, <span class="path">routes/api.php</span> — HTTP routes</li>
-  <li><span class="path">database/migrations</span>, <span class="path">database/seeders</span> — schema and demo data</li>
-  <li><span class="path">docs/</span> — project documentation (this file)</li>
+  <li>Passwords go through Laravel’s hasher, not plain text.</li>
+  <li>Blade escapes output by default; CSRF tokens sit on forms and on AJAX headers.</li>
+  <li>Role middleware walls off customer / farmer / admin URLs.</li>
+  <li>Validation rules reject empty or absurd quantities before stock is touched.</li>
+  <li>Login, contact, and chatbot routes are throttled to slow down spam.</li>
+  <li>Keeping payment offline avoids storing card data in this project.</li>
 </ul>
 
-<h1>11. Installation and Setup (XAMPP)</h1>
+<h1>9. UI notes worth mentioning in a viva</h1>
+<p>
+  Dark mode caused a few contrast bugs early on (light text on light panels, or dark text on the dark footer).
+  Those were fixed in CSS rather than by rewriting every Blade file. The harvest calendar stays on a cream “paper” card in dark mode
+  so day numbers and the popup stay readable. Footer links are forced to light colours because the footer background is always dark.
+  On small screens the products filters collapse into a drawer and a bottom dock mirrors common phone apps.
+</p>
+
+<h1>10. Install steps (local / XAMPP)</h1>
 <ol>
-  <li>Place project under htdocs, e.g. <span class="path">C:\xampp\htdocs\marketlink-techwiz-7</span>.</li>
-  <li>Copy <span class="path">.env.example</span> to <span class="path">.env</span>; set DB name, user, password.</li>
+  <li>Copy the project into htdocs (example path: <span class="path">C:\xampp\htdocs\marketlink-techwiz-7</span>).</li>
+  <li>Copy <span class="path">.env.example</span> to <span class="path">.env</span> and set the database name/user/password.</li>
   <li>Run <span class="path">composer install</span>.</li>
   <li>Run <span class="path">php artisan key:generate</span>.</li>
-  <li>Create MySQL database, then <span class="path">php artisan migrate --seed</span>.</li>
+  <li>Create the MySQL database, then <span class="path">php artisan migrate --seed</span>.</li>
   <li>Run <span class="path">php artisan storage:link</span>.</li>
-  <li>Start Apache + MySQL in XAMPP.</li>
-  <li>Open <span class="path">http://localhost/marketlink-techwiz-7/public/</span> (or <span class="path">php artisan serve</span>).</li>
-  <li>Production: HTTPS, correct <span class="path">APP_URL</span>, secure session cookies.</li>
+  <li>Start Apache and MySQL. Open <span class="path">http://localhost/marketlink-techwiz-7/public/</span>.</li>
 </ol>
 
-<h1>12. Demo Accounts</h1>
+<h1>11. Demo logins</h1>
 <table>
   <tr><th>Role</th><th>Email</th><th>Password</th></tr>
   <tr><td>Admin</td><td>admin@marketlink.com</td><td>Admin@123</td></tr>
@@ -251,75 +250,37 @@
   <tr><td>Customer</td><td>customer@marketlink.com</td><td>Customer@123</td></tr>
 </table>
 <p>
-  Pending farmer example (Priya Shah) cannot list products until approved.
-  If PIN login is enabled in your seeded build, confirm PINs in <span class="path">DatabaseSeeder</span>
-  (development often used Admin 0000, Farmer 1111, Customer 2222).
+  Seed data may also include a pending farmer who cannot publish products until an admin approves the stall.
+  If your build uses PIN login, check the current DatabaseSeeder for the PINs that were actually seeded.
 </p>
 
-<h1>13. Security Measures</h1>
+<h1>12. What we did not build (on purpose)</h1>
 <ul>
-  <li>Password hashing (bcrypt via Laravel).</li>
-  <li>CSRF tokens on forms and AJAX (<span class="path">csrf-token</span> meta + header).</li>
-  <li>Role middleware for customer / farmer / admin areas.</li>
-  <li>Server-side validation; Blade escaping by default.</li>
-  <li>Login and contact/chatbot throttling.</li>
-  <li>Upload type/size limits where images are accepted.</li>
-  <li>No card payment surface — reduces PCI compliance scope.</li>
+  <li>Card or wallet payments.</li>
+  <li>Delivery tracking.</li>
+  <li>A full React SPA; Blade + small JS kept the stack simpler for this brief.</li>
+  <li>A “smart” chatbot—answers are keyword FAQ matches managed by admin.</li>
 </ul>
 
-<h1>14. UI / UX Highlights</h1>
-<ul>
-  <li>Brand styling with Fraunces + Manrope fonts.</li>
-  <li>Dark theme readability across About, footer, harvest calendar, and shop.</li>
-  <li>Continuous customer review marquee on home.</li>
-  <li>Mobile bottom dock for app-like navigation.</li>
-  <li>Toast notifications for AJAX cart actions.</li>
-</ul>
+<h1>13. Suggested demo script for markers</h1>
+<ol>
+  <li>Guest: open Products, change a filter, add an item, watch the bag badge change without a full reload.</li>
+  <li>Guest or customer checkout: choose a pickup slot; show the pay-at-stall message.</li>
+  <li>Farmer login: accept an order, mark ready, then complete.</li>
+  <li>Admin login: approve a farmer or post an announcement; open reports if time allows.</li>
+  <li>Toggle dark mode on About and on the home harvest calendar to show contrast handling.</li>
+  <li>Shrink the browser: show the mobile dock and product filter button.</li>
+</ol>
 
-<h1>15. Read-only API</h1>
+<h1>14. Closing</h1>
 <p>
-  JSON endpoints under <span class="path">/api</span> expose markets and products for a possible future
-  mobile client. Cart and checkout remain web/session based in the current build.
+  MarketLink is a pickup-first market platform: catalogue and reservations online, money and collection offline.
+  The codebase is standard Laravel with a thin layer of JavaScript for shopping speed and a single CSS file for brand and dark mode.
+  The sections above should be enough to explain both the product idea and where to look in the repo when someone asks
+  “which file does the cart?” or “where do orders get split by stall?”
 </p>
 
-<h1>16. Limitations</h1>
-<ul>
-  <li>No card gateway or digital wallet payments.</li>
-  <li>No delivery / courier logistics.</li>
-  <li>Chatbot is keyword FAQ matching, not generative AI.</li>
-  <li>Password reset needs real SMTP in production.</li>
-  <li>Guest cart is session-based and cleared if the session is lost.</li>
-</ul>
-
-<h1>17. Suggested Test Plan</h1>
-<ul>
-  <li><strong>Guest:</strong> browse products → live filter → AJAX Add → guest checkout.</li>
-  <li><strong>Customer:</strong> login → cart → checkout → order timeline → review.</li>
-  <li><strong>Farmer:</strong> accept → ready → complete; update stock; reply to review.</li>
-  <li><strong>Admin:</strong> approve farmer, post announcement, moderate review, export CSV.</li>
-  <li><strong>Theme:</strong> dark mode on About, footer, harvest calendar, products.</li>
-  <li><strong>Mobile:</strong> filter drawer + bottom dock on products page.</li>
-</ul>
-
-<h1>18. Conclusion</h1>
-<p>
-  MarketLink is a complete farmers-market pre-order platform focused on local pickup and
-  in-person payment. It covers public discovery, customer and guest ordering, farmer operations,
-  and admin governance, with a modern responsive UI including live browse and AJAX cart behaviour.
-  It is suitable for TechWiz / academic demonstration and for real stall pickup workflows.
-</p>
-
-<h1>19. Document Control</h1>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Project name</td><td>MarketLink</td></tr>
-  <tr><td>Repository / folder</td><td>marketlink-techwiz-7</td></tr>
-  <tr><td>Framework</td><td>Laravel 11</td></tr>
-  <tr><td>This file</td><td>docs/MarketLink_Complete_Project_Documentation.html</td></tr>
-  <tr><td>Related docs</td><td>README.md, docs/PROJECT_REPORT.md, docs/DEMO_VIDEO_SCRIPT.md</td></tr>
-</table>
-
-<p class="meta" style="margin-top:32px;">— End of MarketLink Complete Project Documentation —</p>
+<p class="meta" style="margin-top:28px;">End of document — MarketLink project documentation</p>
 
 </body>
 </html>
