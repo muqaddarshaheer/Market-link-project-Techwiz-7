@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@marketlink.com',
             'phone' => '555-0100',
             'address' => '1 Market Square',
-            'password' => '0000',
+            'password' => 'Admin@123',
             'role' => 'admin',
             'status' => 'active',
             'email_verified_at' => now(),

@@ -22,7 +22,7 @@
 <div class="row g-3 mb-4">
     <div class="col-md-4"><a class="panel-quick card-ml panel-card p-3 d-flex align-items-center gap-3 text-decoration-none text-reset" href="{{ route('markets.index') }}"><span class="panel-quick-icon tone-green"><i class="bi bi-geo-alt"></i></span><span><strong>Find a market</strong><div class="small muted">See days and pickup windows</div></span></a></div>
     <div class="col-md-4"><a class="panel-quick card-ml panel-card p-3 d-flex align-items-center gap-3 text-decoration-none text-reset" href="{{ route('farmers.index') }}"><span class="panel-quick-icon tone-lime"><i class="bi bi-shop"></i></span><span><strong>Trusted farmers</strong><div class="small muted">Call a stall directly</div></span></a></div>
-    <div class="col-md-4"><a class="panel-quick card-ml panel-card p-3 d-flex align-items-center gap-3 text-decoration-none text-reset" href="{{ route('customer.profile') }}"><span class="panel-quick-icon tone-blue"><i class="bi bi-person"></i></span><span><strong>Your profile</strong><div class="small muted">Update details or PIN</div></span></a></div>
+    <div class="col-md-4"><a class="panel-quick card-ml panel-card p-3 d-flex align-items-center gap-3 text-decoration-none text-reset" href="{{ route('customer.profile') }}"><span class="panel-quick-icon tone-blue"><i class="bi bi-person"></i></span><span><strong>Your profile</strong><div class="small muted">Update details or password</div></span></a></div>
 </div>
 
 <div class="row g-4">

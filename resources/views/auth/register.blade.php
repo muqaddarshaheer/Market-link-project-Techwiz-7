@@ -7,7 +7,7 @@
         <p class="auth-panel-lead">Shop as a customer, or apply for a stall. Farmers go live after a quick admin check.</p>
         <ul class="auth-steps">
             <li><span>1</span><div><strong>Choose a role</strong><small>Customer or farmer</small></div></li>
-            <li><span>2</span><div><strong>Add basics</strong><small>Details + 4-digit PIN</small></div></li>
+            <li><span>2</span><div><strong>Add basics</strong><small>Details + password</small></div></li>
             <li><span>3</span><div><strong>Start</strong><small>Browse or wait for approval</small></div></li>
         </ul>
     </div>
@@ -45,10 +45,10 @@
             <div class="login-field mb-3"><i class="bi bi-envelope"></i><input class="form-control" id="c-email" type="email" name="email" value="{{ old('email') }}" required placeholder="you@email.com"></div>
             <label class="form-label" for="c-phone">Phone</label>
             <div class="login-field mb-3"><i class="bi bi-telephone"></i><input class="form-control" id="c-phone" name="phone" value="{{ old('phone') }}" required placeholder="03xxxxxxxxx"></div>
-            <label class="form-label" for="c-password">Choose a 4-digit PIN</label>
-            <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control pin-input" id="c-password" name="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required placeholder="e.g. 2580" autocomplete="new-password"></div>
-            <label class="form-label" for="c-confirm">Confirm PIN</label>
-            <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control pin-input" id="c-confirm" name="password_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required placeholder="Repeat PIN" autocomplete="new-password"></div>
+            <label class="form-label" for="c-password">Password</label>
+            <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control" id="c-password" type="password" name="password" minlength="6" required placeholder="At least 6 characters" autocomplete="new-password"></div>
+            <label class="form-label" for="c-confirm">Confirm password</label>
+            <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control" id="c-confirm" type="password" name="password_confirmation" minlength="6" required placeholder="Repeat password" autocomplete="new-password"></div>
             <button class="btn btn-ml w-100" type="submit">Create customer account</button>
         </form>
     </div>
@@ -66,10 +66,10 @@
             <div class="login-field mb-3"><i class="bi bi-envelope"></i><input class="form-control" id="f-email" type="email" name="email" value="{{ old('email') }}"></div>
             <label class="form-label" for="f-phone">Phone</label>
             <div class="login-field mb-3"><i class="bi bi-telephone"></i><input class="form-control" id="f-phone" name="phone" value="{{ old('phone') }}"></div>
-            <label class="form-label" for="f-password">Choose a 4-digit PIN</label>
-            <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control pin-input" id="f-password" name="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" autocomplete="new-password"></div>
-            <label class="form-label" for="f-confirm">Confirm PIN</label>
-            <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control pin-input" id="f-confirm" name="password_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" autocomplete="new-password"></div>
+            <label class="form-label" for="f-password">Password</label>
+            <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control" id="f-password" type="password" name="password" minlength="6" autocomplete="new-password" placeholder="At least 6 characters"></div>
+            <label class="form-label" for="f-confirm">Confirm password</label>
+            <div class="login-field mb-3"><i class="bi bi-lock"></i><input class="form-control" id="f-confirm" type="password" name="password_confirmation" minlength="6" autocomplete="new-password" placeholder="Repeat password"></div>
             <button class="btn btn-ml w-100" type="submit">Apply as a farmer</button>
             <p class="small muted mt-2 mb-0">Starts as Saturday stall — edit days later after approval.</p>
         </form>
@@ -118,9 +118,6 @@
 
     pills.forEach(function (pill) {
         pill.addEventListener('click', function () { sync(pill.dataset.type); });
-    });
-    document.querySelectorAll('.pin-input').forEach(function (el) {
-        el.addEventListener('input', function () { this.value = this.value.replace(/\D/g, '').slice(0, 4); });
     });
     sync(typeInput.value || 'customer');
 })();

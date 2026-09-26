@@ -10,26 +10,27 @@
 </div>
 <form class="desk-toolbar" method="GET">
     <input class="form-control" name="q" value="{{ request('q') }}" placeholder="Search name or email">
-    <button class="btn btn-ml">Search</button>
+    <button class="btn btn-ml" type="submit">Search</button>
 </form>
-<div class="table-responsive card-ml">
-<table class="table mb-0">
+<div class="table-responsive card-ml panel-card admin-table-wrap">
+<table class="table admin-table mb-0 align-middle">
     <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Status</th><th></th></tr></thead>
     <tbody>
     @forelse($users as $user)
         <tr>
-            <td><a href="{{ route('admin.users.show', $user) }}">{{ $user->name }}</a></td>
+            <td class="fw-semibold">{{ $user->name }}</td>
             <td>{{ $user->email }}</td>
             <td>{{ $user->phone }}</td>
             <td><span class="badge badge-soft">{{ $user->status }}</span></td>
-            <td>
-                <form method="POST" action="{{ route('admin.users.toggle', $user) }}">@csrf
-                    <button class="btn btn-sm btn-outline-ml">{{ $user->status === 'active' ? 'Deactivate' : 'Activate' }}</button>
+            <td class="text-nowrap">
+                <a class="btn btn-sm btn-outline-ml" href="{{ route('admin.users.show', $user) }}">Open</a>
+                <form method="POST" action="{{ route('admin.users.toggle', $user) }}" class="d-inline">@csrf
+                    <button class="btn btn-sm btn-ml" type="submit">{{ $user->status === 'active' ? 'Deactivate' : 'Activate' }}</button>
                 </form>
             </td>
         </tr>
     @empty
-        <tr><td colspan="5" class="p-4 muted">No customers found.</td></tr>
+        <tr><td colspan="5" class="p-4 muted text-center">No customers found.</td></tr>
     @endforelse
     </tbody>
 </table>

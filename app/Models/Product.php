@@ -72,6 +72,8 @@ class Product extends Model
     public static function bustPublicCaches(): void
     {
         Cache::forget('home.payload.v2');
+        Cache::forget('home.payload.v3');
+        Cache::forget('home.payload.v4');
         Cache::forget('about.payload.v1');
     }
 

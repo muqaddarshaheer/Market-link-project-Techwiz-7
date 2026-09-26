@@ -21,7 +21,7 @@
 <div class="row g-3">
 @forelse($farmers as $farmer)
     <div class="col-md-6">
-        <article class="card-ml p-3 h-100 desk-card">
+        <article class="card-ml p-3 h-100 desk-card admin-anim-card">
             <div class="d-flex justify-content-between gap-2 mb-2">
                 <div>
                     <a class="fw-bold text-decoration-none" href="{{ route('admin.farmers.show', $farmer) }}">{{ $farmer->stall_name }}</a>

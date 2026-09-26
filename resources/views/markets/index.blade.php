@@ -10,7 +10,7 @@
     <div class="col-md-3"><select class="form-select" name="day"><option value="">Any day</option>@foreach(['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] as $day)<option @selected(request('day')===$day)>{{ $day }}</option>@endforeach</select></div>
     <div class="col-md-2"><button class="btn btn-ml">Filter</button></div>
 </form>
-<div class="mb-3"><button class="btn btn-outline-ml btn-sm" type="button" onclick="document.getElementById('markets-map-wrap').classList.toggle('d-none')">Map / list</button> <a href="{{ route('markets.index') }}">Clear</a></div>
+<div class="mb-3"><button class="btn btn-outline-ml btn-sm" type="button" onclick="document.getElementById('markets-map-wrap').classList.toggle('d-none')">Map / list</button> <a class="btn btn-outline-ml btn-sm" href="{{ route('markets.index') }}">Clear</a></div>
 <div class="mb-4" id="markets-map-wrap">
     @include('partials.map', ['id' => 'markets-map', 'points' => $markets->map(fn ($m) => ['lat' => $m->latitude, 'lng' => $m->longitude, 'title' => $m->name, 'subtitle' => $m->city])->values()])
 </div>

@@ -1,0 +1,405 @@
+/* Crop Profit Calculator — compact farmer panel */
+.scc-app {
+  --scc-green: #1a6b42;
+  --scc-green-deep: #0d3d2a;
+  --scc-mint: #eef7f1;
+  --scc-line: #c5dccf;
+  --scc-muted: #5a6b61;
+  --scc-ink: #13241b;
+  --scc-warn-bg: #fff8eb;
+  --scc-warn: #7a5410;
+  --scc-danger: #9b1c1c;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  color: var(--scc-ink);
+  font-size: .92rem;
+}
+
+.scc-hero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .85rem;
+  align-items: center;
+  margin-bottom: .85rem;
+  padding: .75rem .9rem;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(26, 107, 66, 0.1), transparent 55%),
+    linear-gradient(180deg, #f6fbf8, #eaf4ee);
+  border: 1px solid var(--scc-line);
+}
+
+.scc-hero-text { min-width: 0; }
+
+.scc-kicker {
+  margin: 0 0 .2rem;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--scc-green);
+}
+
+.scc-title {
+  margin: 0 0 .25rem;
+  font-size: clamp(1.05rem, 2.5vw, 1.28rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--scc-green-deep);
+  line-height: 1.2;
+}
+
+.scc-lead {
+  margin: 0;
+  color: var(--scc-muted);
+  font-weight: 650;
+  line-height: 1.4;
+  font-size: .82rem;
+}
+
+.scc-hero-photo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #fff;
+  box-shadow: 0 6px 16px rgba(13, 61, 42, 0.18);
+  flex-shrink: 0;
+}
+
+.scc-hero-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+@media (min-width: 576px) {
+  .scc-hero-photo {
+    width: 88px;
+    height: 88px;
+  }
+}
+
+.scc-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .75rem;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .scc-layout {
+    grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.75fr);
+    gap: .85rem;
+  }
+
+  .scc-insights {
+    position: sticky;
+    top: .75rem;
+  }
+}
+
+.scc-form {
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
+  min-width: 0;
+}
+
+.scc-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .55rem;
+  background: #fff;
+  border: 1px solid var(--scc-line);
+  border-radius: 12px;
+  padding: .7rem .8rem .75rem;
+  box-shadow: 0 6px 16px rgba(13, 61, 42, 0.035);
+}
+
+.scc-step {
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: .75rem;
+  color: #fff;
+  background: var(--scc-green);
+  flex-shrink: 0;
+  margin-top: .15rem;
+}
+
+.scc-card-body { min-width: 0; }
+
+.scc-h {
+  margin: 0 0 .45rem;
+  font-size: .9rem;
+  font-weight: 800;
+  color: var(--scc-green-deep);
+}
+
+.scc-label {
+  display: block;
+  font-weight: 750;
+  font-size: .75rem;
+  margin-bottom: .22rem;
+  color: var(--scc-green-deep);
+}
+
+.scc-input,
+.scc-range {
+  width: 100%;
+  border: 1.5px solid #a8c9b6;
+  border-radius: 9px;
+  padding: .5rem .65rem;
+  font-size: .9rem;
+  font-weight: 700;
+  background: #fff;
+  color: var(--scc-ink);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.scc-input:focus {
+  outline: none;
+  border-color: var(--scc-green);
+  box-shadow: 0 0 0 3px rgba(26, 107, 66, 0.14);
+}
+
+.scc-money-wrap {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: stretch;
+}
+
+.scc-currency {
+  display: grid;
+  place-items: center;
+  padding: 0 .65rem;
+  border: 1.5px solid #a8c9b6;
+  border-right: 0;
+  border-radius: 9px 0 0 9px;
+  background: var(--scc-mint);
+  font-weight: 800;
+  font-size: .82rem;
+  color: var(--scc-green-deep);
+}
+
+.scc-money { border-radius: 0 9px 9px 0; }
+
+.scc-range { padding: .3rem 0; accent-color: var(--scc-green); }
+
+.scc-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem;
+}
+
+.scc-gap { margin-top: .5rem; }
+.scc-other { margin-top: .5rem; }
+
+.scc-note {
+  font-size: .76rem;
+  color: var(--scc-muted);
+  font-weight: 650;
+  margin: 0 0 .4rem;
+  line-height: 1.35;
+}
+
+.scc-waste {
+  margin-top: .55rem;
+  padding: .5rem .65rem;
+  border-radius: 9px;
+  background: var(--scc-mint);
+  border: 1px solid var(--scc-line);
+}
+
+.scc-waste-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .2rem;
+}
+
+.scc-waste-head strong {
+  font-size: .85rem;
+  color: var(--scc-green-deep);
+}
+
+.scc-actions { margin-top: .1rem; }
+
+.scc-submit {
+  width: 100%;
+  border: 0;
+  border-radius: 11px;
+  min-height: 44px;
+  background: linear-gradient(160deg, #24965a, #1a6b42);
+  color: #fff;
+  font-size: .95rem;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(26, 107, 66, 0.22);
+  cursor: pointer;
+  transition: transform .15s ease, opacity .15s ease;
+}
+
+.scc-submit:hover { transform: translateY(-1px); }
+.scc-submit:disabled { opacity: .7; cursor: wait; transform: none; }
+
+.scc-errors {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: var(--scc-danger);
+  border-radius: 10px;
+  padding: .65rem .8rem;
+  font-weight: 700;
+  font-size: .85rem;
+}
+
+.scc-errors ul { margin: 0; padding-inline-start: 1rem; }
+
+.scc-insights {
+  background: #fff;
+  border: 1px solid var(--scc-line);
+  border-radius: 12px;
+  padding: .8rem .85rem .9rem;
+  box-shadow: 0 6px 16px rgba(13, 61, 42, 0.035);
+}
+
+.scc-insights-head {
+  padding-bottom: .55rem;
+  margin-bottom: .55rem;
+  border-bottom: 1px solid var(--scc-line);
+}
+
+.scc-insights-kicker {
+  margin: 0 0 .2rem;
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--scc-green);
+}
+
+.scc-insights-title {
+  margin: 0 0 .2rem;
+  font-size: .98rem;
+  font-weight: 800;
+  color: var(--scc-green-deep);
+  line-height: 1.25;
+}
+
+.scc-insights-season {
+  margin: 0;
+  font-size: .78rem;
+  font-weight: 650;
+  color: var(--scc-muted);
+  line-height: 1.4;
+}
+
+.scc-insights-block h3,
+.scc-insights-watch h3 {
+  margin: 0 0 .35rem;
+  font-size: .78rem;
+  font-weight: 800;
+  color: var(--scc-green-deep);
+}
+
+.scc-insights-block ul {
+  margin: 0;
+  padding-inline-start: 1rem;
+  display: grid;
+  gap: .3rem;
+}
+
+.scc-insights-block li {
+  font-size: .8rem;
+  font-weight: 650;
+  line-height: 1.4;
+  color: var(--scc-ink);
+}
+
+.scc-insights-watch {
+  margin-top: .65rem;
+  padding: .55rem .65rem;
+  border-radius: 9px;
+  background: var(--scc-warn-bg);
+  border: 1px solid #edd9a8;
+}
+
+.scc-insights-watch p {
+  margin: 0;
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--scc-warn);
+  line-height: 1.4;
+}
+
+.scc-insights-note {
+  margin: .65rem 0 0;
+  font-size: .7rem;
+  font-weight: 650;
+  color: var(--scc-muted);
+  line-height: 1.4;
+}
+
+.scc-insights.is-updating { opacity: .72; transition: opacity .2s ease; }
+
+@media (max-width: 575.98px) {
+  .scc-row { grid-template-columns: 1fr; }
+  .scc-hero {
+    grid-template-columns: 1fr auto;
+    padding: .65rem .7rem;
+  }
+  .scc-card {
+    grid-template-columns: 1fr;
+    gap: .35rem;
+  }
+  .scc-step { width: 1.4rem; height: 1.4rem; font-size: .7rem; margin-top: 0; }
+}
+
+html[data-farmer-lang="ur"] .scc-app,
+html[data-farmer-lang="ur"] .scc-insights {
+  font-family: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", "Segoe UI", sans-serif;
+}
+
+[data-theme="dark"] .scc-app { color: #eef5f0; }
+[data-theme="dark"] .scc-hero,
+[data-theme="dark"] .scc-card,
+[data-theme="dark"] .scc-insights {
+  background: #18211c;
+  border-color: #2c3b33;
+}
+[data-theme="dark"] .scc-title,
+[data-theme="dark"] .scc-h,
+[data-theme="dark"] .scc-label,
+[data-theme="dark"] .scc-insights-title,
+[data-theme="dark"] .scc-insights-block h3,
+[data-theme="dark"] .scc-insights-watch h3 { color: #d7f5e4; }
+[data-theme="dark"] .scc-lead,
+[data-theme="dark"] .scc-note,
+[data-theme="dark"] .scc-insights-season,
+[data-theme="dark"] .scc-insights-note { color: #9bb3a5; }
+[data-theme="dark"] .scc-input {
+  background: #101612;
+  color: #eef5f0;
+  border-color: #2c3b33;
+}
+[data-theme="dark"] .scc-currency,
+[data-theme="dark"] .scc-waste {
+  background: #1c3328;
+  border-color: #2c3b33;
+  color: #d7f5e4;
+}
+[data-theme="dark"] .scc-insights-watch {
+  background: #2a2418;
+  border-color: #4a3d1f;
+}
+[data-theme="dark"] .scc-insights-watch p { color: #e8c878; }
+[data-theme="dark"] .scc-insights-head { border-color: #2c3b33; }
+[data-theme="dark"] .scc-hero-photo { border-color: #2c3b33; }

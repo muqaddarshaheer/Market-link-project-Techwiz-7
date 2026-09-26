@@ -1,0 +1,437 @@
+{
+  "meta": {
+    "version": 1,
+    "languages": ["ur", "en", "roman_ur"]
+  },
+  "crops": {
+    "potato": {
+      "id": "potato",
+      "name_en": "Potato",
+      "name_ur": "آلو",
+      "icon": "🥔",
+      "aliases": ["potato", "potatoes", "aloo", "alu", "alloo", "aalu", "alo", "آلو", "آلوؤں"],
+      "parts": ["tuber_outside", "tuber_inside", "leaf", "stem", "whole"],
+      "season": {
+        "en": "Cool-season tuber crop — monitor soil moisture, leaf pests, and storage quality.",
+        "ur": "ٹھنڈے موسم کی فصل — مٹی کی نمی، پتوں کے کیڑے اور اسٹوریج کا خیال رکھیں۔"
+      },
+      "symptoms": [
+        {
+          "id": "black_tuber",
+          "match": ["black", "kala", "kale", "کالا", "کالے", "dark"],
+          "parts": ["tuber_outside", "tuber_inside"],
+          "causes": [
+            {"en": "Possible soft rot or storage-related breakdown (needs checking).", "ur": "ممکنہ سافٹ روٹ یا اسٹوریج کا مسئلہ (چیک کریں)۔"},
+            {"en": "Possible physical damage or bruise turning dark.", "ur": "ممکنہ چوٹ یا نقصان جس سے کالا ہو رہا ہو۔"},
+            {"en": "Could relate to wet soil / poor drainage around tubers.", "ur": "گیلی مٹی یا خراب ڈرینج سے بھی ہو سکتا ہے۔"}
+          ],
+          "checklist": [
+            {"id": "inside_soft", "en": "Is the inside soft or watery?", "ur": "اندر نرم یا پانی والا ہے؟"},
+            {"id": "smell", "en": "Any foul smell?", "ur": "بدبو ہے؟"},
+            {"id": "others", "en": "Are nearby potatoes also affected?", "ur": "قریب والے آلو بھی متاثر ہیں؟"},
+            {"id": "storage", "en": "Was storage wet, warm, or poorly ventilated?", "ur": "اسٹوریج گیلی، گرم یا بند تھی؟"}
+          ],
+          "spread": true,
+          "prevention": [
+            {"en": "Keep questionable tubers separate and monitor closely.", "ur": "مشکوک آلو الگ رکھیں اور قریب سے دیکھیں۔"},
+            {"en": "Keep tools and storage surfaces clean and dry.", "ur": "اوزار اور اسٹوریج صاف اور خشک رکھیں۔"},
+            {"en": "Improve drainage; avoid waterlogging.", "ur": "ڈرینج بہتر رکھیں؛ پانی کھڑا نہ ہونے دیں۔"}
+          ],
+          "nutrition_note": {
+            "en": "Nutrition is usually not the first assumption for black tuber flesh — check rot, moisture, and storage first.",
+            "ur": "کالے اندر کے لیے غذائیت پہلا اندازہ نہیں — پہلے سڑن، نمی اور اسٹوریج چیک کریں۔"
+          }
+        },
+        {
+          "id": "yellow_leaf",
+          "match": ["yellow", "peela", "peele", "peelay", "پیلا", "پیلے"],
+          "parts": ["leaf"],
+          "causes": [
+            {"en": "Could relate to watering stress (too wet or too dry).", "ur": "پانی کی کمی یا زیادہ پانی سے ہو سکتا ہے۔"},
+            {"en": "Possible nutrient imbalance (needs soil / fertilizer history check).", "ur": "ممکنہ غذائی عدم توازن (مٹی/کھاد کی تاریخ چیک کریں)۔"},
+            {"en": "Could be related to disease or pest pressure on leaves.", "ur": "پتوں پر بیماری یا کیڑوں سے بھی ہو سکتا ہے۔"}
+          ],
+          "checklist": [
+            {"id": "wet", "en": "Soil too wet?", "ur": "مٹی بہت گیلی ہے؟"},
+            {"id": "dry", "en": "Soil too dry?", "ur": "مٹی بہت خشک ہے؟"},
+            {"id": "spots", "en": "Spots on leaves?", "ur": "پتوں پر دھبے ہیں؟"},
+            {"id": "insects", "en": "Any insects visible?", "ur": "کیڑے نظر آ رہے ہیں؟"},
+            {"id": "others", "en": "Other plants also yellowing?", "ur": "دوسرے پودے بھی پیلے ہو رہے ہیں؟"}
+          ],
+          "spread": true,
+          "prevention": [
+            {"en": "Check irrigation and drainage.", "ur": "آبپاشی اور ڈرینج چیک کریں۔"},
+            {"en": "Remove heavily damaged leaves if advised by local guidance.", "ur": "شدید متاثر پتے مقامی مشورے سے ہٹائیں۔"},
+            {"en": "Monitor nearby plants daily.", "ur": "قریبی پودے روزانہ دیکھیں۔"}
+          ],
+          "nutrition_note": {
+            "en": "Yellow leaves can relate to nutrients — check prior fertilizer use and growth stage before adding more.",
+            "ur": "پیلے پتے غذائیت سے بھی ہو سکتے ہیں — مزید کھاد سے پہلے پرانی کھاد اور مرحلہ چیک کریں۔"
+          }
+        },
+        {
+          "id": "pest",
+          "match": ["keera", "keere", "insect", "pest", "کیڑا", "کیڑے", "worms", "aphid"],
+          "parts": ["leaf", "stem", "whole"],
+          "causes": [
+            {"en": "Possible insect feeding damage.", "ur": "ممکنہ کیڑوں کا نقصان۔"},
+            {"en": "Could be related to humid weather favoring pests.", "ur": "نمی والے موسم میں کیڑے بڑھ سکتے ہیں۔"}
+          ],
+          "checklist": [
+            {"id": "insects", "en": "Can you see insects under leaves?", "ur": "پتوں کے نیچے کیڑے نظر آتے ہیں؟"},
+            {"id": "holes", "en": "Holes or chewed edges?", "ur": "سوراخ یا کٹے کنارے؟"},
+            {"id": "others", "en": "Spreading to nearby plants?", "ur": "قریبی پودوں میں پھیل رہا ہے؟"}
+          ],
+          "spread": true,
+          "prevention": [
+            {"en": "Monitor undersides of leaves regularly.", "ur": "پتوں کے نیچے باقاعدہ چیک کریں۔"},
+            {"en": "Keep field hygiene; remove heavily damaged material when appropriate.", "ur": "کھیت صاف رکھیں؛ شدید متاثر حصہ مناسب طریقے سے الگ کریں۔"},
+            {"en": "For any pesticide, follow the product label and local agricultural advice — do not guess doses.", "ur": "کیڑے مار دوا کے لیے لیبل اور مقامی زرعی مشورہ مانیں — مقدار خود مت لگائیں۔"}
+          ],
+          "nutrition_note": {
+            "en": "Nutrition is secondary when insects are clearly present — focus on pest monitoring first.",
+            "ur": "کیڑے صاف نظر آئیں تو غذائیت ثانوی ہے — پہلے کیڑے دیکھیں۔"
+          }
+        },
+        {
+          "id": "stunted",
+          "match": ["barh nahi", "nahi barh", "not growing", "stunted", "slow growth", "نہیں بڑھ", "رک"],
+          "parts": ["whole"],
+          "causes": [
+            {"en": "Could relate to soil moisture or temperature stress.", "ur": "مٹی کی نمی یا درجہ حرارت سے ہو سکتا ہے۔"},
+            {"en": "Possible nutrient limitation — confirm with growth stage and fertilizer history.", "ur": "ممکنہ غذائی کمی — مرحلہ اور کھاد کی تاریخ سے تصدیق کریں۔"},
+            {"en": "Root or pest issues may limit growth.", "ur": "جڑ یا کیڑوں کا مسئلہ بھی بڑھنے کو روک سکتا ہے۔"}
+          ],
+          "checklist": [
+            {"id": "wet", "en": "Soil waterlogged?", "ur": "مٹی میں پانی بھرا ہے؟"},
+            {"id": "dry", "en": "Soil very dry?", "ur": "مٹی بہت خشک ہے؟"},
+            {"id": "roots", "en": "Roots look healthy if checked?", "ur": "جڑیں ٹھیک لگتی ہیں؟"},
+            {"id": "fertilizer", "en": "Recent fertilizer applied?", "ur": "حال ہی میں کھاد دی؟"}
+          ],
+          "spread": false,
+          "prevention": [
+            {"en": "Balance watering; avoid extremes.", "ur": "پانی متوازن رکھیں؛ انتہا سے بچیں۔"},
+            {"en": "Review fertilizer timing with local guidance / soil test if possible.", "ur": "کھاد کا وقت مقامی مشورے یا مٹی ٹیسٹ سے دیکھیں۔"}
+          ],
+          "nutrition_note": {
+            "en": "Stunted growth may involve nutrients — do not over-apply fertilizer without checking soil and stage.",
+            "ur": "کم بڑھوتری غذائیت سے ہو سکتی ہے — بغیر چیک کے زیادہ کھاد نہ دیں۔"
+          }
+        }
+      ]
+    },
+    "tomato": {
+      "id": "tomato",
+      "name_en": "Tomato",
+      "name_ur": "ٹماٹر",
+      "icon": "🍅",
+      "aliases": ["tomato", "tomatoes", "tamatar", "ٹماٹر"],
+      "parts": ["leaf", "stem", "fruit", "whole"],
+      "season": {
+        "en": "Warm-season crop — watch leaf spots, blossom issues, and watering consistency.",
+        "ur": "گرم موسم کی فصل — پتوں کے دھبے، پھول/پھل اور پانی کا خیال رکھیں۔"
+      },
+      "symptoms": [
+        {
+          "id": "yellow_leaf",
+          "match": ["yellow", "peela", "peele", "پیلا", "پیلے"],
+          "parts": ["leaf"],
+          "causes": [
+            {"en": "Possible watering stress or nutrient imbalance.", "ur": "ممکنہ پانی کا دباؤ یا غذائی عدم توازن۔"},
+            {"en": "Could be related to leaf disease — check for spots.", "ur": "پتوں کی بیماری سے بھی ہو سکتا ہے — دھبے چیک کریں۔"}
+          ],
+          "checklist": [
+            {"id": "spots", "en": "Spots on leaves?", "ur": "پتوں پر دھبے؟"},
+            {"id": "wet", "en": "Soil too wet?", "ur": "مٹی بہت گیلی؟"},
+            {"id": "dry", "en": "Soil too dry?", "ur": "مٹی بہت خشک؟"},
+            {"id": "insects", "en": "Insects under leaves?", "ur": "پتوں کے نیچے کیڑے؟"}
+          ],
+          "spread": true,
+          "prevention": [
+            {"en": "Water at soil level; keep foliage drier when possible.", "ur": "پانی جڑ کے پاس دیں؛ پتے خشک رکھنے کی کوشش کریں۔"},
+            {"en": "Monitor neighboring plants.", "ur": "قریبی پودے دیکھتے رہیں۔"}
+          ],
+          "nutrition_note": {
+            "en": "Yellow tomato leaves can involve nutrients — check fertilizer history before adding more.",
+            "ur": "پیلے ٹماٹر پتے غذائیت سے ہو سکتے ہیں — مزید کھاد سے پہلے تاریخ چیک کریں۔"
+          }
+        },
+        {
+          "id": "pest",
+          "match": ["keera", "keere", "insect", "pest", "کیڑا", "کیڑے"],
+          "parts": ["leaf", "fruit", "whole"],
+          "causes": [
+            {"en": "Possible insect damage on tomato plants.", "ur": "ممکنہ کیڑوں کا نقصان۔"}
+          ],
+          "checklist": [
+            {"id": "insects", "en": "Insects visible?", "ur": "کیڑے نظر آتے ہیں؟"},
+            {"id": "fruit", "en": "Fruit damaged?", "ur": "پھل خراب؟"}
+          ],
+          "spread": true,
+          "prevention": [
+            {"en": "Inspect plants regularly; follow label-based local pest guidance if treatment is needed.", "ur": "باقاعدہ چیک کریں؛ علاج کے لیے لیبل اور مقامی مشورہ مانیں۔"}
+          ],
+          "nutrition_note": {
+            "en": "Focus on pest checks first when insects are suspected.",
+            "ur": "کیڑوں کا شبہ ہو تو پہلے کیڑے چیک کریں۔"
+          }
+        },
+        {
+          "id": "leaf_drop",
+          "match": ["gir", "falling", "drop", "گر", "گر رہے"],
+          "parts": ["leaf"],
+          "causes": [
+            {"en": "Could relate to heat, water stress, or disease.", "ur": "گرمی، پانی کا دباؤ یا بیماری سے ہو سکتا ہے۔"}
+          ],
+          "checklist": [
+            {"id": "heat", "en": "Very hot days recently?", "ur": "حال ہی میں شدید گرمی؟"},
+            {"id": "wet", "en": "Overwatering?", "ur": "زیادہ پانی؟"},
+            {"id": "spots", "en": "Spots before falling?", "ur": "گرنے سے پہلے دھبے؟"}
+          ],
+          "spread": true,
+          "prevention": [
+            {"en": "Stabilize watering and check for leaf disease signs.", "ur": "پانی متوازن کریں اور بیماری کے آثار دیکھیں۔"}
+          ],
+          "nutrition_note": {
+            "en": "Leaf drop is not automatically a fertilizer issue — check stress and disease first.",
+            "ur": "پتوں کا گرنا خود بخود کھاد کا مسئلہ نہیں — پہلے دباؤ اور بیماری دیکھیں۔"
+          }
+        }
+      ]
+    },
+    "mango": {
+      "id": "mango",
+      "name_en": "Mango",
+      "name_ur": "آم",
+      "icon": "🥭",
+      "aliases": ["mango", "aam", "آم"],
+      "parts": ["leaf", "stem", "fruit", "whole"],
+      "season": {
+        "en": "Tree crop — watch leaf drop, flowering, and fruit quality with weather swings.",
+        "ur": "درخت کی فصل — پتوں کا گرنا، پھول اور موسم کے اتار چڑھاؤ دیکھیں۔"
+      },
+      "symptoms": [
+        {
+          "id": "leaf_drop",
+          "match": ["gir", "falling", "drop", "گر"],
+          "parts": ["leaf"],
+          "causes": [
+            {"en": "Could relate to heat, water stress, or seasonal shedding.", "ur": "گرمی، پانی کا دباؤ یا موسمی جھڑنا ہو سکتا ہے۔"},
+            {"en": "Possible disease pressure — check spots and new growth.", "ur": "ممکنہ بیماری — دھبے اور نئی بڑھوتری چیک کریں۔"}
+          ],
+          "checklist": [
+            {"id": "spots", "en": "Spots on falling leaves?", "ur": "گرتے پتوں پر دھبے؟"},
+            {"id": "dry", "en": "Soil too dry?", "ur": "مٹی خشک؟"},
+            {"id": "others", "en": "Other trees also dropping leaves?", "ur": "دوسرے درخت بھی؟"}
+          ],
+          "spread": true,
+          "prevention": [
+            {"en": "Maintain steady watering and field hygiene around the tree base.", "ur": "پانی متوازن رکھیں اور درخت کے گرد صفائی رکھیں۔"}
+          ],
+          "nutrition_note": {
+            "en": "Nutrition may play a role long-term — prefer soil-test guided feeding over guessing.",
+            "ur": "غذائیت طویل مدتی کردار رکھ سکتی ہے — اندازے کی بجائے مٹی ٹیسٹ سے کھاد دیں۔"
+          }
+        }
+      ]
+    },
+    "onion": {
+      "id": "onion",
+      "name_en": "Onion",
+      "name_ur": "پیاز",
+      "icon": "🧅",
+      "aliases": ["onion", "pyaz", "پیاز"],
+      "parts": ["leaf", "bulb", "whole"],
+      "season": {
+        "en": "Watch leaf tip burn, bulb moisture, and fungal risks in humid spells.",
+        "ur": "پتے کے سروں کا جلنا، گیلے پن اور نمی میں فنگس کا خیال رکھیں۔"
+      },
+      "symptoms": [
+        {
+          "id": "yellow_leaf",
+          "match": ["yellow", "peela", "peele", "پیلا"],
+          "parts": ["leaf"],
+          "causes": [
+            {"en": "Could relate to watering, nutrients, or leaf disease.", "ur": "پانی، غذائیت یا پتوں کی بیماری سے ہو سکتا ہے۔"}
+          ],
+          "checklist": [
+            {"id": "wet", "en": "Soil too wet?", "ur": "مٹی گیلی؟"},
+            {"id": "spots", "en": "Leaf spots?", "ur": "دھبے؟"}
+          ],
+          "spread": true,
+          "prevention": [
+            {"en": "Improve drainage and avoid prolonged leaf wetness when possible.", "ur": "ڈرینج بہتر کریں اور پتے زیادہ دیر گیلی نہ رہیں۔"}
+          ],
+          "nutrition_note": {
+            "en": "Check fertilizer history before assuming nutrients are the main cause.",
+            "ur": "غذائیت ماننے سے پہلے کھاد کی تاریخ چیک کریں۔"
+          }
+        }
+      ]
+    },
+    "chili": {
+      "id": "chili",
+      "name_en": "Chili",
+      "name_ur": "مرچ",
+      "icon": "🌶️",
+      "aliases": ["chili", "chilli", "mirch", "pepper", "مرچ"],
+      "parts": ["leaf", "fruit", "stem", "whole"],
+      "season": {
+        "en": "Warm crop — monitor leaf curl, pests, and heat stress.",
+        "ur": "گرم موسم کی فصل — پتوں کا مڑنا، کیڑے اور گرمی دیکھیں۔"
+      },
+      "symptoms": [
+        {
+          "id": "yellow_leaf",
+          "match": ["yellow", "peela", "peele", "پیلا"],
+          "parts": ["leaf"],
+          "causes": [
+            {"en": "Possible water or nutrient stress; check for pests too.", "ur": "ممکنہ پانی یا غذائی دباؤ؛ کیڑے بھی دیکھیں۔"}
+          ],
+          "checklist": [
+            {"id": "insects", "en": "Insects under leaves?", "ur": "کیڑے؟"},
+            {"id": "dry", "en": "Soil dry?", "ur": "مٹی خشک؟"}
+          ],
+          "spread": true,
+          "prevention": [
+            {"en": "Keep watering steady and inspect for pests early.", "ur": "پانی متوازن رکھیں اور کیڑے جلد دیکھیں۔"}
+          ],
+          "nutrition_note": {
+            "en": "Nutrient issues are possible — avoid heavy fertilizer without checking stage.",
+            "ur": "غذائیت ممکن ہے — بغیر مرحلہ دیکھے زیادہ کھاد نہ دیں۔"
+          }
+        }
+      ]
+    },
+    "wheat": {
+      "id": "wheat",
+      "name_en": "Wheat",
+      "name_ur": "گندم",
+      "icon": "🌾",
+      "aliases": ["wheat", "gandum", "گندم"],
+      "parts": ["leaf", "stem", "ear", "whole"],
+      "season": {
+        "en": "Monitor rust-like spots, lodging risk, and moisture after rains.",
+        "ur": "دھبے، گرنے کا خطرہ اور بارش کے بعد نمی دیکھیں۔"
+      },
+      "symptoms": [
+        {
+          "id": "yellow_leaf",
+          "match": ["yellow", "peela", "پیلا"],
+          "parts": ["leaf"],
+          "causes": [
+            {"en": "Could relate to nutrients, waterlogging, or disease — needs field checking.", "ur": "غذائیت، پانی بھراؤ یا بیماری سے ہو سکتا ہے — کھیت میں چیک کریں۔"}
+          ],
+          "checklist": [
+            {"id": "spots", "en": "Orange/brown spots?", "ur": "نارنجی/بھورے دھبے؟"},
+            {"id": "wet", "en": "Standing water?", "ur": "کھڑا پانی؟"}
+          ],
+          "spread": true,
+          "prevention": [
+            {"en": "Monitor patches; keep records of spread and weather.", "ur": "داغوں کو دیکھیں؛ پھیلاؤ اور موسم نوٹ کریں۔"}
+          ],
+          "nutrition_note": {
+            "en": "Yellowing in wheat often needs local agronomy advice and soil context.",
+            "ur": "گندم کے پیلے پن کے لیے مقامی زرعی مشورہ اور مٹی کا سیاق مفید ہے۔"
+          }
+        }
+      ]
+    },
+    "generic": {
+      "id": "generic",
+      "name_en": "Crop",
+      "name_ur": "فصل",
+      "icon": "🌱",
+      "aliases": ["fasal", "crop", "plant", "فصل", "پودا"],
+      "parts": ["leaf", "stem", "fruit", "whole"],
+      "season": {
+        "en": "General monitoring — moisture, pests, leaf condition, and weather changes.",
+        "ur": "عام نگرانی — نمی، کیڑے، پتے اور موسم۔"
+      },
+      "symptoms": [
+        {
+          "id": "general",
+          "match": ["problem", "masla", "kharab", "خراب", "مسئلہ"],
+          "parts": ["whole"],
+          "causes": [
+            {"en": "More detail is needed — possible water, pest, disease, or nutrient factors.", "ur": "مزید تفصیل چاہیے — پانی، کیڑے، بیماری یا غذائیت ہو سکتی ہے۔"}
+          ],
+          "checklist": [
+            {"id": "insects", "en": "Any insects?", "ur": "کیڑے؟"},
+            {"id": "spots", "en": "Spots on leaves?", "ur": "دھبے؟"},
+            {"id": "wet", "en": "Soil too wet?", "ur": "مٹی گیلی؟"},
+            {"id": "dry", "en": "Soil too dry?", "ur": "مٹی خشک؟"}
+          ],
+          "spread": true,
+          "prevention": [
+            {"en": "Observe closely and note how fast symptoms change.", "ur": "غور سے دیکھیں اور علامات کی رفتار نوٹ کریں۔"}
+          ],
+          "nutrition_note": {
+            "en": "Do not assume fertilizer will fix an unclear problem.",
+            "ur": "غیر واضح مسئلے پر کھاد کا اندازہ نہ لگائیں۔"
+          }
+        }
+      ]
+    }
+  },
+  "questions": {
+    "crop": {
+      "id": "crop",
+      "en": "Kaun si fasal hai?",
+      "ur": "کون سی فصل ہے؟",
+      "options": [
+        {"id": "potato", "en": "Potato / Aloo", "ur": "آلو", "icon": "🥔"},
+        {"id": "tomato", "en": "Tomato", "ur": "ٹماٹر", "icon": "🍅"},
+        {"id": "mango", "en": "Mango / Aam", "ur": "آم", "icon": "🥭"},
+        {"id": "onion", "en": "Onion / Pyaz", "ur": "پیاز", "icon": "🧅"},
+        {"id": "chili", "en": "Chili / Mirch", "ur": "مرچ", "icon": "🌶️"},
+        {"id": "wheat", "en": "Wheat / Gandum", "ur": "گندم", "icon": "🌾"},
+        {"id": "unknown", "en": "Pata nahi", "ur": "پتہ نہیں", "icon": "❓"}
+      ]
+    },
+    "part_potato_black": {
+      "id": "part",
+      "en": "Black kahan ho raha hai?",
+      "ur": "کالا کہاں ہو رہا ہے؟",
+      "options": [
+        {"id": "tuber_outside", "en": "Aloo ke bahar", "ur": "آلو کے باہر", "icon": "🥔"},
+        {"id": "tuber_inside", "en": "Aloo ke andar", "ur": "آلو کے اندر", "icon": "🥔"},
+        {"id": "leaf", "en": "Pattay", "ur": "پتے", "icon": "🌿"},
+        {"id": "stem", "en": "Stem", "ur": "تنے پر", "icon": "🌱"},
+        {"id": "unknown", "en": "Pata nahi", "ur": "پتہ نہیں", "icon": "❓"}
+      ]
+    },
+    "soft_hard": {
+      "id": "texture",
+      "en": "Aloo soft ho raha hai ya hard?",
+      "ur": "آلو نرم ہو رہا ہے یا سخت؟",
+      "options": [
+        {"id": "soft", "en": "Soft", "ur": "نرم", "icon": "🟤"},
+        {"id": "hard", "en": "Hard", "ur": "سخت", "icon": "⚪"},
+        {"id": "unknown", "en": "Pata nahi", "ur": "پتہ نہیں", "icon": "❓"}
+      ]
+    },
+    "spread_others": {
+      "id": "spread",
+      "en": "Kya aas paas ke doosre plants mein bhi ye problem hai?",
+      "ur": "کیا آس پاس کے دوسرے پودوں میں بھی یہ مسئلہ ہے؟",
+      "options": [
+        {"id": "yes", "en": "Haan", "ur": "ہاں", "icon": "✅"},
+        {"id": "no", "en": "Nahi", "ur": "نہیں", "icon": "⛔"},
+        {"id": "unknown", "en": "Pata nahi", "ur": "پتہ نہیں", "icon": "❓"}
+      ]
+    },
+    "part_leaf_default": {
+      "id": "part",
+      "en": "Problem kahan dikh rahi hai?",
+      "ur": "مسئلہ کہاں نظر آ رہا ہے؟",
+      "options": [
+        {"id": "leaf", "en": "Pattay", "ur": "پتے", "icon": "🌿"},
+        {"id": "stem", "en": "Stem", "ur": "تنا", "icon": "🌱"},
+        {"id": "fruit", "en": "Phal / produce", "ur": "پھل", "icon": "🍎"},
+        {"id": "whole", "en": "Poora plant", "ur": "پورا پودا", "icon": "🪴"},
+        {"id": "unknown", "en": "Pata nahi", "ur": "پتہ نہیں", "icon": "❓"}
+      ]
+    }
+  }
+}

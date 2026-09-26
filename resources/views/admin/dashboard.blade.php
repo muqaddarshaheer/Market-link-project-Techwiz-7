@@ -71,7 +71,7 @@
                         <td>{{ $order->market->name ?? '—' }}</td>
                         <td>{{ money($order->total_amount) }}</td>
                         <td>@include('partials.order-status-badge', ['status' => $order->status])</td>
-                        <td><a href="{{ route('admin.orders.show', $order) }}">View</a></td>
+                        <td><a class="btn btn-sm btn-outline-ml" href="{{ route('admin.orders.show', $order) }}">View</a></td>
                     </tr>
                 @empty
                     <tr><td colspan="7" class="text-center muted py-4">No orders yet.</td></tr>

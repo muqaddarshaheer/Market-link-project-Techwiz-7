@@ -14,7 +14,7 @@
 <body class="admin-body desk-admin">
 <div class="admin-shell">
     <aside class="admin-side" id="adminSide">
-        <a class="admin-brand" href="{{ route('admin.dashboard') }}"><img class="brand-logo" src="{{ asset('images/logo.svg') }}" alt="" width="36" height="36"> {{ $siteName ?? 'MarketLink' }}</a>
+        <a class="admin-brand" href="{{ route('home') }}" title="Open website"><img class="brand-logo" src="{{ asset('images/logo.svg') }}" alt="" width="36" height="36"> {{ $siteName ?? 'MarketLink' }}</a>
         <nav class="admin-nav">
             @php
                 $groups = [

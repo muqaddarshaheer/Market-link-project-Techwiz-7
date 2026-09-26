@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Review;
 use App\Services\NotificationService;
 use App\Services\OrderService;
+use App\Services\WeatherService;
 use App\Support\ImageStore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,7 @@ class FarmerDashboardController extends Controller
     public function __construct(
         private NotificationService $notifications,
         private OrderService $orders,
+        private WeatherService $weather,
     ) {}
 
     private function profile()
@@ -30,11 +32,12 @@ class FarmerDashboardController extends Controller
 
     public function index()
     {
-        $farmer = $this->profile();
+        $farmer = $this->profile()->loadMissing('markets');
         $orders = $farmer->orders();
 
         return view('farmer.dashboard', [
             'farmer' => $farmer,
+            'weather' => $this->weather->forFarmer($farmer),
             'stats' => [
                 'orders' => (clone $orders)->count(),
                 'pending' => (clone $orders)->where('status', 'placed')->count(),
@@ -45,6 +48,100 @@ class FarmerDashboardController extends Controller
             'lowStock' => $farmer->products()->where('stock_quantity', '<=', 5)->where('is_available', true)->get(),
             'best' => $farmer->products()->withSum('orderItems as sold', 'quantity')->orderByDesc('sold')->take(5)->get(),
         ]);
+    }
+
+    public function speakWeather(Request $request)
+    {
+        $this->profile();
+
+        $data = $request->validate([
+            'text' => ['required', 'string', 'max:280'],
+            'lang' => ['nullable', 'in:ur,en,hi'],
+        ]);
+
+        $lang = $data['lang'] ?? 'ur';
+        $speech = app(\App\Services\WeatherSpeechService::class);
+        $normalizeLang = $lang === 'en' ? 'en' : 'ur';
+
+        // Expand symbols/abbreviations so TTS never reads raw "C", "%", or "km/h".
+        $text = $speech->normalizeForTts(trim($data['text']), $normalizeLang);
+
+        if ($normalizeLang === 'ur') {
+            // English place names / labels can flip Google TTS mid-sentence.
+            $cleaned = trim(preg_replace('/\b[A-Za-z][A-Za-z0-9\'\-]{2,}\b/u', '', $text) ?: $text);
+            $cleaned = preg_replace('/\s+/u', ' ', $cleaned) ?: $text;
+            if (mb_strlen($cleaned) >= 12) {
+                $text = $cleaned;
+            }
+        }
+
+        $text = trim(preg_replace('/\s+/u', ' ', $text) ?: '');
+        $text = mb_substr($text, 0, 180);
+        if ($text === '') {
+            return response('Voice unavailable', 422);
+        }
+
+        // Prefer real Urdu voice. Hindi fallback often returns tiny/garbled audio for Nastaliq.
+        $voiceOrder = match ($lang) {
+            'en' => ['en'],
+            'hi' => ['hi'],
+            default => ['ur', 'hi'],
+        };
+
+        try {
+            $body = null;
+            foreach ($voiceOrder as $voiceLang) {
+                $body = $this->fetchTtsAudio($text, $voiceLang);
+                if ($body !== null) {
+                    break;
+                }
+            }
+
+            if ($body === null) {
+                return response('Voice unavailable', 502);
+            }
+
+            return response($body, 200, [
+                'Content-Type' => 'audio/mpeg',
+                'Cache-Control' => 'private, max-age=300',
+            ]);
+        } catch (\Throwable $e) {
+            return response('Voice unavailable', 502);
+        }
+    }
+
+    private function fetchTtsAudio(string $text, string $tl): ?string
+    {
+        $http = \Illuminate\Support\Facades\Http::timeout(12)
+            ->withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Accept' => '*/*',
+                'Accept-Language' => 'ur-PK,ur;q=0.9,hi-IN;q=0.8,en;q=0.7',
+                'Referer' => 'https://translate.google.com/',
+            ]);
+
+        if (app()->environment('local')) {
+            $http = $http->withoutVerifying();
+        }
+
+        // Short sentences still produce several KB; reject tiny broken clips.
+        $minBytes = max(3500, (int) (mb_strlen($text) * 80));
+
+        foreach (['tw-ob', 'gtx'] as $client) {
+            $response = $http->get('https://translate.google.com/translate_tts', [
+                'ie' => 'UTF-8',
+                'client' => $client,
+                'tl' => $tl,
+                'q' => $text,
+                'ttsspeed' => $tl === 'ur' ? '0.88' : '0.92',
+            ]);
+
+            if ($response->successful() && strlen($response->body()) >= $minBytes) {
+                return $response->body();
+            }
+        }
+
+        return null;
     }
 
     public function products()
@@ -250,6 +347,13 @@ class FarmerDashboardController extends Controller
             'farmer' => $farmer,
             'markets' => Market::query()->where('status', 'active')->orderBy('name')->get(),
         ]);
+    }
+
+    public function account()
+    {
+        $this->profile();
+
+        return view('farmer.account');
     }
 
     public function profileUpdate(Request $request)

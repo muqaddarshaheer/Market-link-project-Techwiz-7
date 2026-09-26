@@ -175,6 +175,46 @@
         });
     }
 
+    function bindFilterRating() {
+        const box = document.querySelector('[data-filter-rate]');
+        if (!box) return;
+
+        const input = box.querySelector('[data-rate-input]');
+        const thanks = box.querySelector('[data-rate-thanks]');
+        const thanksText = box.querySelector('[data-rate-thanks-text]');
+        const stars = Array.prototype.slice.call(box.querySelectorAll('.rate-star'));
+        if (!input || !stars.length) return;
+
+        function paint(value) {
+            stars.forEach(function (star) {
+                const n = parseInt(star.getAttribute('data-rate-value'), 10);
+                const on = n <= value;
+                star.classList.toggle('is-on', on);
+                star.setAttribute('aria-checked', n === value ? 'true' : 'false');
+            });
+            input.value = value > 0 ? String(value) : '';
+            if (thanks && thanksText) {
+                if (value > 0) {
+                    thanks.hidden = false;
+                    thanks.classList.add('is-show');
+                    thanksText.textContent = 'Thank you for rating us ' + value + ' out of 5!';
+                } else {
+                    thanks.hidden = true;
+                    thanks.classList.remove('is-show');
+                }
+            }
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        stars.forEach(function (star) {
+            star.addEventListener('click', function () {
+                const next = parseInt(star.getAttribute('data-rate-value'), 10) || 0;
+                const current = parseInt(input.value, 10) || 0;
+                paint(current === next ? 0 : next);
+            });
+        });
+    }
+
     function bindCheckoutGuard() {
         document.querySelectorAll('form[data-checkout-guard]').forEach(function (form) {
             form.addEventListener('submit', function () {
@@ -190,6 +230,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         bindLiveFilters();
         bindFilterDrawer();
+        bindFilterRating();
         bindCheckoutGuard();
         revealShopCards();
     });

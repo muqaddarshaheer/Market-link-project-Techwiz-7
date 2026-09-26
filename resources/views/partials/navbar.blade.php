@@ -13,6 +13,7 @@
                 <li class="nav-item"><a class="nav-link {{ request()->routeIs('markets.*') ? 'active' : '' }}" href="{{ route('markets.index') }}">Markets</a></li>
                 <li class="nav-item"><a class="nav-link {{ request()->routeIs('farmers.*') ? 'active' : '' }}" href="{{ route('farmers.index') }}">Farmers</a></li>
                 <li class="nav-item"><a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('products.index') }}">Products</a></li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('produce-guide') ? 'active' : '' }}" href="{{ route('produce-guide') }}">HarvestWise</a></li>
                 <li class="nav-item"><a class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">About</a></li>
                 <li class="nav-item"><a class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">Contact</a></li>
             </ul>
@@ -82,7 +83,10 @@
                         </a>
                     @endif
                     <div class="dropdown">
-                        <button class="btn btn-ml btn-sm dropdown-toggle" data-bs-toggle="dropdown">{{ auth()->user()->name }}</button>
+                        <button class="btn btn-ml btn-sm dropdown-toggle d-inline-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                            <img class="nav-avatar" src="{{ \App\Support\ImageStore::url(auth()->user()->avatar, 'images/placeholder.svg') }}" alt="" width="22" height="22">
+                            <span>{{ auth()->user()->name }}</span>
+                        </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             @if(auth()->user()->isCustomer())
                                 <li><a class="dropdown-item" href="{{ route('customer.dashboard') }}">Dashboard</a></li>
@@ -94,9 +98,11 @@
                                 <li><a class="dropdown-item" href="{{ route('farmer.products.index') }}">Products</a></li>
                                 <li><a class="dropdown-item" href="{{ route('farmer.orders.index') }}">Orders</a></li>
                                 <li><a class="dropdown-item" href="{{ route('farmer.profile') }}">Stall profile</a></li>
+                                <li><a class="dropdown-item" href="{{ route('farmer.account') }}">Account</a></li>
                                 <li><a class="dropdown-item" href="{{ route('farmer.insights') }}">Insights</a></li>
                             @else
                                 <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">Admin dashboard</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.settings') }}">Account &amp; settings</a></li>
                             @endif
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">@csrf

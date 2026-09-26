@@ -125,22 +125,24 @@ class AdminDashboardController extends Controller
     public function setUserPin(Request $request, User $user)
     {
         abort_if($user->role === 'admin', 403);
-        $data = $request->validate(['pin' => ['required', 'digits:4', 'confirmed']]);
-        $user->update(['password' => $data['pin']]);
+        $data = $request->validate([
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ]);
+        $user->update(['password' => $data['password']]);
 
-        return back()->with('success', 'PIN updated. It is not shown again.');
+        return back()->with('success', 'Password updated. It is not shown again.');
     }
 
     public function setOwnPin(Request $request)
     {
         $data = $request->validate([
-            'current_pin' => ['required', 'digits:4'],
-            'pin' => ['required', 'digits:4', 'confirmed'],
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
-        abort_unless(\Illuminate\Support\Facades\Hash::check($data['current_pin'], $request->user()->password), 422);
-        $request->user()->update(['password' => $data['pin']]);
+        abort_unless(\Illuminate\Support\Facades\Hash::check($data['current_password'], $request->user()->password), 422, 'Current password is incorrect.');
+        $request->user()->update(['password' => $data['password']]);
 
-        return back()->with('success', 'Your PIN was changed.');
+        return back()->with('success', 'Your password was changed.');
     }
 
     public function setPayment(Request $request, Order $order)

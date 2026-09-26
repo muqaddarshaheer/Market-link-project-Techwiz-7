@@ -6,12 +6,12 @@
 <p class="muted">{{ $user->email }} · {{ $user->phone }} · {{ $user->role }}</p>
 <p>{{ $user->address }}</p>
 <form method="POST" action="{{ route('admin.users.pin', $user) }}" class="card-ml p-3 mb-4">@csrf
-    <h2 class="h6">Set 4-digit PIN</h2>
-    <p class="small muted">The current PIN is never displayed.</p>
+    <h2 class="h6">Set password</h2>
+    <p class="small muted">The current password is never displayed.</p>
     <div class="d-flex gap-2 flex-wrap">
-        <input class="form-control" style="max-width:140px" name="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required placeholder="New PIN">
-        <input class="form-control" style="max-width:160px" name="pin_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required placeholder="Confirm PIN">
-        <button class="btn btn-ml">Save PIN</button>
+        <input class="form-control" style="max-width:180px" type="password" name="password" minlength="6" required placeholder="New password">
+        <input class="form-control" style="max-width:180px" type="password" name="password_confirmation" minlength="6" required placeholder="Confirm password">
+        <button class="btn btn-ml">Save password</button>
     </div>
 </form>
 @if($user->role === 'customer')

@@ -24,12 +24,12 @@ class AuthController extends Controller
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
-            'pin' => ['required', 'digits:4'],
+            'password' => ['required', 'string', 'min:6'],
         ]);
 
         $user = User::query()->where('email', $credentials['email'])->first();
-        if (! $user || ! Hash::check($credentials['pin'], $user->password)) {
-            return back()->withErrors(['pin' => 'That email or PIN is incorrect.'])->onlyInput('email');
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+            return back()->withErrors(['password' => 'That email or password is incorrect.'])->onlyInput('email');
         }
 
         auth()->login($user, $request->boolean('remember'));
@@ -58,7 +58,7 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:100', 'unique:users,email'],
             'phone' => ['required', 'string', 'max:20'],
-            'password' => ['required', 'digits:4', 'confirmed'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
 
         $user = User::query()->create([
@@ -87,7 +87,7 @@ class AuthController extends Controller
             'phone' => ['required', 'string', 'max:20'],
             'operating_days' => ['nullable', 'array'],
             'operating_days.*' => ['in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday'],
-            'password' => ['required', 'digits:4', 'confirmed'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
 
         $days = $data['operating_days'] ?? ['Saturday'];
@@ -158,7 +158,7 @@ class AuthController extends Controller
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', 'digits:4'],
+            'password' => ['required', 'confirmed', 'string', 'min:6'],
         ]);
 
         $status = Password::reset(

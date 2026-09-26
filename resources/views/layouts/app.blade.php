@@ -32,7 +32,7 @@
 </head>
 <body class="app-shell">
 @include('partials.navbar')
-@if(($liveAnnouncements ?? collect())->isNotEmpty())
+@if(($liveAnnouncements ?? collect())->isNotEmpty() && ! request()->routeIs('home'))
     <div class="container mt-3">
         @foreach($liveAnnouncements as $announcement)
             <div class="alert alert-dismissible fade show {{ $announcement->priority === 'high' ? 'alert-warning' : 'alert-success' }} py-2 mb-2 ml-alert" role="alert">
@@ -43,6 +43,9 @@
     </div>
 @endif
 <main class="py-4 app-main">
+    @hasSection('fullbleed')
+        @yield('fullbleed')
+    @endif
     <div class="container">
         @include('partials.flashes')
         @auth

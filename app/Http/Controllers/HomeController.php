@@ -14,7 +14,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $payload = Cache::remember('home.payload.v3', 45, function () {
+        $payload = Cache::remember('home.payload.v4', 45, function () {
             return [
                 'markets' => Market::query()->where('status', 'active')->withCount('products')->latest()->take(4)->get(),
                 'farmers' => FarmerProfile::query()->where('approval_status', 'approved')->with('user')->withCount('products')->take(4)->get(),
@@ -23,6 +23,10 @@ class HomeController extends Controller
                     ->withAvg(['reviews as rating_avg' => fn ($q) => $q->where('status', 'approved')], 'rating')
                     ->take(8)->get(),
                 'reviews' => Review::query()->where('status', 'approved')->with('customer')->latest()->take(8)->get(),
+                'spotlight' => [
+                    'berries' => $this->nearestProduct('blueberr'),
+                    'honey' => $this->nearestProduct('honey'),
+                ],
                 'harvestGrowers' => Product::query()
                     ->select(['id', 'name', 'quality', 'stock_quantity', 'unit', 'is_available', 'is_sold_out', 'farmer_id', 'market_id'])
                     ->whereHas('farmer', fn ($q) => $q->where('approval_status', 'approved'))
@@ -44,6 +48,30 @@ class HomeController extends Controller
         });
 
         return view('home', $payload);
+    }
+
+    /**
+     * Pick an available listing whose name matches, preferring the stall closest to downtown Austin.
+     */
+    private function nearestProduct(string $needle, float $lat = 30.2672, float $lng = -97.7431): ?Product
+    {
+        $matches = Product::query()
+            ->where('is_available', true)
+            ->where('name', 'like', '%'.$needle.'%')
+            ->whereHas('farmer', fn ($q) => $q->where('approval_status', 'approved'))
+            ->with(['farmer', 'market'])
+            ->get();
+
+        if ($matches->isEmpty()) {
+            return null;
+        }
+
+        return $matches->sortBy(function (Product $product) use ($lat, $lng) {
+            $fLat = $product->farmer->latitude ?? $product->market->latitude ?? $lat;
+            $fLng = $product->farmer->longitude ?? $product->market->longitude ?? $lng;
+
+            return (($fLat - $lat) ** 2) + (($fLng - $lng) ** 2);
+        })->first();
     }
 
     public function about()

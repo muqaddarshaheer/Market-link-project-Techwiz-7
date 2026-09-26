@@ -60,11 +60,17 @@
 </div>
 <h2 class="h5 mt-4">Reviews</h2>
 @forelse($product->reviews->where('status','approved') as $review)
-    <div class="card-ml p-3 mb-2">
-        @include('partials.star-rating', ['rating' => $review->rating])
-        <p class="mb-1">{{ $review->comment }}</p>
-        <div class="small muted">{{ $review->customer->name }}</div>
-    </div>
+    <article class="review-public-card card-ml p-3 mb-2">
+        <div class="d-flex justify-content-between gap-2 flex-wrap mb-1">
+            @include('partials.star-rating', ['rating' => $review->rating])
+            <span class="small muted">{{ $review->created_at?->format('M j, Y') }}</span>
+        </div>
+        <p class="review-admin-body mb-2">{{ $review->comment }}</p>
+        <div class="small muted fw-bold">{{ $review->customer->name }}</div>
+        @if($review->farmer_reply)
+            <div class="review-admin-reply mt-2"><strong>Farmer reply:</strong> {{ $review->farmer_reply }}</div>
+        @endif
+    </article>
 @empty
     <p class="muted">No reviews yet.</p>
 @endforelse

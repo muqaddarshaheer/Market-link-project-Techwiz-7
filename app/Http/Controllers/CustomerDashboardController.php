@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\AppNotification;
 use App\Models\Order;
 use App\Models\Review;
-use App\Support\ImageStore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Hash;
 
 class CustomerDashboardController extends Controller
 {
@@ -87,40 +85,5 @@ class CustomerDashboardController extends Controller
     public function profile()
     {
         return view('customer.profile');
-    }
-
-    public function updateProfile(Request $request)
-    {
-        $user = $request->user();
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'phone' => ['required', 'string', 'max:20'],
-            'address' => ['required', 'string', 'max:500'],
-            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-        ]);
-
-        $user->fill(collect($data)->except('avatar')->all());
-        if ($request->hasFile('avatar')) {
-            $user->avatar = ImageStore::put($request->file('avatar'), 'avatars', $user->avatar);
-        }
-        $user->save();
-
-        return back()->with('success', 'Profile saved.');
-    }
-
-    public function updatePassword(Request $request)
-    {
-        $data = $request->validate([
-            'current_password' => ['required', 'digits:4'],
-            'password' => ['required', 'digits:4', 'confirmed'],
-        ]);
-
-        if (! Hash::check($data['current_password'], $request->user()->password)) {
-            return back()->withErrors(['current_password' => 'Current PIN is incorrect.']);
-        }
-
-        $request->user()->update(['password' => $data['password']]);
-
-        return back()->with('success', 'PIN updated.');
     }
 }

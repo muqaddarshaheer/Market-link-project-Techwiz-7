@@ -12,6 +12,94 @@ use Illuminate\Support\Facades\Log;
 
 class ChatbotController extends Controller
 {
+    public function speak(Request $request)
+    {
+        $data = $request->validate([
+            'text' => ['required', 'string', 'max:220'],
+            'lang' => ['nullable', 'in:ur,en,hi'],
+        ]);
+
+        $lang = $data['lang'] ?? 'en';
+        $text = trim(preg_replace('/\s+/u', ' ', $data['text']) ?: '');
+        if ($text === '') {
+            return response('Empty', 422);
+        }
+
+        // Keep short — Google TTS truncates long queries.
+        $text = mb_substr($text, 0, 160);
+
+        if ($lang === 'ur' || $lang === 'hi') {
+            $text = app(\App\Services\WeatherSpeechService::class)->normalizeForTts($text, 'ur');
+            $text = mb_substr($text, 0, 160);
+        }
+
+        // Prefer real Urdu voice; Hindi fallback often garbles Nastaliq.
+        $voices = match ($lang) {
+            'ur' => ['ur', 'hi'],
+            'hi' => ['hi'],
+            default => ['en'],
+        };
+
+        try {
+            $body = null;
+            foreach ($voices as $tl) {
+                $body = $this->fetchTtsAudio($text, $tl);
+                if ($body !== null) {
+                    break;
+                }
+            }
+
+            if ($body === null) {
+                return response('Voice unavailable', 502);
+            }
+
+            return response($body, 200, [
+                'Content-Type' => 'audio/mpeg',
+                'Cache-Control' => 'private, max-age=120',
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('Chatbot TTS failed', ['message' => $e->getMessage()]);
+
+            return response('Voice unavailable', 502);
+        }
+    }
+
+    private function fetchTtsAudio(string $text, string $tl): ?string
+    {
+        $http = Http::timeout(12)
+            ->withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Accept' => '*/*',
+                'Accept-Language' => 'ur-PK,ur;q=0.9,hi-IN;q=0.8,en;q=0.7',
+                'Referer' => 'https://translate.google.com/',
+            ]);
+
+        if (app()->environment('local')) {
+            $http = $http->withoutVerifying();
+        }
+
+        // Reject tiny broken clips (Hindi voice often returns ~2KB junk for Urdu script).
+        $minBytes = $tl === 'en'
+            ? max(800, (int) (mb_strlen($text) * 40))
+            : max(3500, (int) (mb_strlen($text) * 80));
+
+        foreach (['tw-ob', 'gtx'] as $client) {
+            $response = $http->get('https://translate.google.com/translate_tts', [
+                'ie' => 'UTF-8',
+                'client' => $client,
+                'tl' => $tl,
+                'q' => $text,
+                'ttsspeed' => $tl === 'ur' ? '0.88' : ($tl === 'en' ? '0.95' : '0.92'),
+            ]);
+
+            if ($response->successful() && strlen($response->body()) >= $minBytes) {
+                return $response->body();
+            }
+        }
+
+        return null;
+    }
+
     public function ask(Request $request)
     {
         $data = $request->validate([
@@ -20,6 +108,10 @@ class ChatbotController extends Controller
         ]);
         $message = $data['message'];
         $lang = $data['lang'] ?? 'en';
+        // Auto-switch to Urdu when the user writes Urdu script or common Roman Urdu.
+        if ($this->looksLikeUrdu($message)) {
+            $lang = 'ur';
+        }
         $faqs = ChatbotFaq::query()->take(12)->get();
 
         if (! $this->isMarketLinkTopic($message)) {
@@ -43,9 +135,13 @@ class ChatbotController extends Controller
         $history[] = ['q' => $message, 'a' => $answer];
         session(['chat_history' => array_slice($history, -12)]);
 
+        $suggestions = $lang === 'ur'
+            ? ['پک اپ کیسے ہوتا ہے؟', 'آج قیمتیں کیا ہیں؟', 'کون سے کسان کھلے ہیں؟', 'اکاؤنٹ کیسے بنائیں؟']
+            : $faqs->take(4)->pluck('question')->values();
+
         return response()->json([
             'answer' => $answer,
-            'suggestions' => $faqs->take(4)->pluck('question')->values(),
+            'suggestions' => $suggestions,
             'provider' => $this->lastProvider,
         ]);
     }
@@ -63,14 +159,23 @@ class ChatbotController extends Controller
         $needles = [
             'marketlink', 'market', 'farmer', 'stall', 'produce', 'product', 'pickup', 'pick up', 'collect',
             'order', 'cart', 'rs', 'rupee', 'price', 'pin', 'login', 'register', 'account', 'customer',
-            'harvest', 'crop', 'tomato', 'honey', 'egg', 'bread', 'vegetable', 'fruit', 'organic',
+            'harvest', 'crop', 'tomato', 'potato', 'onion', 'wheat', 'rice', 'honey', 'egg', 'bread', 'vegetable', 'fruit', 'organic',
             'delivery', 'payment', 'pay', 'reservation', 'reserve', 'cutoff', 'slot', 'quality',
             'admin', 'dashboard', 'favorite', 'review', 'contact', 'bazaar', 'farm',
+            'weather', 'rain', 'mosam', 'mausam', 'barish', 'temperature',
+            'aloo', 'piyaz', 'pyaz', 'tamatar', 'gandum', 'makai', 'chawal', 'aam', 'sabzi', 'fasal',
+            'patte', 'keere', 'peela', 'kala', 'bimari', 'pani', 'mitti', 'khad',
             // Urdu / Roman Urdu
             'مارکیٹ', 'کسان', 'پیداوار', 'پک اپ', 'آرڈر', 'قیمت', 'روپے', 'اکاؤنٹ', 'لاگ ان',
-            'منڈی', 'سبزی', 'پھل', 'ادائیگی', 'جمع', 'رزرو',
+            'منڈی', 'سبزی', 'پھل', 'ادائیگی', 'جمع', 'رزرو', 'موسم', 'بارش', 'درجہ',
             'kisaan', 'mandi', 'qeemat', 'rupay', 'account', 'pickup', 'sabzi', 'phal',
+            'پیاز', 'آلو', 'ٹماٹر', 'فصل',
         ];
+
+        // Hard block unrelated topics even if a weak needle matches later
+        if (preg_match('/\b(world\s*war|cricket\s*score|football|bitcoin|election|politics)\b/u', $text)) {
+            return false;
+        }
 
         foreach ($needles as $word) {
             if (str_contains($text, $word)) {
@@ -105,7 +210,7 @@ class ChatbotController extends Controller
         $farmers = FarmerProfile::query()->where('approval_status', 'approved')->take(8)->pluck('stall_name')->implode(', ');
 
         $language = $lang === 'ur'
-            ? 'Reply in clear Urdu (Urdu script). Keep MarketLink English names as-is when useful.'
+            ? 'IMPORTANT: Reply ONLY in clear Urdu using Urdu (Nastaliq) script. Do not reply in English. Keep product names and MarketLink as English if needed. Keep answers short.'
             : 'Reply in clear simple English.';
 
         return 'You are MarketLink helper only. Answer ONLY about MarketLink: markets, farmers, produce, pickup, Rs prices, accounts, and orders. '
@@ -113,6 +218,24 @@ class ChatbotController extends Controller
             .$language.' '
             .'Currency is Pakistani Rupees (Rs). Pickup and pay at the stall — no delivery, no online payment. Be short and clear. '
             .'Markets: '.$markets.'. Farmers: '.$farmers.". Catalog:\n".$catalog;
+    }
+
+    private function looksLikeUrdu(string $message): bool
+    {
+        if (preg_match('/[\x{0600}-\x{06FF}]/u', $message)) {
+            return true;
+        }
+
+        $roman = strtolower($message);
+        $hints = ['kia', 'kya', 'hai', 'kaisa', 'kese', 'kaise', 'pickup', 'mandi', 'kisaan', 'qeemat', 'rupay', 'shukriya', 'meherbani', 'batao', 'btaye'];
+        $hits = 0;
+        foreach ($hints as $word) {
+            if (preg_match('/\b'.preg_quote($word, '/').'\b/u', $roman)) {
+                $hits++;
+            }
+        }
+
+        return $hits >= 2;
     }
 
     private function fromGroq(string $message, string $lang = 'en'): ?string
@@ -242,6 +365,13 @@ class ChatbotController extends Controller
                 : 'MarketLink is pickup only. Reserve online, collect at the stall, and pay the farmer in person in Rs. No delivery, no online payment.';
         }
 
+        if (str_contains($text, 'weather') || str_contains($text, 'rain') || str_contains($text, 'mosam') || str_contains($text, 'mausam')
+            || str_contains($text, 'موسم') || str_contains($text, 'بارش') || str_contains($text, 'barish')) {
+            return $ur
+                ? 'ڈیش بورڈ پر موسم کارڈ کھولیں — آج اور اگلے سات دن نظر آئیں گے۔ کسی دن پر دبائیں، پھر سنیں دبائیں تاکہ آواز میں سن سکیں۔'
+                : 'Open the weather card on your dashboard for today and the next 7 days. Tap a day, then Listen to hear it aloud.';
+        }
+
         if (str_contains($text, 'price') || str_contains($text, 'rs') || str_contains($text, 'rupee') || str_contains($text, 'cost')
             || str_contains($text, 'قیمت') || str_contains($text, 'روپے')) {
             $items = Product::query()->where('is_available', true)->orderBy('price')->take(5)->get(['name', 'price', 'unit']);
@@ -275,8 +405,8 @@ class ChatbotController extends Controller
         if (str_contains($text, 'pin') || str_contains($text, 'login') || str_contains($text, 'account') || str_contains($text, 'register')
             || str_contains($text, 'اکاؤنٹ') || str_contains($text, 'لاگ ان')) {
             return $ur
-                ? 'ای میل + 4 ہندسوں کا PIN سے سائن اپ کریں۔ کسٹمر فوراً خرید سکتا ہے؛ کسان کو ایڈمن منظوری درکار ہے۔'
-                : 'Sign up with email + a 4-digit PIN. Customers shop right away; farmers need admin approval.';
+                ? 'ای میل اور پاس ورڈ سے سائن اپ کریں۔ کسٹمر فوراً خرید سکتا ہے؛ کسان کو ایڈمن منظوری درکار ہے۔'
+                : 'Sign up with email and a password. Customers shop right away; farmers need admin approval.';
         }
 
         $faq = $this->fromFaqs($message, $faqs);

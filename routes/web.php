@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
@@ -7,10 +8,12 @@ use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\CustomerDashboardController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\FarmerDashboardController;
+use App\Http\Controllers\CropCalculatorController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MarketController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProduceGuideController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +23,7 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact', [HomeController::class, 'sendContact'])->middleware('throttle:8,1')->name('contact.send');
 Route::get('/sitemap', [HomeController::class, 'sitemap'])->name('sitemap');
+Route::get('/produce-guide', [ProduceGuideController::class, 'index'])->name('produce-guide');
 
 Route::get('/markets', [MarketController::class, 'index'])->name('markets.index');
 Route::get('/markets/{market}', [MarketController::class, 'show'])->name('markets.show');
@@ -32,6 +36,7 @@ Route::get('/search/suggest', [ProductController::class, 'suggest'])->name('sear
 Route::get('/privacy', [HomeController::class, 'privacy'])->name('privacy');
 Route::get('/terms', [HomeController::class, 'terms'])->name('terms');
 Route::post('/chatbot', [ChatbotController::class, 'ask'])->middleware('throttle:30,1')->name('chatbot.ask');
+Route::get('/chatbot/speak', [ChatbotController::class, 'speak'])->middleware('throttle:60,1')->name('chatbot.speak');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -47,6 +52,11 @@ Route::middleware('guest')->group(function () {
 
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
+Route::middleware('auth')->prefix('account')->name('account.')->group(function () {
+    Route::put('/profile', [AccountController::class, 'updateProfile'])->name('profile');
+    Route::put('/password', [AccountController::class, 'updatePassword'])->name('password');
+});
+
 Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
     Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
     Route::get('/favorites', [CustomerDashboardController::class, 'favorites'])->name('favorites');
@@ -57,8 +67,6 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
     Route::post('/notifications/read-all', [CustomerDashboardController::class, 'readAll'])->name('notifications.read-all');
     Route::get('/reviews', [CustomerDashboardController::class, 'reviews'])->name('reviews');
     Route::get('/profile', [CustomerDashboardController::class, 'profile'])->name('profile');
-    Route::put('/profile', [CustomerDashboardController::class, 'updateProfile'])->name('profile.update');
-    Route::put('/password', [CustomerDashboardController::class, 'updatePassword'])->name('password.update');
     Route::get('/orders', [OrderController::class, 'history'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
@@ -88,6 +96,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
 Route::middleware(['auth', 'role:farmer'])->prefix('farmer')->name('farmer.')->group(function () {
     Route::get('/dashboard', [FarmerDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/weather/speak', [FarmerDashboardController::class, 'speakWeather'])->middleware('throttle:40,1')->name('weather.speak');
+    Route::get('/crop-calculator', [CropCalculatorController::class, 'index'])->name('crop-calculator');
+    Route::post('/crop-calculator/calculate', [CropCalculatorController::class, 'calculate'])->middleware('throttle:40,1')->name('crop-calculator.calculate');
     Route::get('/products', [FarmerDashboardController::class, 'products'])->name('products.index');
     Route::post('/products', [FarmerDashboardController::class, 'storeProduct'])->name('products.store');
     Route::put('/products/{product}', [FarmerDashboardController::class, 'updateProduct'])->name('products.update');
@@ -106,6 +117,7 @@ Route::middleware(['auth', 'role:farmer'])->prefix('farmer')->name('farmer.')->g
     Route::post('/reviews/{review}/reply', [FarmerDashboardController::class, 'reply'])->name('reviews.reply');
     Route::get('/profile', [FarmerDashboardController::class, 'profileEdit'])->name('profile');
     Route::put('/profile', [FarmerDashboardController::class, 'profileUpdate'])->name('profile.update');
+    Route::get('/account', [FarmerDashboardController::class, 'account'])->name('account');
     Route::get('/notifications/poll', [CustomerDashboardController::class, 'poll'])->name('notifications.poll');
     Route::get('/notifications', [CustomerDashboardController::class, 'notifications'])->name('notifications');
     Route::post('/notifications/read-all', [CustomerDashboardController::class, 'readAll'])->name('notifications.read-all');

@@ -1,13 +1,82 @@
 @extends('layouts.app')
 @section('title', 'MarketLink · Local farms, ready for pickup')
-@section('content')
-<div class="home-page">
-<section class="home-hero" aria-label="MarketLink intro">
-    <div class="home-hero-media">
-        <img src="{{ asset('images/banners/marketlink-hero.jpg') }}?v=6" alt="MarketLink" width="1024" height="512" fetchpriority="high" decoding="sync">
+
+@section('fullbleed')
+@php
+    $heroPicks = collect($products ?? [])->take(3);
+@endphp
+<section class="ml-hero ml-hero-fresh" aria-label="MarketLink intro">
+    <div class="ml-hero-atmosphere" aria-hidden="true"></div>
+    <div class="ml-hero-fresh-inner">
+        <div class="ml-hero-copy">
+            <p class="ml-hero-brand" aria-label="MarketLink">
+                <span class="ml-hero-brand-track" aria-hidden="true">
+                    <span class="ml-hero-brand-word" style="--w:0">
+                        <span class="ml-hero-brand-letter" style="--i:0">M</span><span class="ml-hero-brand-letter" style="--i:1">a</span><span class="ml-hero-brand-letter" style="--i:2">r</span><span class="ml-hero-brand-letter" style="--i:3">k</span><span class="ml-hero-brand-letter" style="--i:4">e</span><span class="ml-hero-brand-letter" style="--i:5">t</span>
+                    </span>
+                    <span class="ml-hero-brand-word ml-hero-brand-word-link" style="--w:1">
+                        <span class="ml-hero-brand-letter" style="--i:0">L</span><span class="ml-hero-brand-letter" style="--i:1">i</span><span class="ml-hero-brand-letter" style="--i:2">n</span><span class="ml-hero-brand-letter" style="--i:3">k</span>
+                    </span>
+                </span>
+            </p>
+            <h1 class="ml-hero-title">Fresh from local stalls.<em>Ready for pickup.</em></h1>
+            <p class="ml-hero-lead">Shop fruits and vegetables from approved growers — reserve online, collect at the market, and pay the farmer in person.</p>
+            <div class="ml-hero-cta">
+                <a class="btn btn-ml ml-hero-btn" href="{{ route('products.index') }}">Shop Fresh Now</a>
+                <a class="ml-hero-link" href="{{ route('markets.index') }}">Browse markets <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+            </div>
+        </div>
+
+        <div class="ml-hero-stage" aria-hidden="false">
+            <div class="ml-hero-phone" aria-label="MarketLink on mobile">
+                <div class="ml-hero-phone-bezel">
+                    <div class="ml-hero-phone-notch" aria-hidden="true"></div>
+                    <div class="ml-hero-phone-screen">
+                        <div class="ml-hero-phone-top">
+                            <strong>MarketLink</strong>
+                            <span>Fresh picks · Pickup</span>
+                        </div>
+                        <div class="ml-hero-phone-search" aria-hidden="true"><i class="bi bi-search"></i> Search produce…</div>
+                        <p class="ml-hero-phone-label">Fresh picks</p>
+                        @forelse($heroPicks as $pick)
+                            <a class="ml-hero-phone-item" href="{{ route('products.show', $pick) }}">
+                                <img src="{{ \App\Support\ImageStore::picture($pick->image, $pick->name) }}" alt="">
+                                <span>
+                                    <strong>{{ $pick->name }}</strong>
+                                    <small>{{ money($pick->price) }}/{{ $pick->unit }}</small>
+                                </span>
+                            </a>
+                        @empty
+                            <a class="ml-hero-phone-item" href="{{ route('products.index') }}">
+                                <img src="{{ asset('images/produce/cherry-tomatoes.jpg') }}" alt="">
+                                <span><strong>Cherry tomatoes</strong><small>See shop</small></span>
+                            </a>
+                            <a class="ml-hero-phone-item" href="{{ route('products.index') }}">
+                                <img src="{{ asset('images/produce/peaches.jpg') }}" alt="">
+                                <span><strong>Peaches</strong><small>See shop</small></span>
+                            </a>
+                            <a class="ml-hero-phone-item" href="{{ route('products.index') }}">
+                                <img src="{{ asset('images/produce/honey.jpg') }}" alt="">
+                                <span><strong>Local honey</strong><small>See shop</small></span>
+                            </a>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+
+            <img class="ml-hero-veg ml-hero-veg-a" src="{{ asset('images/produce/salad.jpg') }}" alt="" width="200" height="200" fetchpriority="high">
+            <img class="ml-hero-veg ml-hero-veg-b" src="{{ asset('images/produce/cherry-tomatoes.jpg') }}" alt="" width="150" height="150" fetchpriority="high">
+            <img class="ml-hero-veg ml-hero-veg-c" src="{{ asset('images/produce/sweet-corn.jpg') }}" alt="" width="130" height="130" fetchpriority="high">
+            <img class="ml-hero-veg ml-hero-veg-d" src="{{ asset('images/produce/peaches.jpg') }}" alt="" width="120" height="120" fetchpriority="high">
+            <img class="ml-hero-veg ml-hero-veg-e" src="{{ asset('images/produce/blueberries.jpg') }}" alt="" width="110" height="110">
+            <img class="ml-hero-veg ml-hero-veg-f" src="{{ asset('images/produce/basil.jpg') }}" alt="" width="100" height="100">
+        </div>
     </div>
 </section>
+@endsection
 
+@section('content')
+<div class="home-page">
 <section class="mb-5 home-block reveal-up home-strip">
     <div class="row g-3">
         <div class="col-md-4">

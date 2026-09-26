@@ -1,7 +1,7 @@
 @extends('layouts.farmer')
 @section('title', 'Reviews')
 @section('content')
-<h1 class="section-title">Reviews</h1>
+<h1 class="section-title" data-i18n="rev.title">Reviews</h1>
 @foreach($reviews as $review)
 <div class="card-ml p-3 mb-3">
     @include('partials.star-rating', ['rating'=>$review->rating])
@@ -9,8 +9,8 @@
     <div class="small muted">{{ $review->customer->name }} @if($review->product)· {{ $review->product->name }}@endif</div>
     @if($review->farmer_reply)<p class="timeline-note">{{ $review->farmer_reply }}</p>@endif
     <form method="POST" action="{{ route('farmer.reviews.reply', $review) }}">@csrf
-        <textarea class="form-control mb-2" name="farmer_reply" required>{{ $review->farmer_reply }}</textarea>
-        <button class="btn btn-ml btn-sm">Reply</button>
+        <textarea class="form-control mb-2" name="farmer_reply" required data-i18n-placeholder="rev.replyPh" placeholder="Write your reply…">{{ $review->farmer_reply }}</textarea>
+        <button class="btn btn-ml btn-sm" data-i18n="rev.reply">Reply</button>
     </form>
 </div>
 @endforeach
