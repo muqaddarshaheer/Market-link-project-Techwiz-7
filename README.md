@@ -1,64 +1,150 @@
-# MarketLink - Farmers Market Platform
+# MarketLink
 
-MarketLink connects local farmers-market growers with customers. Customers browse markets, search produce, save favorites, and place pickup pre-orders. Farmers manage stall profiles, stock, and incoming orders. Admins approve farmers, moderate listings, and review platform reports. Payment happens in person at pickup. There is no delivery and no online payment.
+Farmers-market platform for Techwiz 7. Customers browse markets and produce, place **pickup pre-orders**, and pay the farmer **in person**. Farmers manage stalls, stock, and orders. Admins approve farmers and keep the catalog clean.
 
-## Features
+There is **no delivery** and **no online payment**.
 
-- Customer pre-order system with stock checks and a cutoff window
-- Farmer inventory, weekly stock template, and order workflow
-- Admin dashboard with Chart.js analytics and CSV export
-- Leaflet.js and OpenStreetMap maps (no API key)
-- In-app notifications that refresh every 30 seconds
-- Dark mode stored in the browser
-- FAQ chatbot with keyword matching
-- Responsive Bootstrap 5 layout and a printable invoice
-- Small read-only JSON API under `/api/markets` and `/api/products`
-- Installable PWA manifest and a simple service worker
+**Repo:** [muqaddarshaheer/Market-link-project-Techwiz-7](https://github.com/muqaddarshaheer/Market-link-project-Techwiz-7)
 
-## Installation
+---
 
-1. Clone the repository: `git clone <repo-url>`
-2. Navigate to the project: `cd marketlink`
-3. Copy the environment file: `cp .env.example .env` (on Windows: `copy .env.example .env`)
-4. Configure the MySQL database name, user, and password in `.env`
-5. Install dependencies: `composer install`
-6. Generate the app key: `php artisan key:generate`
-7. Create the database, then run migrations and seeders: `php artisan migrate --seed`
-8. Link public storage: `php artisan storage:link`
-9. Start the server: `php artisan serve`
-10. Open http://127.0.0.1:8000
+## What it does
 
-This project targets PHP 8.2+ and Laravel 11. Serve it behind HTTPS in production (`APP_URL` with `https://`, trusted proxy, and TLS terminated at the web server). Session cookies should be marked secure once HTTPS is on.
+### Public site
+- Home, markets, farmers, products, search (with live suggestions)
+- **HarvestWise** (`/produce-guide`) — fruit & vegetable benefits / cautions, EN + اردو in the popup
+- FAQ chatbot (keyword FAQs + optional speech)
+- Guest cart / quick order flow
+- Dark mode (saved in the browser)
+- Installable PWA (`manifest` + service worker)
 
-A seeded SQL export is in `database/marketlink.sql`.
+### Customer
+- Cart, checkout, order timeline, cancel / reorder, printable invoice
+- Favorites, reviews, notifications (poll refresh)
 
-## Demo credentials
+### Farmer panel
+- Dashboard with weather helper (speak endpoint)
+- Products, weekly stock template, pickup slots
+- Order workflow: accept → ready → complete (or decline)
+- Insights, reviews reply, stall profile, account settings
+- **Crop Calculator** — land / cost / harvest estimate, crop tips, export & WhatsApp share
+- English / Urdu UI toggle for the farmer panel
 
-- Admin: admin@marketlink.com / Admin@123
-- Farmer: farmer@marketlink.com / Farmer@123
-- Customer: customer@marketlink.com / Customer@123
+### Admin
+- Users, farmers (approve / suspend), markets, categories, products
+- Orders, reviews moderation, announcements, chatbot FAQs
+- Reports with Chart.js + CSV export
+- Settings; sidebar **MarketLink** brand opens the public site
 
-Priya Shah (`priya@marketlink.com` / Farmer@123) is a pending farmer and cannot list products until an admin approves the stall.
+### Small JSON API
+- `GET /api/markets`
+- `GET /api/products`
 
-Password reset emails use the `log` mailer. The reset link is written to `storage/logs/laravel.log`.
+---
 
 ## Tech stack
 
-- Laravel 11.x
-- MySQL 8.x (MariaDB 10.4 from XAMPP is compatible)
-- Bootstrap 5.3
-- Alpine.js
-- Leaflet.js
-- Chart.js
+| Layer | Choice |
+|--------|--------|
+| Backend | PHP 8.2+, Laravel 11 |
+| Database | MySQL 8 / MariaDB (XAMPP-friendly) |
+| Front end | Blade, Bootstrap 5.3, Alpine.js |
+| Maps | Leaflet.js + OpenStreetMap (no API key) |
+| Charts | Chart.js |
 
-## Screenshots
+---
 
-Capture the homepage, product filters, a market map, the customer order timeline, the farmer order queue, and the admin charts after you walk through the demo accounts.
+## Requirements
 
-## Video demo
+- PHP 8.2+ with common extensions (mbstring, openssl, pdo_mysql, tokenizer, xml, ctype, json, fileinfo)
+- Composer
+- MySQL or MariaDB
+- Optional: Node is **not** required for the default Blade UI
 
-See `docs/DEMO_VIDEO_SCRIPT.md` for a shot list. Add the MP4 link here when the recording is ready.
+---
 
-## Documentation
+## Setup
 
-The report outline is in `docs/PROJECT_REPORT.md`.
+```bash
+git clone https://github.com/muqaddarshaheer/Market-link-project-Techwiz-7.git
+cd Market-link-project-Techwiz-7
+
+composer install
+copy .env.example .env          # Windows
+# cp .env.example .env          # macOS / Linux
+
+php artisan key:generate
+```
+
+Edit `.env`:
+
+```env
+APP_NAME=MarketLink
+APP_URL=http://127.0.0.1:8000
+DB_DATABASE=marketlink
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Create the empty MySQL database `marketlink`, then:
+
+```bash
+php artisan migrate --seed
+php artisan storage:link
+php artisan serve
+```
+
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000).
+
+### XAMPP note
+
+You can also point Apache at the `public/` folder (e.g. `http://127.0.0.1/marketlink-techwiz-7/public`). Keep `APP_URL` matching how you open the site.
+
+### Optional SQL dump
+
+A seeded export lives at `database/marketlink.sql` if you prefer importing instead of `migrate --seed`.
+
+### Production
+
+Serve behind HTTPS (`APP_URL` with `https://`, TLS at the web server, secure session cookies). Run `php artisan config:cache` and `route:cache` after deploy.
+
+---
+
+## Demo logins
+
+Passwords come from `database/seeders/DatabaseSeeder.php` (run after a fresh migrate/seed):
+
+| Role | Email | Password |
+|------|--------|----------|
+| Admin | `admin@marketlink.com` | `Admin@123` |
+| Farmer (approved) | `farmer@marketlink.com` | `1111` |
+| Customer | `customer@marketlink.com` | `2222` |
+
+Other seeded farmers (also password `1111`) include accounts such as `priya@marketlink.com`.
+
+Password-reset emails use the `log` mailer — the link is written to `storage/logs/laravel.log`.
+
+---
+
+## Useful URLs
+
+| Page | Path |
+|------|------|
+| HarvestWise | `/produce-guide` |
+| Farmer calculator | `/farmer/crop-calculator` |
+| Farmer dashboard | `/farmer/dashboard` |
+| Admin dashboard | `/admin/dashboard` |
+| Customer dashboard | `/customer/dashboard` |
+
+---
+
+## Project docs
+
+- `docs/PROJECT_REPORT.md` — report outline
+- `docs/DEMO_VIDEO_SCRIPT.md` — demo video shot list
+
+---
+
+## License
+
+Academic / Techwiz project use unless otherwise stated by the authors.
