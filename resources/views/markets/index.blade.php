@@ -1,0 +1,25 @@
+@extends('layouts.app')
+@section('title', 'Markets')
+@section('content')
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="section-title mb-0">Markets</h1>
+</div>
+<form class="row g-2 mb-3" method="GET">
+    <div class="col-md-4"><input class="form-control" name="q" value="{{ request('q') }}" placeholder="Search markets"></div>
+    <div class="col-md-3"><select class="form-select" name="city"><option value="">All cities</option>@foreach($cities as $city)<option value="{{ $city }}" @selected(request('city')===$city)>{{ $city }}</option>@endforeach</select></div>
+    <div class="col-md-3"><select class="form-select" name="day"><option value="">Any day</option>@foreach(['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] as $day)<option @selected(request('day')===$day)>{{ $day }}</option>@endforeach</select></div>
+    <div class="col-md-2"><button class="btn btn-ml">Filter</button></div>
+</form>
+<div class="mb-3"><button class="btn btn-outline-ml btn-sm" type="button" onclick="document.getElementById('markets-map-wrap').classList.toggle('d-none')">Map / list</button> <a class="btn btn-outline-ml btn-sm" href="{{ route('markets.index') }}">Clear</a></div>
+<div class="mb-4" id="markets-map-wrap">
+    @include('partials.map', ['id' => 'markets-map', 'points' => $markets->map(fn ($m) => ['lat' => $m->latitude, 'lng' => $m->longitude, 'title' => $m->name, 'subtitle' => $m->city])->values()])
+</div>
+<div class="row g-3">
+    @forelse($markets as $market)
+        <div class="col-md-6 col-lg-4">@include('partials.market-card', compact('market'))</div>
+    @empty
+        <div class="empty-state"><i class="bi bi-geo"></i><p>No markets match those filters.</p></div>
+    @endforelse
+</div>
+<div class="mt-3">{{ $markets->links() }}</div>
+@endsection
