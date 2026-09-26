@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin') · {{ $siteName ?? 'MarketLink' }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -11,7 +12,7 @@
     <link href="{{ asset('css/marketlink.css') }}?v={{ @filemtime(public_path('css/marketlink.css')) }}" rel="stylesheet">
     <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ml-theme') || 'light');</script>
 </head>
-<body class="admin-body desk-admin">
+<body class="admin-body desk-admin" data-csrf-url="{{ route('csrf.token') }}">
 <div class="panel-scrim" id="panelScrim" onclick="document.getElementById('adminSide').classList.remove('open');this.classList.remove('is-on');this.hidden=true" hidden></div>
 <div class="admin-shell">
     <aside class="admin-side" id="adminSide">
@@ -79,6 +80,7 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+<script src="{{ asset('js/csrf-keepalive.js') }}?v={{ @filemtime(public_path('js/csrf-keepalive.js')) }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>

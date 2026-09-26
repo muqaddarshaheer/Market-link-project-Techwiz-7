@@ -272,7 +272,7 @@
 
 .scc-crop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
   gap: .5rem;
 }
 
@@ -281,12 +281,21 @@
   border: 2px solid #d5e8dc;
   background: #fff;
   border-radius: 14px;
-  padding: .65rem .35rem .55rem;
+  padding: .65rem .4rem .55rem;
   cursor: pointer;
   text-align: center;
   transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease, background .15s ease;
   color: inherit;
   font: inherit;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: .15rem;
+  box-sizing: border-box;
 }
 
 .scc-crop-chip:hover {
@@ -301,9 +310,87 @@
   box-shadow: 0 0 0 3px rgba(31, 107, 69, 0.16);
 }
 
-.scc-crop-emoji { display: block; font-size: 1.55rem; line-height: 1; margin-bottom: .2rem; }
-.scc-crop-en { display: block; font-weight: 800; font-size: .8rem; color: var(--scc-ink); }
-.scc-crop-ur { display: block; font-size: .7rem; color: var(--scc-muted); margin-top: .08rem; }
+.scc-crop-emoji { display: block; font-size: 1.55rem; line-height: 1; flex-shrink: 0; }
+.scc-crop-en,
+.scc-crop-ur {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.2;
+  padding: 0 .15rem;
+  box-sizing: border-box;
+}
+.scc-crop-en {
+  font-weight: 800;
+  font-size: .76rem;
+  color: var(--scc-ink);
+  min-height: 1.85em;
+}
+.scc-crop-ur {
+  font-size: .68rem;
+  color: var(--scc-muted);
+}
+
+/* Fruit / crop name colors */
+.scc-crop-chip[data-crop="mango"] .scc-crop-en { color: #c2410c; }
+.scc-crop-chip[data-crop="mango"] .scc-crop-ur { color: #ea580c; }
+.scc-crop-chip[data-crop="apple"] .scc-crop-en { color: #b91c1c; }
+.scc-crop-chip[data-crop="apple"] .scc-crop-ur { color: #dc2626; }
+.scc-crop-chip[data-crop="kinnow"] .scc-crop-en { color: #c2410c; }
+.scc-crop-chip[data-crop="kinnow"] .scc-crop-ur { color: #ea580c; }
+.scc-crop-chip[data-crop="watermelon"] .scc-crop-en { color: #15803d; }
+.scc-crop-chip[data-crop="watermelon"] .scc-crop-ur { color: #16a34a; }
+.scc-crop-chip[data-crop="grapes"] .scc-crop-en { color: #6d28d9; }
+.scc-crop-chip[data-crop="grapes"] .scc-crop-ur { color: #7c3aed; }
+.scc-crop-chip[data-crop="tomato"] .scc-crop-en { color: #dc2626; }
+.scc-crop-chip[data-crop="tomato"] .scc-crop-ur { color: #ef4444; }
+.scc-crop-chip[data-crop="chili"] .scc-crop-en { color: #b91c1c; }
+.scc-crop-chip[data-crop="chili"] .scc-crop-ur { color: #ef4444; }
+.scc-crop-chip[data-crop="carrot"] .scc-crop-en { color: #c2410c; }
+.scc-crop-chip[data-crop="carrot"] .scc-crop-ur { color: #ea580c; }
+.scc-crop-chip[data-crop="eggplant"] .scc-crop-en { color: #6d28d9; }
+.scc-crop-chip[data-crop="eggplant"] .scc-crop-ur { color: #7c3aed; }
+.scc-crop-chip[data-crop="broccoli"] .scc-crop-en { color: #166534; }
+.scc-crop-chip[data-crop="broccoli"] .scc-crop-ur { color: #15803d; }
+.scc-crop-chip[data-crop="spinach"] .scc-crop-en { color: #15803d; }
+.scc-crop-chip[data-crop="spinach"] .scc-crop-ur { color: #16a34a; }
+.scc-crop-chip[data-crop="cucumber"] .scc-crop-en { color: #0f766e; }
+.scc-crop-chip[data-crop="cucumber"] .scc-crop-ur { color: #0d9488; }
+.scc-crop-chip[data-crop="corn"] .scc-crop-en { color: #a16207; }
+.scc-crop-chip[data-crop="corn"] .scc-crop-ur { color: #ca8a04; }
+.scc-crop-chip[data-crop="onion"] .scc-crop-en { color: #7c3aed; }
+.scc-crop-chip[data-crop="onion"] .scc-crop-ur { color: #8b5cf6; }
+.scc-crop-chip[data-crop="potato"] .scc-crop-en { color: #92400e; }
+.scc-crop-chip[data-crop="potato"] .scc-crop-ur { color: #a16207; }
+.scc-crop-chip[data-crop="wheat"] .scc-crop-en { color: #a16207; }
+.scc-crop-chip[data-crop="wheat"] .scc-crop-ur { color: #ca8a04; }
+.scc-crop-chip[data-crop="rice"] .scc-crop-en { color: #0f766e; }
+.scc-crop-chip[data-crop="rice"] .scc-crop-ur { color: #14b8a6; }
+
+/* Soft tinted card backgrounds for fruits */
+.scc-crop-chip[data-crop="mango"] { background: #fff7ed; border-color: #fdba74; }
+.scc-crop-chip[data-crop="apple"] { background: #fef2f2; border-color: #fca5a5; }
+.scc-crop-chip[data-crop="kinnow"] { background: #fff7ed; border-color: #fdba74; }
+.scc-crop-chip[data-crop="watermelon"] { background: #f0fdf4; border-color: #86efac; }
+.scc-crop-chip[data-crop="grapes"] { background: #f5f3ff; border-color: #c4b5fd; }
+.scc-crop-chip[data-crop="tomato"] { background: #fef2f2; border-color: #fca5a5; }
+
+.scc-crop-chip[data-crop="mango"].is-selected,
+.scc-crop-chip[data-crop="apple"].is-selected,
+.scc-crop-chip[data-crop="kinnow"].is-selected,
+.scc-crop-chip[data-crop="watermelon"].is-selected,
+.scc-crop-chip[data-crop="grapes"].is-selected,
+.scc-crop-chip[data-crop="tomato"].is-selected {
+  box-shadow: 0 0 0 3px rgba(31, 107, 69, 0.14);
+}
 
 .scc-unit-row {
   display: flex;
@@ -810,6 +897,8 @@
 @media (max-width: 575.98px) {
   .scc-quick-money { grid-template-columns: repeat(2, 1fr); }
   .scc-crop-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .scc-crop-en { font-size: .72rem; }
+  .scc-crop-ur { font-size: .62rem; }
   .scc-hero-photo { width: 64px; height: 64px; }
 }
 
@@ -833,6 +922,18 @@ html[data-farmer-lang="ur"] .scc-app {
   border-color: #2c3b33;
   color: #eef5f0;
 }
+[data-theme="dark"] .scc-crop-chip[data-crop="mango"] { background: #2a1c12; border-color: #c2410c; }
+[data-theme="dark"] .scc-crop-chip[data-crop="apple"],
+[data-theme="dark"] .scc-crop-chip[data-crop="tomato"] { background: #2a1414; border-color: #dc2626; }
+[data-theme="dark"] .scc-crop-chip[data-crop="kinnow"] { background: #2a1c12; border-color: #ea580c; }
+[data-theme="dark"] .scc-crop-chip[data-crop="watermelon"] { background: #122016; border-color: #16a34a; }
+[data-theme="dark"] .scc-crop-chip[data-crop="grapes"] { background: #1a1528; border-color: #7c3aed; }
+[data-theme="dark"] .scc-crop-chip[data-crop="mango"] .scc-crop-en,
+[data-theme="dark"] .scc-crop-chip[data-crop="kinnow"] .scc-crop-en { color: #fb923c; }
+[data-theme="dark"] .scc-crop-chip[data-crop="apple"] .scc-crop-en,
+[data-theme="dark"] .scc-crop-chip[data-crop="tomato"] .scc-crop-en { color: #f87171; }
+[data-theme="dark"] .scc-crop-chip[data-crop="watermelon"] .scc-crop-en { color: #4ade80; }
+[data-theme="dark"] .scc-crop-chip[data-crop="grapes"] .scc-crop-en { color: #c4b5fd; }
 [data-theme="dark"] .scc-panel {
   background-image: none;
 }

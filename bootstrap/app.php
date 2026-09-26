@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Session\TokenMismatchException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -24,5 +26,23 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // Never show the bare "419 Page Expired" screen — soft-recover instead
+        $exceptions->render(function (TokenMismatchException $e, Request $request) {
+            if ($request->expectsJson() || $request->ajax() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Session expired. Please try again.',
+                    'reload' => true,
+                ], 419);
+            }
+
+            $back = url()->previous();
+            if (! $back || $back === $request->fullUrl()) {
+                $back = route('home');
+            }
+
+            return redirect()
+                ->to($back)
+                ->withInput($request->except('_token', 'password', 'password_confirmation'))
+                ->with('status', 'Session refreshed. Please submit again.');
+        });
     })->create();

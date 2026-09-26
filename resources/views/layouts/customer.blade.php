@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') · {{ $siteName ?? 'MarketLink' }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -10,7 +11,7 @@
     <link href="{{ asset('css/marketlink.css') }}?v={{ @filemtime(public_path('css/marketlink.css')) }}" rel="stylesheet">
     <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ml-theme') || 'light');</script>
 </head>
-<body class="admin-body desk-customer">
+<body class="admin-body desk-customer" data-csrf-url="{{ route('csrf.token') }}">
 <div class="admin-shell">
     <aside class="admin-side" id="adminSide">
         <a class="admin-brand" href="{{ route('customer.dashboard') }}"><img class="brand-logo" src="{{ asset('images/logo.svg') }}" alt="" width="36" height="36"> {{ $siteName ?? 'MarketLink' }}</a>
@@ -71,6 +72,7 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+<script src="{{ asset('js/csrf-keepalive.js') }}?v={{ @filemtime(public_path('js/csrf-keepalive.js')) }}"></script>
 <script>
 window.mlTheme = function () {
     const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';

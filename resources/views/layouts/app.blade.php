@@ -30,7 +30,7 @@
     <style>[x-cloak]{display:none!important}</style>
     @stack('head')
 </head>
-<body class="app-shell">
+<body class="app-shell" data-csrf-url="{{ route('csrf.token') }}">
 @include('partials.navbar')
 @if(($liveAnnouncements ?? collect())->isNotEmpty() && ! request()->routeIs('home'))
     <div class="container mt-3">
@@ -64,6 +64,7 @@
 <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+<script src="{{ asset('js/csrf-keepalive.js') }}?v={{ @filemtime(public_path('js/csrf-keepalive.js')) }}"></script>
 <script>
     window.mlTheme = function () {
         const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';

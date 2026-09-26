@@ -7,6 +7,14 @@
 
     var calcUrl = root.getAttribute('data-calc-url');
     var csrf = root.getAttribute('data-csrf') || (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+
+    function freshCsrf() {
+      csrf = (window.mlCsrf && window.mlCsrf.token ? window.mlCsrf.token() : null)
+        || (document.querySelector('meta[name="csrf-token"]') || {}).content
+        || root.getAttribute('data-csrf')
+        || csrf;
+      return csrf;
+    }
     var insights = {};
     try {
       insights = JSON.parse(root.getAttribute('data-insights') || '{}') || {};
@@ -665,17 +673,32 @@
       showErrors([]);
       if (submitBtn) submitBtn.disabled = true;
       try {
+        if (window.mlCsrf && window.mlCsrf.refresh) {
+          await window.mlCsrf.refresh();
+        }
+        freshCsrf();
+        var headers = {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'X-CSRF-TOKEN': csrf,
+          'X-Requested-With': 'XMLHttpRequest',
+        };
+        if (window.mlCsrf && window.mlCsrf.headers) {
+          Object.assign(headers, window.mlCsrf.headers());
+          headers['Content-Type'] = 'application/json';
+          headers['X-CSRF-TOKEN'] = freshCsrf() || headers['X-CSRF-TOKEN'];
+        }
         var res = await fetch(calcUrl, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            'X-CSRF-TOKEN': csrf,
-            'X-Requested-With': 'XMLHttpRequest',
-          },
+          headers: headers,
           credentials: 'same-origin',
           body: JSON.stringify(payloadFromForm()),
         });
+        if (res.status === 419) {
+          showErrors([isUr() ? 'سیشن ختم — صفحہ ریفریش کریں' : 'Session expired — refreshing…']);
+          setTimeout(function () { window.location.reload(); }, 600);
+          return;
+        }
         var data = await res.json();
         if (!res.ok) {
           var errs = [];

@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Sign in') · {{ $siteName ?? 'MarketLink' }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +13,7 @@
     <link href="{{ asset('css/marketlink.css') }}?v={{ @filemtime(public_path('css/marketlink.css')) }}" rel="stylesheet">
     <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ml-theme') || 'light');</script>
 </head>
-<body class="auth-body {{ request()->routeIs('register*') ? 'auth-register' : 'auth-login' }}">
+<body class="auth-body {{ request()->routeIs('register*') ? 'auth-register' : 'auth-login' }}" data-csrf-url="{{ route('csrf.token') }}">
 <div class="auth-shell">
     <aside class="auth-panel">
         <div class="auth-panel-media" aria-hidden="true"></div>
@@ -31,5 +32,6 @@
     </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/csrf-keepalive.js') }}?v={{ @filemtime(public_path('js/csrf-keepalive.js')) }}"></script>
 </body>
 </html>
