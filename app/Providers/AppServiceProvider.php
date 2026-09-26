@@ -47,6 +47,8 @@ class AppServiceProvider extends ServiceProvider
                         fn () => (int) ($user->cart?->items()->sum('quantity') ?? 0)
                     );
                 }
+            } else {
+                $cartCount = (int) array_sum(array_map('intval', session('ml_guest_cart', [])));
             }
 
             $settings = Cache::remember('settings.all', 300, fn () => Setting::query()->pluck('value', 'key')->all());

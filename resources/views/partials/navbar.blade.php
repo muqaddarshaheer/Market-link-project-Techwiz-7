@@ -16,13 +16,14 @@
                 <li class="nav-item"><a class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">About</a></li>
                 <li class="nav-item"><a class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">Contact</a></li>
             </ul>
-            <form class="nav-search me-2 my-2 my-lg-0" action="{{ route('products.index') }}" method="GET" x-data="searchBox()" @click.outside="open=false" role="search">
+            <form class="nav-search me-2 my-2 my-lg-0" action="{{ route('search') }}" method="GET" x-data="searchBox()" @click.outside="open=false" role="search">
                 <i class="bi bi-search" aria-hidden="true"></i>
-                <input class="form-control" name="q" placeholder="Search products, farmers or markets..." autocomplete="off" x-model="q" @input.debounce.250ms="lookup()" aria-label="Search">
+                <input class="form-control" name="q" placeholder="Search products, farmers or markets..." autocomplete="off" x-model="q" @input.debounce.220ms="lookup()" @keydown.enter="open=false" aria-label="Search">
                 <div class="search-pop mt-1" x-show="open" x-cloak>
                     <template x-for="item in items" :key="item.url">
                         <a class="d-block px-3 py-2 text-decoration-none" :href="item.url" x-text="item.label"></a>
                     </template>
+                    <a class="d-block px-3 py-2 small border-top text-decoration-none" x-show="q.length > 1" :href="'{{ route('search') }}?q=' + encodeURIComponent(q)">See all results</a>
                 </div>
             </form>
             <div class="nav-actions">
@@ -44,9 +45,9 @@
                         </div>
                     </div>
                     @if(auth()->user()->isCustomer())
-                        <a class="btn btn-outline-ml btn-sm position-relative" href="{{ route('cart.index') }}" aria-label="Cart">
+                        <a class="btn btn-outline-ml btn-sm position-relative" href="{{ route('cart.index') }}" aria-label="Cart" data-cart-link>
                             <i class="bi bi-bag"></i>
-                            @if(($cartCount ?? 0) > 0)<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ $cartCount }}</span>@endif
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ ($cartCount ?? 0) < 1 ? 'd-none' : '' }}" data-cart-badge>{{ $cartCount ?? 0 }}</span>
                         </a>
                     @endif
                     <div class="dropdown">
@@ -74,6 +75,10 @@
                         </ul>
                     </div>
                 @else
+                    <a class="btn btn-outline-ml btn-sm position-relative" href="{{ route('guest.cart') }}" aria-label="Cart" data-cart-link>
+                        <i class="bi bi-bag"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ ($cartCount ?? 0) < 1 ? 'd-none' : '' }}" data-cart-badge>{{ $cartCount ?? 0 }}</span>
+                    </a>
                     <a class="btn btn-outline-ml btn-sm" href="{{ route('login') }}">Log in</a>
                     <a class="btn btn-ml btn-sm" href="{{ route('register') }}">Join</a>
                 @endauth

@@ -19,23 +19,25 @@ class CartController extends Controller
     public function add(Request $request, Product $product)
     {
         $data = $request->validate(['quantity' => ['required', 'integer', 'min:1', 'max:99']]);
-        abort_unless($product->canPurchase(), 422, 'This product cannot be ordered right now.');
+        if (! $product->canPurchase()) {
+            return $this->cartFail('This product cannot be ordered right now.', 422);
+        }
 
         if ($data['quantity'] > $product->stock_quantity) {
-            return back()->withErrors(['quantity' => 'Only '.$product->stock_quantity.' left in stock.']);
+            return $this->cartFail('Only '.$product->stock_quantity.' left in stock.', 422);
         }
 
         $cart = $this->cart();
         $item = $cart->items()->firstOrNew(['product_id' => $product->id]);
         $next = ($item->exists ? $item->quantity : 0) + $data['quantity'];
         if ($next > $product->stock_quantity) {
-            return back()->withErrors(['quantity' => 'That quantity exceeds available stock.']);
+            return $this->cartFail('That quantity exceeds available stock.', 422);
         }
         $item->quantity = $next;
         $item->save();
-        Cache::forget('user.'.auth()->id().'.cart_qty');
+        $this->forgetCartCache();
 
-        return back()->with('success', $product->name.' added to your cart.');
+        return $this->cartOk($product->name.' added to your cart.');
     }
 
     public function update(Request $request, Product $product)
@@ -43,20 +45,20 @@ class CartController extends Controller
         $data = $request->validate(['quantity' => ['required', 'integer', 'min:1', 'max:99']]);
         $item = $this->cart()->items()->where('product_id', $product->id)->firstOrFail();
         if ($data['quantity'] > $product->stock_quantity) {
-            return back()->withErrors(['quantity' => 'Only '.$product->stock_quantity.' available.']);
+            return $this->cartFail('Only '.$product->stock_quantity.' available.', 422);
         }
         $item->update(['quantity' => $data['quantity']]);
-        Cache::forget('user.'.auth()->id().'.cart_qty');
+        $this->forgetCartCache();
 
-        return back()->with('success', 'Cart updated.');
+        return $this->cartOk('Cart updated.');
     }
 
     public function remove(Product $product)
     {
         $this->cart()->items()->where('product_id', $product->id)->delete();
-        Cache::forget('user.'.auth()->id().'.cart_qty');
+        $this->forgetCartCache();
 
-        return back()->with('success', 'Item removed.');
+        return $this->cartOk('Item removed.');
     }
 
     public function guestIndex()
@@ -70,16 +72,43 @@ class CartController extends Controller
     public function guestAdd(Request $request, Product $product)
     {
         $qty = (int) $request->validate(['quantity' => ['required', 'integer', 'min:1', 'max:99']])['quantity'];
-        abort_unless($product->canPurchase(), 422);
+        if (! $product->canPurchase()) {
+            return $this->cartFail('This product cannot be ordered right now.', 422);
+        }
         $lines = $this->guestLines();
         $next = ($lines[$product->id] ?? 0) + $qty;
         if ($next > $product->stock_quantity) {
-            return back()->withErrors(['quantity' => 'Only '.$product->stock_quantity.' left in stock.']);
+            return $this->cartFail('Only '.$product->stock_quantity.' left in stock.', 422);
         }
         $lines[$product->id] = $next;
         session(['ml_guest_cart' => $lines]);
 
+        if ($this->wantsCartJson()) {
+            return response()->json([
+                'ok' => true,
+                'message' => $product->name.' added.',
+                'count' => array_sum($lines),
+                'cart_url' => route('guest.cart'),
+            ]);
+        }
+
         return redirect()->route('guest.cart')->with('success', $product->name.' added.');
+    }
+
+    public function guestUpdate(Request $request, Product $product)
+    {
+        $qty = (int) $request->validate(['quantity' => ['required', 'integer', 'min:1', 'max:99']])['quantity'];
+        $lines = $this->guestLines();
+        if (! isset($lines[$product->id])) {
+            return $this->cartFail('Item not in cart.', 404);
+        }
+        if ($qty > $product->stock_quantity) {
+            return $this->cartFail('Only '.$product->stock_quantity.' available.', 422);
+        }
+        $lines[$product->id] = $qty;
+        session(['ml_guest_cart' => $lines]);
+
+        return $this->guestOk('Cart updated.', $lines);
     }
 
     public function guestRemove(Product $product)
@@ -88,7 +117,7 @@ class CartController extends Controller
         unset($lines[$product->id]);
         session(['ml_guest_cart' => $lines]);
 
-        return back()->with('success', 'Item removed.');
+        return $this->guestOk('Item removed.', $lines);
     }
 
     private function guestLines(): array
@@ -99,5 +128,56 @@ class CartController extends Controller
     private function cart(): Cart
     {
         return Cart::query()->firstOrCreate(['customer_id' => auth()->id()]);
+    }
+
+    private function forgetCartCache(): void
+    {
+        if (auth()->id()) {
+            Cache::forget('user.'.auth()->id().'.cart_qty');
+        }
+    }
+
+    private function wantsCartJson(): bool
+    {
+        return request()->expectsJson() || request()->ajax() || request()->boolean('ajax');
+    }
+
+    private function cartOk(string $message)
+    {
+        $cart = $this->cart()->load('items.product');
+        if ($this->wantsCartJson()) {
+            return response()->json([
+                'ok' => true,
+                'message' => $message,
+                'count' => (int) $cart->items->sum('quantity'),
+                'total' => $cart->total(),
+                'cart_url' => route('cart.index'),
+            ]);
+        }
+
+        return back()->with('success', $message);
+    }
+
+    private function guestOk(string $message, array $lines)
+    {
+        if ($this->wantsCartJson()) {
+            return response()->json([
+                'ok' => true,
+                'message' => $message,
+                'count' => array_sum($lines),
+                'cart_url' => route('guest.cart'),
+            ]);
+        }
+
+        return back()->with('success', $message);
+    }
+
+    private function cartFail(string $message, int $status = 422)
+    {
+        if ($this->wantsCartJson()) {
+            return response()->json(['ok' => false, 'message' => $message], $status);
+        }
+
+        return back()->withErrors(['quantity' => $message]);
     }
 }

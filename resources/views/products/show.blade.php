@@ -29,7 +29,7 @@
         </div>
         @auth
             @if(auth()->user()->isCustomer() && $available)
-                <form method="POST" action="{{ route('cart.add', $product) }}" class="product-buy" id="addForm">
+                <form method="POST" action="{{ route('cart.add', $product) }}" class="product-buy" id="addForm" data-ajax-cart>
                     @csrf
                     <input class="form-control" type="number" name="quantity" value="1" min="1" max="{{ $product->stock_quantity }}">
                     <button class="btn btn-ml" id="addBtn" type="submit">Add to cart</button>
@@ -37,14 +37,19 @@
             @endif
         @else
             @if($available)
-            <form method="POST" action="{{ route('guest.quick', $product) }}" class="guest-quick card-ml p-3" id="guestQuick">
+            <form method="POST" action="{{ route('guest.cart.add', $product) }}" class="product-buy mb-2" data-ajax-cart>
                 @csrf
-                <h2 class="h6 mb-2">Order in one step · no account</h2>
+                <input class="form-control" type="number" name="quantity" value="1" min="1" max="{{ $product->stock_quantity }}">
+                <button class="btn btn-ml" type="submit">Add to cart</button>
+            </form>
+            <form method="POST" action="{{ route('guest.quick', $product) }}" class="guest-quick card-ml p-3" id="guestQuick" data-checkout-guard>
+                @csrf
+                <h2 class="h6 mb-2">Or order in one step · no account</h2>
                 <div class="row g-2">
                     <div class="col-md-4"><input class="form-control" name="name" placeholder="Your name" required value="{{ old('name') }}"></div>
                     <div class="col-md-4"><input class="form-control" name="phone" placeholder="Phone" required value="{{ old('phone') }}"></div>
                     <div class="col-md-2"><input class="form-control" type="number" name="quantity" value="1" min="1" max="{{ $product->stock_quantity }}" required></div>
-                    <div class="col-md-2"><button class="btn btn-ml w-100" type="submit">Order</button></div>
+                    <div class="col-md-2"><button class="btn btn-outline-ml w-100" type="submit">Order</button></div>
                 </div>
                 <p class="small muted mb-0 mt-2">Pickup tomorrow at the stall. Pay in Rs to the farmer.</p>
             </form>

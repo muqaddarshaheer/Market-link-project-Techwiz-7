@@ -2,10 +2,14 @@
 <html lang="en" data-theme="light">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#1f6b45">
     <meta name="description" content="MarketLink connects farmers-market growers with customers for local pickup pre-orders.">
     <title>@yield('title', $siteName ?? 'MarketLink')</title>
     <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
@@ -26,7 +30,7 @@
     <style>[x-cloak]{display:none!important}</style>
     @stack('head')
 </head>
-<body>
+<body class="app-shell">
 @include('partials.navbar')
 @if(($liveAnnouncements ?? collect())->isNotEmpty())
     <div class="container mt-3">
@@ -38,7 +42,7 @@
         @endforeach
     </div>
 @endif
-<main class="py-4">
+<main class="py-4 app-main">
     <div class="container">
         @include('partials.flashes')
         @auth
@@ -52,8 +56,9 @@
     </div>
 </main>
 @include('partials.footer')
+@include('partials.mobile-dock')
 @include('partials.chatbot')
-<div class="toast-stack" id="toastStack"></div>
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 <script>
@@ -63,6 +68,7 @@
         localStorage.setItem('ml-theme', next);
     };
 </script>
+<script src="{{ asset('js/shop.js') }}?v={{ @filemtime(public_path('js/shop.js')) }}" defer></script>
 @stack('scripts')
 </body>
 </html>

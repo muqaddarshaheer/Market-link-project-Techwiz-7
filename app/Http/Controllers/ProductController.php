@@ -57,11 +57,17 @@ class ProductController extends Controller
             default => $query->latest(),
         };
 
+        $products = $query->paginate(12)->withQueryString();
+
+        if ($request->ajax() || $request->boolean('partial')) {
+            return view('products._grid', compact('products'));
+        }
+
         return view('products.index', [
-            'products' => $query->paginate(12)->withQueryString(),
+            'products' => $products,
             'categories' => Category::query()->orderBy('name')->get(),
             'markets' => Market::query()->where('status', 'active')->orderBy('name')->get(),
-            'farmers' => \App\Models\FarmerProfile::query()->where('approval_status', 'approved')->orderBy('stall_name')->get(),
+            'farmers' => FarmerProfile::query()->where('approval_status', 'approved')->orderBy('stall_name')->get(),
         ]);
     }
 

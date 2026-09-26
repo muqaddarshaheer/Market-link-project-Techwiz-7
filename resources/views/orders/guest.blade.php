@@ -19,11 +19,12 @@
     <textarea class="form-control mb-3" name="customer_note">{{ old('customer_note') }}</textarea>
     <button class="btn btn-ml" id="guestBtn" type="submit">Place guest pre-order</button>
 </form>
+@endsection
+@push('scripts')
 <script>
-document.getElementById('guestForm').addEventListener('submit', function () {
+document.getElementById('guestForm')?.addEventListener('submit', function () {
     const button = document.getElementById('guestBtn');
-    button.disabled = true;
-    button.textContent = 'Placing order…';
+    if (button) { button.disabled = true; button.textContent = 'Placing order…'; }
 });
 </script>
-@endsection
+@endpush

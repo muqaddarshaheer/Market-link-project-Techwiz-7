@@ -1932,3 +1932,93 @@ body:has(.home-page) main.py-4 { padding-top: .35rem !important; }
   background: linear-gradient(180deg, #248655, #145c38) !important;
   color: #fff !important;
 }
+
+/* —— Shop app shell: toast, dock, live browse, cart —— */
+.toast-stack {
+  position: fixed; right: 16px; bottom: 88px; z-index: 2500;
+  display: grid; gap: .45rem; width: min(320px, calc(100vw - 2rem));
+  pointer-events: none;
+}
+.ml-toast {
+  pointer-events: auto;
+  background: #145c38; color: #fff; border-radius: 14px;
+  padding: .75rem .9rem; font-weight: 700; font-size: .9rem;
+  box-shadow: 0 12px 28px rgba(0,0,0,.28);
+  opacity: 0; transform: translateY(10px); transition: opacity .18s ease, transform .18s ease;
+}
+.ml-toast.is-in { opacity: 1; transform: none; }
+.ml-toast.is-error { background: #8a2e2e; }
+[data-theme="dark"] .ml-toast { background: #1f6b45; }
+[data-theme="dark"] .ml-toast.is-error { background: #a33b3b; }
+
+.mobile-dock {
+  position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 1030;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: .25rem;
+  padding: .45rem .35rem calc(.45rem + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--ml-surface) 92%, transparent);
+  border: 1px solid var(--ml-line); border-radius: 18px;
+  backdrop-filter: blur(14px); box-shadow: 0 12px 30px rgba(0,0,0,.18);
+}
+.mobile-dock-item {
+  position: relative; display: grid; place-items: center; gap: .1rem;
+  text-decoration: none; color: var(--ml-muted); font-size: .68rem; font-weight: 700;
+  padding: .35rem .2rem; border-radius: 12px;
+}
+.mobile-dock-item i { font-size: 1.15rem; color: var(--ml-text); }
+.mobile-dock-item.is-on { background: var(--ml-green-soft); color: var(--ml-green-dark); }
+.mobile-dock-item.is-on i { color: var(--ml-green-dark); }
+.mobile-dock-badge {
+  position: absolute; top: 2px; right: 14%; min-width: 16px; height: 16px;
+  border-radius: 999px; background: #c0392b; color: #fff;
+  font-size: .62rem; display: grid; place-items: center; padding: 0 4px;
+}
+@media (min-width: 992px) {
+  .mobile-dock { display: none !important; }
+}
+.app-shell .app-main { padding-bottom: 5.5rem; }
+@media (min-width: 992px) {
+  .app-shell .app-main { padding-bottom: 0; }
+}
+
+.shop-results { position: relative; min-height: 240px; transition: opacity .15s ease; }
+.shop-results.is-loading { opacity: .45; pointer-events: none; }
+.shop-reveal { opacity: 0; transform: translateY(12px); transition: opacity .18s ease, transform .18s ease; }
+.shop-reveal.is-visible { opacity: 1; transform: none; }
+.shop-filters a { color: var(--ml-green-dark); font-weight: 700; }
+@media (max-width: 991.98px) {
+  .shop-filters {
+    display: none; position: fixed; inset: auto 12px 76px 12px; z-index: 1040;
+    max-height: min(70vh, 560px); overflow: auto;
+    box-shadow: 0 18px 40px rgba(0,0,0,.28);
+  }
+  .shop-filters.is-open { display: block; }
+  body.shop-filters-open::before {
+    content: ""; position: fixed; inset: 0; background: rgba(8,20,14,.45); z-index: 1035;
+  }
+}
+
+.cart-row-main { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; }
+.cart-row-actions { display: flex; justify-content: space-between; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.cart-qty-input { width: 72px; }
+.cart-checkout-bar { position: sticky; bottom: 76px; z-index: 5; }
+@media (min-width: 992px) {
+  .cart-checkout-bar { bottom: 12px; }
+}
+
+.product-card { transition: transform .12s ease, box-shadow .12s ease; }
+.product-card:active { transform: scale(.98); }
+@media (max-width: 575.98px) {
+  .product-card-title { font-size: .95rem; }
+  .product-card-actions .btn { padding: .35rem .55rem; }
+  .thumb { height: 140px; }
+}
+
+[data-theme="dark"] .filter-panel,
+[data-theme="dark"] .cart-row,
+[data-theme="dark"] .checkout-summary,
+[data-theme="dark"] .cart-checkout-bar {
+  background: #18211c !important; border-color: #2c3b33 !important; color: #f4faf6 !important;
+}
+[data-theme="dark"] .mobile-dock {
+  background: rgba(24, 33, 28, .94); border-color: #2c3b33;
+}

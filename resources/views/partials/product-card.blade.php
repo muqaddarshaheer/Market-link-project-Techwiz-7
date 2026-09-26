@@ -30,7 +30,7 @@
                             <button class="btn btn-outline-ml btn-sm" type="submit" aria-label="Favorite"><i class="bi bi-heart"></i></button>
                         </form>
                         @if($product->is_available && ! $product->is_sold_out && $product->stock_quantity > 0)
-                            <form method="POST" action="{{ route('cart.add', $product) }}">@csrf
+                            <form method="POST" action="{{ route('cart.add', $product) }}" data-ajax-cart>@csrf
                                 <input type="hidden" name="quantity" value="1">
                                 <button class="btn btn-ml btn-sm" type="submit">Add</button>
                             </form>
@@ -39,7 +39,7 @@
                 @endauth
                 @guest
                     @if($product->is_available && ! $product->is_sold_out && $product->stock_quantity > 0)
-                        <form method="POST" action="{{ route('guest.cart.add', $product) }}">@csrf
+                        <form method="POST" action="{{ route('guest.cart.add', $product) }}" data-ajax-cart>@csrf
                             <input type="hidden" name="quantity" value="1">
                             <button class="btn btn-ml btn-sm" type="submit">Add</button>
                         </form>
