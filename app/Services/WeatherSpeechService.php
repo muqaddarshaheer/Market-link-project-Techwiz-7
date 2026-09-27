@@ -216,6 +216,11 @@ class WeatherSpeechService
             $parts[] = $this->softenCropEnglish($crop);
         }
 
+        $skill = trim((string) ($w['skill_en'] ?? ''));
+        if ($skill !== '') {
+            $parts[] = 'Farmer skill today: '.$this->lcfirst($skill);
+        }
+
         $days = $w['days'] ?? [];
         if (is_array($days) && $days !== []) {
             $wet = 0;
@@ -289,6 +294,11 @@ class WeatherSpeechService
             $parts[] = $this->softenCropUrdu($crop);
         }
 
+        $skill = trim((string) ($w['skill_ur'] ?? $w['skill_en'] ?? ''));
+        if ($skill !== '') {
+            $parts[] = 'آج کسان مہارت: '.$skill;
+        }
+
         $days = $w['days'] ?? [];
         if (is_array($days) && $days !== []) {
             $wet = 0;
@@ -355,6 +365,11 @@ class WeatherSpeechService
             $parts[] = 'Farm tip: '.$this->lcfirst($tip);
         }
 
+        $skill = trim((string) ($d['skill_en'] ?? ''));
+        if ($skill !== '') {
+            $parts[] = 'Farmer skill for this day: '.$this->lcfirst($skill);
+        }
+
         return $this->joinEnglish($parts);
     }
 
@@ -402,6 +417,11 @@ class WeatherSpeechService
 
         if ($tip !== '') {
             $parts[] = 'کھیتی مشورہ: '.$tip;
+        }
+
+        $skill = trim((string) ($d['skill_ur'] ?? $d['skill_en'] ?? ''));
+        if ($skill !== '') {
+            $parts[] = 'کسان مہارت: '.$skill;
         }
 
         return $this->joinUrdu($parts);

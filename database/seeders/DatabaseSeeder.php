@@ -133,6 +133,42 @@ class DatabaseSeeder extends Seeder
             $marketModels[2]->id => ['stall_number' => 'E8'],
         ]);
 
+        $farmers[0]->lands()->create([
+            'name' => 'Front field',
+            'area_amount' => 2,
+            'area_unit' => 'kanal',
+            'crop_key' => 'tomato',
+            'crop_name' => 'Tomato',
+            'planted_on' => now()->subDays(40)->toDateString(),
+            'expected_harvest' => now()->addDays(35)->toDateString(),
+            'stage' => 'growing',
+            'soil_type' => 'loamy',
+            'notes' => 'Drip line on east side',
+            'is_active' => true,
+        ]);
+        $farmers[0]->lands()->create([
+            'name' => 'Back plot',
+            'area_amount' => 4,
+            'area_unit' => 'marla',
+            'crop_key' => 'spinach',
+            'crop_name' => 'Spinach',
+            'planted_on' => now()->subDays(30)->toDateString(),
+            'expected_harvest' => now()->addDays(10)->toDateString(),
+            'stage' => 'ready',
+            'soil_type' => 'silt',
+            'is_active' => true,
+        ]);
+        $farmers[1]->lands()->create([
+            'name' => 'Orchard strip',
+            'area_amount' => 1,
+            'area_unit' => 'acre',
+            'crop_key' => null,
+            'crop_name' => null,
+            'stage' => 'empty',
+            'soil_type' => 'sandy',
+            'is_active' => true,
+        ]);
+
         $categories = [
             ['Vegetables', 'bi-basket2', 'Seasonal vegetables'],
             ['Fruits', 'bi-apple', 'Orchard fruit'],

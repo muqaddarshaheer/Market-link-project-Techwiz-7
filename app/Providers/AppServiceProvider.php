@@ -3,9 +3,12 @@
 namespace App\Providers;
 
 use App\Models\Announcement;
+use App\Models\FarmerExpense;
+use App\Models\FarmerLand;
 use App\Models\Setting;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -20,6 +23,22 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        Route::bind('land', function (string $value) {
+            $land = FarmerLand::query()->findOrFail($value);
+            $profile = auth()->user()?->farmerProfile;
+            abort_unless($profile && (int) $land->farmer_id === (int) $profile->id, 403);
+
+            return $land;
+        });
+
+        Route::bind('expense', function (string $value) {
+            $expense = FarmerExpense::query()->findOrFail($value);
+            $profile = auth()->user()?->farmerProfile;
+            abort_unless($profile && (int) $expense->farmer_id === (int) $profile->id, 403);
+
+            return $expense;
+        });
 
         if (! $this->app->runningInConsole() && ! empty($_SERVER['HTTP_HOST'])) {
             $https = (! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');

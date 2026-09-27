@@ -53,6 +53,16 @@ class FarmerProfile extends Model
             ->withTimestamps();
     }
 
+    public function lands(): HasMany
+    {
+        return $this->hasMany(FarmerLand::class, 'farmer_id');
+    }
+
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(FarmerExpense::class, 'farmer_id');
+    }
+
     public function averageRating(): float
     {
         return round((float) $this->reviews()->where('status', 'approved')->avg('rating'), 1);

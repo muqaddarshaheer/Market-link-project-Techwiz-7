@@ -34,20 +34,133 @@ class FarmerDashboardController extends Controller
     {
         $farmer = $this->profile()->loadMissing('markets');
         $orders = $farmer->orders();
+        $weather = $this->weather->forFarmer($farmer);
+        $lowStock = $farmer->products()->where('stock_quantity', '<=', 5)->where('is_available', true)->get();
+        $pending = (clone $orders)->where('status', 'placed')->count();
+
+        $lands = $farmer->lands()->latest()->take(6)->get();
 
         return view('farmer.dashboard', [
             'farmer' => $farmer,
-            'weather' => $this->weather->forFarmer($farmer),
+            'weather' => $weather,
+            'lands' => $lands,
             'stats' => [
                 'orders' => (clone $orders)->count(),
-                'pending' => (clone $orders)->where('status', 'placed')->count(),
+                'pending' => $pending,
                 'revenue' => (clone $orders)->where('status', 'completed')->sum('total_amount'),
                 'products' => $farmer->products()->count(),
             ],
             'recent' => $farmer->orders()->with('customer')->latest()->take(6)->get(),
-            'lowStock' => $farmer->products()->where('stock_quantity', '<=', 5)->where('is_available', true)->get(),
+            'lowStock' => $lowStock,
             'best' => $farmer->products()->withSum('orderItems as sold', 'quantity')->orderByDesc('sold')->take(5)->get(),
+            'farmHelp' => $this->buildFarmHelp($farmer, $weather, $lowStock, $pending, $lands),
         ]);
+    }
+
+    private function buildFarmHelp($farmer, ?array $weather, $lowStock, int $pending, $lands = null): array
+    {
+        $rain = (int) ($weather['rain_chance'] ?? 0);
+        $risk = $weather['risk'] ?? 'ok';
+        $temp = $weather['temp'] ?? null;
+        $lands = $lands ?? collect();
+
+        $readyLand = $lands->first(fn ($l) => $l->stage === 'ready');
+        $soonHarvest = $lands->filter(function ($l) {
+            $d = $l->daysToHarvest();
+
+            return $d !== null && $d >= 0 && $d <= 14 && $l->stage !== 'harvested' && $l->stage !== 'empty';
+        })->sortBy(fn ($l) => $l->daysToHarvest())->first();
+
+        if ($readyLand) {
+            $tipEn = $readyLand->name.': '.$readyLand->crop_name.' is ready — harvest in cool hours.';
+            $tipUr = $readyLand->name.' — '.$readyLand->careTipUr();
+            $action = 'Harvest '.$readyLand->name;
+        } elseif ($weather) {
+            if ($risk === 'high' || $rain >= 60) {
+                $tipEn = 'Heavy weather risk — pause irrigation and cover tender plants.';
+                $tipUr = 'تیز موسم — آبپاشی روکیں اور نرم پودے ڈھانپیں۔';
+                $action = 'Protect today';
+            } elseif ($rain >= 40) {
+                $tipEn = 'Rain possible — skip extra watering; check field drainage.';
+                $tipUr = 'بارش ممکن — اضافی پانی نہ دیں؛ نکاس چیک کریں۔';
+                $action = 'Skip watering';
+            } elseif ($temp !== null && $temp >= 35) {
+                $tipEn = 'Hot day — water early morning or evening; shade young plants.';
+                $tipUr = 'گرمی — صبح/شام پانی دیں؛ چھوٹے پودوں کو سایہ دیں۔';
+                $action = 'Water carefully';
+            } else {
+                $tipEn = $weather['crop_note'] ?? 'Fair day — follow your normal field schedule.';
+                $tipUr = $weather['crop_note_ur'] ?? 'موسم مناسب — معمول کے مطابق دیکھ بھال کریں۔';
+                $action = 'Field check';
+            }
+        } else {
+            $tipEn = 'Add stall location on profile to unlock live farm weather tips.';
+            $tipUr = 'لائیو موسم کے لیے پروفائل پر مقام شامل کریں۔';
+            $action = 'Set location';
+        }
+
+        $todos = [];
+        if ($pending > 0) {
+            $todos[] = [
+                'id' => 'pending-orders',
+                'icon' => 'bi-bag-check',
+                'title' => $pending.' pickup order(s) waiting',
+                'title_ur' => $pending.' پک اپ آرڈر منتظر',
+                'href' => route('farmer.orders.index', ['status' => 'placed']),
+            ];
+        }
+        if ($readyLand) {
+            $todos[] = [
+                'id' => 'land-ready-'.$readyLand->id,
+                'icon' => 'bi-scissors',
+                'title' => 'Harvest '.$readyLand->crop_name.' on '.$readyLand->name,
+                'title_ur' => $readyLand->name.' سے کاٹائی: '.$readyLand->crop_name,
+                'href' => route('farmer.lands.index'),
+            ];
+        } elseif ($soonHarvest) {
+            $d = $soonHarvest->daysToHarvest();
+            $todos[] = [
+                'id' => 'land-soon-'.$soonHarvest->id,
+                'icon' => 'bi-calendar-event',
+                'title' => $soonHarvest->crop_name.' on '.$soonHarvest->name.' — ~'.$d.' days to harvest',
+                'title_ur' => $soonHarvest->name.' — کٹائی تقریباً '.$d.' دن',
+                'href' => route('farmer.lands.index'),
+            ];
+        } elseif ($lands->isEmpty()) {
+            $todos[] = [
+                'id' => 'add-land',
+                'icon' => 'bi-geo-alt',
+                'title' => 'Add your first land plot',
+                'title_ur' => 'پہلی زمین / پلاٹ شامل کریں',
+                'href' => route('farmer.lands.index'),
+            ];
+        }
+        if ($weather) {
+            $todos[] = [
+                'id' => 'weather-care',
+                'icon' => 'bi-droplet',
+                'title' => $action,
+                'title_ur' => $action === 'Skip watering' ? 'پانی نہ دیں' : ($action === 'Protect today' ? 'فصل بچائیں' : 'کھیت چیک کریں'),
+                'href' => route('farmer.smart-crop-guide'),
+            ];
+        }
+        if ($lowStock->isNotEmpty()) {
+            $todos[] = [
+                'id' => 'restock',
+                'icon' => 'bi-box-seam',
+                'title' => 'Restock '.$lowStock->first()->name.($lowStock->count() > 1 ? ' + more' : ''),
+                'title_ur' => 'اسٹاک بھریں: '.$lowStock->first()->name,
+                'href' => route('farmer.products.index'),
+            ];
+        }
+
+        return [
+            'tip_en' => $tipEn,
+            'tip_ur' => $tipUr,
+            'action' => $action,
+            'todos' => array_slice($todos, 0, 5),
+            'quickRestock' => $lowStock->take(4),
+        ];
     }
 
     public function speakWeather(Request $request)

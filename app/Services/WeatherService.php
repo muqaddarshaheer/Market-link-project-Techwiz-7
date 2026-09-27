@@ -16,7 +16,7 @@ class WeatherService
             return null;
         }
 
-        $key = 'weather:v4:'.round($coords['lat'], 2).':'.round($coords['lng'], 2).':'.now()->format('Y-m-d');
+        $key = 'weather:v5:'.round($coords['lat'], 2).':'.round($coords['lng'], 2).':'.now()->format('Y-m-d');
         $cacheHours = max(1, (int) config('weather.cache_hours', 2));
 
         return Cache::remember($key, now()->addHours($cacheHours), function () use ($coords) {
@@ -65,6 +65,13 @@ class WeatherService
                     $today['code']
                 );
                 $payload['days'] = $days;
+                $payload['sky'] = $today['sky'] ?? $this->skyClass($today['code']);
+                $payload['skill_en'] = $today['skill_en'] ?? '';
+                $payload['skill_ur'] = $today['skill_ur'] ?? '';
+                $payload['skill_tags'] = $today['skill_tags'] ?? [];
+                $payload['date_full'] = $today['date_full'] ?? '';
+                $payload['date_full_ur'] = $today['date_full_ur'] ?? '';
+                $payload['as_of'] = now()->toIso8601String();
 
                 return $payload;
             } catch (\Throwable $e) {
@@ -108,7 +115,8 @@ class WeatherService
                 'rain_chance' => $rainChance,
                 'wind' => round($wind),
                 'risk' => $risk,
-            ], $this->dateLabels($carbon, $i === 0, $risk, $code, $rainChance));
+                'sky' => $this->skyClass($code),
+            ], $this->dateLabels($carbon, $i === 0, $risk, $code, $rainChance, $tmax !== null ? (float) $tmax : null, $wind));
         }
 
         return $days;
@@ -128,10 +136,7 @@ class WeatherService
         };
     }
 
-    /**
-     * Calendar labels that follow the live forecast date (auto-updates each day).
-     */
-    private function dateLabels(\Carbon\Carbon $carbon, bool $isToday, string $risk, int $code, int $rainChance): array
+    private function dateLabels(\Carbon\Carbon $carbon, bool $isToday, string $risk, int $code, int $rainChance, ?float $tmax = null, float $wind = 0): array
     {
         $monthsUr = [
             1 => 'جنوری', 2 => 'فروری', 3 => 'مارچ', 4 => 'اپریل',
@@ -141,6 +146,7 @@ class WeatherService
         $weekdayEn = $carbon->format('l');
         $weekdayUr = $this->weekdayUr($carbon->dayOfWeek);
         $monthUr = $monthsUr[(int) $carbon->format('n')] ?? $carbon->format('F');
+        $skills = $this->farmerSkills($risk, $code, $rainChance, $tmax, $wind);
 
         return [
             'month' => $carbon->format('M'),
@@ -153,7 +159,68 @@ class WeatherService
             'weekday_full_ur' => $weekdayUr,
             'tip' => $this->dayFarmTip($risk, $code, $rainChance, false),
             'tip_ur' => $this->dayFarmTip($risk, $code, $rainChance, true),
+            'skill_en' => $skills['en'],
+            'skill_ur' => $skills['ur'],
+            'skill_tags' => $skills['tags'],
         ];
+    }
+
+    private function farmerSkills(string $risk, int $code, int $rainChance, ?float $tmax, float $wind): array
+    {
+        $tags = [];
+        $en = [];
+        $ur = [];
+
+        if ($risk === 'high' || $code >= 80 || $rainChance >= 70) {
+            $tags = ['protect', 'pause_water'];
+            $en[] = 'Protect crops — cover tender plants';
+            $en[] = 'Pause irrigation until rain passes';
+            $ur[] = 'فصل بچائیں — نرم پودے ڈھانپیں';
+            $ur[] = 'بارش تک آبپاشی روکیں';
+        } elseif ($risk === 'watch' || $rainChance >= 45) {
+            $tags = ['watch', 'light_water'];
+            $en[] = 'Skip extra watering — soil may stay wet';
+            $en[] = 'Check drainage in low spots';
+            $ur[] = 'اضافی پانی نہ دیں — مٹی گیلی رہ سکتی ہے';
+            $ur[] = 'نچلی جگہوں کا نکاس چیک کریں';
+        } elseif ($tmax !== null && $tmax >= 35) {
+            $tags = ['heat', 'water_cool'];
+            $en[] = 'Water early morning or evening';
+            $en[] = 'Shade young seedlings from harsh sun';
+            $ur[] = 'صبح یا شام پانی دیں';
+            $ur[] = 'چھوٹے پودوں کو تیز دھوپ سے بچائیں';
+        } elseif ($wind >= 35) {
+            $tags = ['wind', 'support'];
+            $en[] = 'Stake tall plants against wind';
+            $en[] = 'Delay spray until wind drops';
+            $ur[] = 'لمبے پودوں کو سہارا دیں';
+            $ur[] = 'ہوا کم ہونے تک سپرے ملتوی کریں';
+        } else {
+            $tags = ['care', 'normal'];
+            $en[] = 'Normal field care — weed & check pests';
+            $en[] = 'Good day for light work and market packing';
+            $ur[] = 'معمولی دیکھ بھال — گوڈی اور کیڑے چیک';
+            $ur[] = 'ہلکے کام اور منڈی پیکنگ کا اچھا دن';
+        }
+
+        return [
+            'en' => implode(' · ', $en),
+            'ur' => implode(' · ', $ur),
+            'tags' => $tags,
+        ];
+    }
+
+    private function skyClass(int $code): string
+    {
+        return match (true) {
+            $code === 0 => 'sky-clear',
+            $code <= 3 => 'sky-partly',
+            $code <= 48 => 'sky-fog',
+            $code <= 67 => 'sky-rain',
+            $code <= 77 => 'sky-cold',
+            $code <= 99 => 'sky-storm',
+            default => 'sky-partly',
+        };
     }
 
     private function dayFarmTip(string $risk, int $code, int $rainChance, bool $urdu): string
@@ -209,26 +276,45 @@ class WeatherService
     {
         $payload = $this->payload($place, 24, 28, 18, 55, 0.0, 15, 12.0, 2);
         $days = [];
+        $codes = [2, 1, 3, 61, 2, 80, 0];
         for ($i = 0; $i < 7; $i++) {
             $carbon = now()->addDays($i);
+            $code = $codes[$i] ?? 2;
+            $rainChance = match (true) {
+                $code >= 80 => 75,
+                $code >= 61 => 55,
+                $code >= 3 => 30,
+                default => 12 + ($i * 3),
+            };
+            $tmax = (float) (28 - ($i % 3) + ($code === 0 ? 2 : 0));
+            $wind = (float) (12 + ($i * 2));
+            $risk = $this->riskLevel($code, $rainChance > 60 ? 8.0 : 0.5, $rainChance, $wind);
             $days[] = array_merge([
                 'date' => $carbon->toDateString(),
                 'label' => $i === 0 ? 'Today' : $carbon->format('D'),
                 'label_ur' => $i === 0 ? 'آج' : $this->weekdayUr($carbon->dayOfWeek),
                 'day_num' => $carbon->format('j'),
-                'code' => 2,
-                'summary' => 'Partly cloudy',
-                'summary_ur' => 'جزوی بادل',
-                'icon' => 'bi-cloud-sun',
-                'temp_max' => 28 - ($i % 3),
-                'temp_min' => 18 - ($i % 2),
-                'rain_mm' => 0.0,
-                'rain_chance' => 15 + ($i * 5),
-                'wind' => 12,
-                'risk' => 'ok',
-            ], $this->dateLabels($carbon, $i === 0, 'ok', 2, 15 + ($i * 5)));
+                'code' => $code,
+                'summary' => $this->summary($code),
+                'summary_ur' => $this->summaryUr($code),
+                'icon' => $this->icon($code),
+                'temp_max' => round($tmax),
+                'temp_min' => round(18 - ($i % 2)),
+                'rain_mm' => $rainChance > 50 ? 4.0 : 0.0,
+                'rain_chance' => $rainChance,
+                'wind' => round($wind),
+                'risk' => $risk,
+                'sky' => $this->skyClass($code),
+            ], $this->dateLabels($carbon, $i === 0, $risk, $code, $rainChance, $tmax, $wind));
         }
         $payload['days'] = $days;
+        $payload['sky'] = $days[0]['sky'] ?? 'sky-partly';
+        $payload['skill_en'] = $days[0]['skill_en'] ?? '';
+        $payload['skill_ur'] = $days[0]['skill_ur'] ?? '';
+        $payload['skill_tags'] = $days[0]['skill_tags'] ?? [];
+        $payload['date_full'] = $days[0]['date_full'] ?? '';
+        $payload['date_full_ur'] = $days[0]['date_full_ur'] ?? '';
+        $payload['as_of'] = now()->toIso8601String();
 
         return $payload;
     }

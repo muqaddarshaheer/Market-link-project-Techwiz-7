@@ -20,7 +20,7 @@
     </div>
 
     @if($farmer->isApproved() && $markets->isNotEmpty())
-        <form method="POST" action="{{ route('farmer.products.store') }}" enctype="multipart/form-data" class="fp-add-card">
+        <form method="POST" action="{{ route('farmer.products.store') }}" enctype="multipart/form-data" class="fp-add-card" id="add">
             @csrf
             <h2 data-i18n="products.addTitle">Add new product</h2>
             <div class="fp-grid">
@@ -123,6 +123,7 @@
                             <input type="hidden" name="market_id" value="{{ $product->market_id }}">
                             <input type="hidden" name="price" value="{{ $product->price }}">
                             <input type="hidden" name="unit" value="{{ $product->unit }}">
+                            <input type="hidden" name="quality" value="{{ $product->quality ?? 'fresh' }}">
                             <div>
                                 <label class="fp-label" data-i18n="products.stock">Stock</label>
                                 <input class="form-control form-control-sm" name="stock_quantity" value="{{ $product->stock_quantity }}">

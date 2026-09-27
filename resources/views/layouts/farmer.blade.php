@@ -32,10 +32,9 @@
                 $groups = [
                     ['key' => 'nav.overview', 'links' => [
                         ['farmer.dashboard', 'bi-speedometer2', 'nav.dashboard'],
-                        ['farmer.insights', 'bi-list-ul', 'nav.insights'],
+                        ['farmer.lands.index', 'bi-geo-alt', 'nav.lands'],
                         ['farmer.crop-calculator', 'bi-calculator', 'nav.calculator'],
                         ['farmer.smart-crop-guide', 'bi-flower1', 'nav.smartCrop'],
-                        ['farmer.crop-health', 'bi-heart-pulse', 'nav.cropHealth'],
                         ['produce-guide', 'bi-lightbulb', 'nav.produceGuide'],
                     ]],
                     ['key' => 'nav.stall', 'links' => [
@@ -46,6 +45,8 @@
                     ]],
                     ['key' => 'nav.sales', 'links' => [
                         ['farmer.orders.index', 'bi-receipt', 'nav.orders'],
+                        ['farmer.sales', 'bi-graph-up', 'nav.salesPage'],
+                        ['farmer.expenses.index', 'bi-wallet2', 'nav.expenses'],
                         ['farmer.reviews', 'bi-star', 'nav.reviews'],
                     ]],
                     ['key' => 'nav.accountGroup', 'links' => [
@@ -57,10 +58,13 @@
                 <div class="admin-group" data-i18n="{{ $group['key'] }}">{{ $group['key'] === 'nav.overview' ? 'Overview' : ($group['key'] === 'nav.stall' ? 'Stall' : ($group['key'] === 'nav.sales' ? 'Sales' : 'Account')) }}</div>
                 @foreach($group['links'] as [$name, $icon, $i18n])
                     @continue(! \Illuminate\Support\Facades\Route::has($name))
-                    <a class="{{ request()->routeIs($name) || request()->routeIs($name.'.*') || request()->routeIs(str_replace('.index', '.*', $name)) ? 'active' : '' }}" href="{{ route($name) }}">
+                    <a class="{{ request()->routeIs($name) || request()->routeIs($name.'.*') || request()->routeIs(str_replace('.index', '.*', $name)) || ($name === 'farmer.sales' && request()->routeIs('farmer.insights')) ? 'active' : '' }}" href="{{ route($name) }}">
                         <i class="bi {{ $icon }}"></i> <span data-i18n="{{ $i18n }}">{{ match($i18n) {
                             'nav.dashboard' => 'Dashboard',
-                            'nav.insights' => 'Insights',
+                            'nav.insights' => 'Sales',
+                            'nav.salesPage' => 'Sales',
+                            'nav.expenses' => 'Expenses',
+                            'nav.lands' => 'My Land',
                             'nav.calculator' => 'Crop Calculator',
                             'nav.smartCrop' => 'Smart Crop Guide',
                             'nav.cropHealth' => 'Crop Health',
