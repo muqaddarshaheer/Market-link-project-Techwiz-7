@@ -22,6 +22,13 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Safe for ZIP re-runs / SQL import already done
+        if (User::query()->where('email', 'admin@marketlink.com')->exists()) {
+            $this->command?->info('Demo data already present — seeding skipped.');
+
+            return;
+        }
+
         $this->call(SmartCropSeeder::class);
 
         $admin = User::registerAccount([

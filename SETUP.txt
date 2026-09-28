@@ -1,18 +1,25 @@
-MarketLink — START HERE (judges)
+MarketLink ZIP — ZERO ERROR START
 
 1) Unzip into C:\xampp\htdocs\
 2) XAMPP: Apache + MySQL ON
-3) Open ONE of these:
+3) Open ONE URL:
 
    http://localhost/Your-Folder-Name/import-db.php
-   → click "Import marketlink.sql"
+   → click Import  (creates DB + tables + demo data)
 
-   OR just:
-   http://localhost/Your-Folder-Name/
-   → auto setup
+   OR phpMyAdmin → Import → database/marketlink.sql (utf-8)
+   (file has CREATE DATABASE — DB ban jati hai)
 
-DO NOT use phpMyAdmin Import if it shows "Unexpected character"
-(that is a Windows encoding bug). Use import-db.php instead.
+4) Open: http://localhost/Your-Folder-Name/
 
-Demo: farmer@marketlink.com / Farmer@123
-Need: PHP 8.2 or 8.3
+Login:
+  farmer@marketlink.com / Farmer@123
+  customer@marketlink.com / Customer@123
+  admin@marketlink.com / Admin@123
+
+If anything breaks, run once:
+  C:\xampp\php\php.exe fix-all-issues.php
+  C:\xampp\php\php.exe artisan cache:clear
+  C:\xampp\php\php.exe artisan view:clear
+
+Need PHP 8.2 or 8.3

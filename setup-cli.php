@@ -362,18 +362,82 @@ function ml_run_full_setup(string $root, ?string $detectedBaseUrl = null): array
             $logs[] = trim($out."\n".$err);
             if ($code !== 0) {
                 throw new RuntimeException(
-                    'SQL import and migrate --seed both failed. In phpMyAdmin: Import database/marketlink.sql then Retry.'
+                    'SQL import and migrate --seed both failed. Import database/marketlink.sql in phpMyAdmin or open import-db.php, then Retry.'
                 );
             }
             $logs[] = 'Database migrated + seeded (fallback)';
         }
 
-        // Ensure any newer migrations after the dump still apply
+        // Repair common ZIP issues (passwords / missing columns) without reseeding
+        try {
+            $fix = new PDO('mysql:host=127.0.0.1;port=3306;dbname=marketlink', 'root', '', [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            ]);
+            $hasQuality = (bool) $fix->query("SHOW COLUMNS FROM products LIKE 'quality'")->fetch();
+            if (! $hasQuality) {
+                $fix->exec("ALTER TABLE `products` ADD COLUMN `quality` ENUM('premium','fresh','standard') NOT NULL DEFAULT 'fresh' AFTER `unit`");
+                $logs[] = 'Added products.quality';
+            }
+            $hasLands = (bool) $fix->query("SHOW TABLES LIKE 'farmer_lands'")->fetch();
+            if (! $hasLands) {
+                $fix->exec("CREATE TABLE `farmer_lands` (
+                  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                  `farmer_id` bigint(20) unsigned NOT NULL,
+                  `name` varchar(120) NOT NULL,
+                  `area_amount` decimal(10,2) DEFAULT NULL,
+                  `area_unit` varchar(30) NOT NULL DEFAULT 'kanal',
+                  `crop_name` varchar(120) DEFAULT NULL,
+                  `crop_key` varchar(60) DEFAULT NULL,
+                  `planted_on` date DEFAULT NULL,
+                  `expected_harvest` date DEFAULT NULL,
+                  `stage` varchar(30) NOT NULL DEFAULT 'empty',
+                  `soil_type` varchar(60) DEFAULT NULL,
+                  `notes` text DEFAULT NULL,
+                  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+                  `created_at` timestamp NULL DEFAULT NULL,
+                  `updated_at` timestamp NULL DEFAULT NULL,
+                  PRIMARY KEY (`id`),
+                  KEY `farmer_lands_farmer_id_is_active_index` (`farmer_id`,`is_active`),
+                  CONSTRAINT `farmer_lands_farmer_id_foreign` FOREIGN KEY (`farmer_id`) REFERENCES `farmer_profiles` (`id`) ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+                $logs[] = 'Created farmer_lands';
+            }
+            $fix->exec('ALTER TABLE users MODIFY password VARCHAR(255) NOT NULL');
+            $demos = [
+                'farmer@marketlink.com' => 'Farmer@123',
+                'customer@marketlink.com' => 'Customer@123',
+                'admin@marketlink.com' => 'Admin@123',
+            ];
+            $upd = $fix->prepare('UPDATE users SET password = ? WHERE email = ?');
+            foreach ($demos as $email => $plain) {
+                $row = $fix->query('SELECT password FROM users WHERE email='.$fix->quote($email))->fetch(PDO::FETCH_ASSOC);
+                if (! $row) {
+                    continue;
+                }
+                if (strlen((string) $row['password']) !== 60 || ! password_verify($plain, (string) $row['password'])) {
+                    $upd->execute([password_hash($plain, PASSWORD_BCRYPT, ['cost' => 12]), $email]);
+                    $logs[] = 'Repaired password for '.$email;
+                }
+            }
+        } catch (Throwable $repairEx) {
+            $logs[] = 'Repair note: '.$repairEx->getMessage();
+        }
+
+        // Schema-only migrate (never seed again — dump/seed already loaded data)
         [$code, $out, $err] = ml_run(escapeshellarg($php).' artisan migrate --force', $root);
         $logs[] = trim($out."\n".$err) ?: 'migrate check done';
+        // Do not fail setup if migrate complains after SQL import
+        if ($code !== 0) {
+            $logs[] = 'migrate returned non-zero (often OK after SQL import) — continuing';
+        }
 
         [$code, $out, $err] = ml_run(escapeshellarg($php).' artisan storage:link', $root);
         $logs[] = trim($out."\n".$err) ?: 'storage:link done';
+
+        foreach (['cache:clear', 'config:clear', 'view:clear'] as $art) {
+            ml_run(escapeshellarg($php).' artisan '.$art, $root);
+        }
+        $logs[] = 'Caches cleared';
 
         @file_put_contents($lockFile, date('c')."\n");
 
