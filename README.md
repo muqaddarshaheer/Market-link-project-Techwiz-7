@@ -13,6 +13,8 @@ Farmers manage stock and orders. Admins approve stalls and keep the catalog clea
 
 > **No delivery. No online payment.** Cash / local payment at pickup only.
 
+**Full A1 documentation (all build steps, theme, chat, install):** see [`DOCUMENTATION.md`](DOCUMENTATION.md)
+
 ---
 
 ## About this project

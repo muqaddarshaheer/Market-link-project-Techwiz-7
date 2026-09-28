@@ -11,7 +11,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="{{ asset('css/marketlink.css') }}?v={{ @filemtime(public_path('css/marketlink.css')) }}" rel="stylesheet">
-    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ml-theme') || 'light');</script>
+    <meta name="theme-color" content="#1f6b45">
+    <script src="{{ asset('js/theme.js') }}?v={{ @filemtime(public_path('js/theme.js')) }}"></script>
 </head>
 <body class="auth-body {{ request()->routeIs('register*') ? 'auth-register' : 'auth-login' }}" data-csrf-url="{{ route('csrf.token') }}">
 <div class="auth-shell">

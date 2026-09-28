@@ -73,7 +73,7 @@
             </form>
 
             <div class="nav-actions">
-                <button class="btn btn-outline-ml btn-sm nav-icon-btn" type="button" onclick="mlTheme()" aria-label="Toggle dark mode"><i class="bi bi-moon-stars"></i></button>
+                <button class="btn btn-outline-ml btn-sm nav-icon-btn" type="button" data-theme-toggle onclick="mlTheme()" aria-label="Toggle dark mode" aria-pressed="false"><i class="bi bi-moon-stars"></i></button>
                 @auth
                     <div class="dropdown" x-data="notifyBell()" x-init="start()">
                         <button class="btn btn-outline-ml btn-sm position-relative" data-bs-toggle="dropdown" aria-label="Notifications">

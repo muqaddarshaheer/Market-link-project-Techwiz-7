@@ -9,7 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="{{ asset('css/marketlink.css') }}?v={{ @filemtime(public_path('css/marketlink.css')) }}" rel="stylesheet">
-    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ml-theme') || 'light');</script>
+    <meta name="theme-color" content="#1f6b45">
+    <script src="{{ asset('js/theme.js') }}?v={{ @filemtime(public_path('js/theme.js')) }}"></script>
 </head>
 <body class="admin-body desk-customer" data-csrf-url="{{ route('csrf.token') }}">
 <div class="admin-shell">
@@ -60,7 +61,7 @@
             </div>
             <div class="ms-auto d-flex align-items-center gap-2">
                 <span class="admin-role-pill d-none d-md-inline">Customer</span>
-                <button class="btn btn-outline-ml btn-sm" type="button" onclick="mlTheme()" aria-label="Toggle dark mode"><i class="bi bi-moon-stars"></i></button>
+                <button class="btn btn-outline-ml btn-sm" type="button" data-theme-toggle onclick="mlTheme()" aria-label="Toggle dark mode" aria-pressed="false"><i class="bi bi-moon-stars"></i></button>
                 <a class="btn btn-outline-ml btn-sm" href="{{ route('home') }}">View site</a>
                 <span class="admin-user">{{ auth()->user()->name }}</span>
             </div>
@@ -73,13 +74,6 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 <script src="{{ asset('js/csrf-keepalive.js') }}?v={{ @filemtime(public_path('js/csrf-keepalive.js')) }}"></script>
-<script>
-window.mlTheme = function () {
-    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('ml-theme', next);
-};
-</script>
 @stack('scripts')
 </body>
 </html>

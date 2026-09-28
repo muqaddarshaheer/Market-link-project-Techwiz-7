@@ -11,8 +11,9 @@
     <link href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="{{ asset('css/marketlink.css') }}?v={{ @filemtime(public_path('css/marketlink.css')) }}" rel="stylesheet">
     <link href="{{ asset('css/farmer-panel.css') }}?v={{ @filemtime(public_path('css/farmer-panel.css')) }}" rel="stylesheet">
+    <meta name="theme-color" content="#1f6b45">
+    <script src="{{ asset('js/theme.js') }}?v={{ @filemtime(public_path('js/theme.js')) }}"></script>
     <script>
-        document.documentElement.setAttribute('data-theme', localStorage.getItem('ml-theme') || 'light');
         (function () {
             var lang = localStorage.getItem('farmer-lang') || 'en';
             document.documentElement.setAttribute('data-farmer-lang', lang);
@@ -101,7 +102,7 @@
                     <i class="bi bi-translate"></i> <span>اردو</span>
                 </button>
                 <span class="admin-role-pill d-none d-md-inline" data-i18n="top.role">Farmer</span>
-                <button class="btn btn-outline-ml btn-sm" type="button" onclick="mlTheme()" aria-label="Toggle dark mode"><i class="bi bi-moon-stars"></i></button>
+                <button class="btn btn-outline-ml btn-sm" type="button" data-theme-toggle onclick="mlTheme()" aria-label="Toggle dark mode" aria-pressed="false"><i class="bi bi-moon-stars"></i></button>
                 <a class="btn btn-outline-ml btn-sm" href="{{ route('home') }}"><span data-i18n="top.site">View site</span></a>
                 <span class="admin-user">{{ auth()->user()->name }}</span>
             </div>
@@ -120,13 +121,6 @@
 <script src="{{ asset('js/csrf-keepalive.js') }}?v={{ @filemtime(public_path('js/csrf-keepalive.js')) }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="{{ asset('js/farmer-i18n.js') }}?v={{ @filemtime(public_path('js/farmer-i18n.js')) }}"></script>
-<script>
-window.mlTheme = function () {
-    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('ml-theme', next);
-};
-</script>
 @stack('scripts')
 </body>
 </html>
