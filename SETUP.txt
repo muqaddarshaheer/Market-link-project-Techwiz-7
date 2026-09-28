@@ -1,26 +1,24 @@
-MarketLink — kisi bhi PC pe kaise chalaye
+MarketLink — kisi bhi PC pe (GitHub ZIP)
+
+REQUIREMENTS
+- XAMPP with PHP 8.2 or 8.3 (Laravel 11)
+- Apache + MySQL ON
 
 ========================================
-GitHub ZIP (Code → Download ZIP)
+STEPS
 ========================================
-1) Unzip → C:\xampp\htdocs\
-2) XAMPP: Apache + MySQL ON
-3) Browser: http://localhost/Folder-Name/
-4) Pehli visit pe site KHUD setup karti hai (.env + DB + demo data)
+1) GitHub → Code → Download ZIP
+2) Unzip → C:\xampp\htdocs\
+3) XAMPP: Apache + MySQL start
+4) Browser: http://localhost/Folder-Name/
+5) Pehli visit pe auto setup (.env + DB + demo)
 
-Composer / manual migrate zaroori NAHI — vendor GitHub ZIP me included hai.
+Composer zaroori NAHI — vendor ZIP me included hai.
 
-========================================
-READY ZIP (SHARE-ZIP.bat) — optional
-========================================
-Desktop pe MarketLink-READY.zip bhi bana sakte ho sharing ke liye.
-Same steps: unzip → MySQL ON → browser open.
-
-========================================
-Demo login (seed ke baad)
-========================================
+Demo:
 farmer@marketlink.com / Farmer@123
 customer@marketlink.com / Customer@123
 admin@marketlink.com / Admin@123
 
-Agar MySQL band ho: XAMPP me MySQL start karke page pe Retry.
+Agar PHP 8.0/8.1 ho: site clear message degi — XAMPP PHP 8.2+ install karo.
+Agar MySQL off ho: start karke Retry.

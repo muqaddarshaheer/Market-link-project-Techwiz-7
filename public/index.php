@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-require __DIR__.'/../bootstrap/missing-vendor.php';
+require_once __DIR__.'/../bootstrap/missing-vendor.php';
 $appRoot = dirname(__DIR__);
 if (ml_needs_setup($appRoot)) {
     ml_try_auto_setup($appRoot);

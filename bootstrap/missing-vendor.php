@@ -13,6 +13,24 @@ function ml_needs_setup(string $root): bool
     return ! is_file($autoload) || ! is_file($env) || ! is_file($lock);
 }
 
+function ml_php_too_old_page(): void
+{
+    header('HTTP/1.1 503 Service Unavailable');
+    header('Content-Type: text/html; charset=UTF-8');
+    echo '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">';
+    echo '<title>MarketLink — PHP upgrade needed</title>';
+    echo '<style>body{font-family:Segoe UI,sans-serif;background:#eef2ef;color:#0e3b2e;margin:0;padding:2rem 1rem}';
+    echo '.card{max-width:640px;margin:0 auto;background:#fff;border:1px solid #d5e8dc;border-radius:16px;padding:1.4rem 1.5rem}';
+    echo 'code{background:#eef4f0;padding:.15rem .4rem;border-radius:6px}.err{color:#8a2e2e}</style></head><body><div class="card">';
+    echo '<h1>PHP 8.2+ required</h1>';
+    echo '<p class="err">This PC has PHP <strong>'.htmlspecialchars(PHP_VERSION, ENT_QUOTES, 'UTF-8').'</strong>. MarketLink needs <strong>PHP 8.2 or 8.3</strong>.</p>';
+    echo '<ol><li>Install XAMPP with PHP 8.2/8.3 from <code>https://www.apachefriends.org</code></li>';
+    echo '<li>Restart Apache + MySQL</li>';
+    echo '<li>Open this site again</li></ol>';
+    echo '</div></body></html>';
+    exit;
+}
+
 function ml_setup_fail_page(string $root, string $error, array $logs = []): void
 {
     $folder = basename($root);
@@ -29,6 +47,7 @@ function ml_setup_fail_page(string $root, string $error, array $logs = []): void
     echo '<div class="err"><strong>'.htmlspecialchars($error, ENT_QUOTES, 'UTF-8').'</strong></div>';
     echo '<ol class="muted">';
     echo '<li>XAMPP Control Panel → start <strong>Apache</strong> + <strong>MySQL</strong></li>';
+    echo '<li>PHP must be <strong>8.2+</strong> (Laravel 11)</li>';
     echo '<li>Folder <code>'.htmlspecialchars($folder, ENT_QUOTES, 'UTF-8').'</code> me <code>setup.bat</code> double-click</li>';
     echo '<li>Ya neeche Retry dabao</li>';
     echo '</ol>';
@@ -45,11 +64,14 @@ function ml_setup_fail_page(string $root, string $error, array $logs = []): void
  */
 function ml_try_auto_setup(string $root): void
 {
+    if (defined('PHP_VERSION_ID') && PHP_VERSION_ID < 80200) {
+        ml_php_too_old_page();
+    }
+
     @set_time_limit(0);
     @ini_set('max_execution_time', '0');
     @ini_set('memory_limit', '512M');
 
-    // Show a waiting page first so the browser does not look frozen (POST bounce).
     if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET' && empty($_GET['ml_setup'])) {
         $folder = basename($root);
         $hasVendor = is_file($root.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
@@ -97,7 +119,6 @@ function ml_try_auto_setup(string $root): void
     ml_setup_fail_page($root, (string) ($result['error'] ?? 'Setup failed'), $result['logs'] ?? []);
 }
 
-/** @deprecated use ml_try_auto_setup */
 function ml_missing_vendor_page(string $root): void
 {
     ml_try_auto_setup($root);

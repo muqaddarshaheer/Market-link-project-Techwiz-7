@@ -104,15 +104,16 @@ Guest / Customer          Farmer                    Admin
 
 ### GitHub ZIP / any PC (XAMPP)
 
-`vendor/` is included in the repo so **Code → Download ZIP** works without Composer.
+`vendor/` is in the repo — **Code → Download ZIP** works without Composer.
+
+**Need PHP 8.2 or 8.3** (Laravel 11). Old XAMPP PHP 8.0/8.1 will show a clear upgrade page.
 
 1. Unzip into `C:\xampp\htdocs\`
-2. Start **Apache + MySQL** in XAMPP
-3. Open: `http://localhost/Your-Folder-Name/`
-4. First visit auto-creates `.env`, database `marketlink`, migrate + seed
+2. Start **Apache + MySQL**
+3. Open `http://localhost/Your-Folder-Name/`
+4. First visit auto-creates `.env`, DB `marketlink`, migrate + seed
 
-Optional: **`SHARE-ZIP.bat`** → Desktop `MarketLink-READY.zip` for WhatsApp sharing.  
-If MySQL was offline, start it and click **Retry**. See **SETUP.txt**.
+See **SETUP.txt**.
 
 ### Git clone / developers
 

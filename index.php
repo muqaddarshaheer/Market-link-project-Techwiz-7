@@ -5,7 +5,7 @@
  */
 
 $publicPath = __DIR__.DIRECTORY_SEPARATOR.'public';
-require __DIR__.DIRECTORY_SEPARATOR.'bootstrap'.DIRECTORY_SEPARATOR.'missing-vendor.php';
+require_once __DIR__.DIRECTORY_SEPARATOR.'bootstrap'.DIRECTORY_SEPARATOR.'missing-vendor.php';
 if (ml_needs_setup(__DIR__)) {
     $script = basename($_SERVER['SCRIPT_NAME'] ?? '');
     $uriPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';

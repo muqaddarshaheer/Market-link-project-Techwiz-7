@@ -18,31 +18,109 @@ function ml_out(string $msg, bool $isCli): void
     }
 }
 
-function ml_find_php(): string
+function ml_php_version_id(string $bin): int
 {
-    if (defined('PHP_BINARY') && PHP_BINARY && is_file(PHP_BINARY) && stripos(PHP_BINARY, 'php') !== false) {
-        // Apache SAPI binary may not be CLI — prefer known XAMPP CLI
-        $xampp = [
-            'C:\\xampp\\php\\php.exe',
-            'C:\\XAMPP\\php\\php.exe',
-        ];
-        foreach ($xampp as $bin) {
-            if (is_file($bin)) {
-                return $bin;
-            }
-        }
-
-        return PHP_BINARY;
+    if ($bin === '' || ($bin !== 'php' && ! is_file($bin))) {
+        return 0;
+    }
+    $out = [];
+    $code = 0;
+    @exec(escapeshellarg($bin).' -r "echo PHP_VERSION_ID;"', $out, $code);
+    if ($code !== 0 || empty($out[0]) || ! ctype_digit(trim($out[0]))) {
+        return 0;
     }
 
-    foreach (['C:\\xampp\\php\\php.exe', 'C:\\XAMPP\\php\\php.exe', '/opt/lampp/bin/php', '/usr/bin/php'] as $bin) {
+    return (int) trim($out[0]);
+}
+
+/**
+ * Prefer any PHP CLI >= 8.2 (Laravel 11). Never pick an old XAMPP 8.0 over a newer PATH PHP.
+ */
+function ml_find_php(): string
+{
+    $candidates = [];
+
+    foreach ([
+        'C:\\xampp\\php\\php.exe',
+        'C:\\XAMPP\\php\\php.exe',
+        '/opt/lampp/bin/php',
+        '/usr/bin/php',
+    ] as $bin) {
         if (is_file($bin)) {
+            $candidates[] = $bin;
+        }
+    }
+
+    $where = [];
+    if (strncasecmp(PHP_OS, 'WIN', 3) === 0) {
+        @exec('where php 2>nul', $where);
+    } else {
+        @exec('command -v php 2>/dev/null', $where);
+    }
+    foreach ($where as $line) {
+        $line = trim($line);
+        if ($line !== '' && is_file($line) && ! preg_match('/\.(dll|so)$/i', $line)) {
+            $candidates[] = $line;
+        }
+    }
+
+    if (defined('PHP_BINARY') && PHP_BINARY && is_file(PHP_BINARY) && ! preg_match('/\.(dll|so)$/i', PHP_BINARY)) {
+        $candidates[] = PHP_BINARY;
+    }
+
+    $candidates[] = 'php';
+
+    $best = null;
+    $bestId = 0;
+    $seen = [];
+    foreach ($candidates as $bin) {
+        $key = strtolower($bin);
+        if (isset($seen[$key])) {
+            continue;
+        }
+        $seen[$key] = true;
+        $id = ml_php_version_id($bin);
+        if ($id >= 80200 && $id > $bestId) {
+            $bestId = $id;
+            $best = $bin;
+        }
+    }
+
+    if ($best !== null) {
+        return $best;
+    }
+
+    foreach ($candidates as $bin) {
+        if ($bin === 'php' || is_file($bin)) {
             return $bin;
         }
     }
 
     return 'php';
 }
+
+function ml_require_php82_web(): void
+{
+    if (defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 80200) {
+        return;
+    }
+
+    header('HTTP/1.1 503 Service Unavailable');
+    header('Content-Type: text/html; charset=UTF-8');
+    echo '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">';
+    echo '<title>MarketLink — PHP upgrade needed</title>';
+    echo '<style>body{font-family:Segoe UI,sans-serif;background:#eef2ef;color:#0e3b2e;margin:0;padding:2rem 1rem}';
+    echo '.card{max-width:640px;margin:0 auto;background:#fff;border:1px solid #d5e8dc;border-radius:16px;padding:1.4rem 1.5rem}';
+    echo 'code{background:#eef4f0;padding:.15rem .4rem;border-radius:6px}.err{color:#8a2e2e}</style></head><body><div class="card">';
+    echo '<h1>PHP 8.2+ required</h1>';
+    echo '<p class="err">This PC has PHP <strong>'.htmlspecialchars(PHP_VERSION, ENT_QUOTES, 'UTF-8').'</strong>. MarketLink needs <strong>PHP 8.2 or 8.3</strong>.</p>';
+    echo '<ol><li>Install XAMPP with PHP 8.2/8.3 from <code>https://www.apachefriends.org</code></li>';
+    echo '<li>Restart Apache + MySQL</li>';
+    echo '<li>Open this site again</li></ol>';
+    echo '</div></body></html>';
+    exit;
+}
+
 
 function ml_run(string $cmd, string $cwd): array
 {
@@ -94,6 +172,15 @@ function ml_run_full_setup(string $root, ?string $detectedBaseUrl = null): array
             throw new RuntimeException('composer.json missing. Wrong folder?');
         }
 
+        $php = ml_find_php();
+        $phpId = ml_php_version_id($php);
+        if ($phpId < 80200) {
+            throw new RuntimeException(
+                'PHP 8.2+ required for setup CLI. Found '.$php.' (version id '.$phpId.'). Install PHP 8.2/8.3 (or newer XAMPP) and ensure it is on PATH, then run setup again.'
+            );
+        }
+        $logs[] = 'PHP: '.$php.' ('.$phpId.')';
+
         foreach ([
             'storage/framework/cache/data',
             'storage/framework/sessions',
@@ -122,9 +209,6 @@ function ml_run_full_setup(string $root, ?string $detectedBaseUrl = null): array
         ml_set_env_value($envPath, 'DB_PASSWORD', '');
         ml_set_env_value($envPath, 'DB_HOST', '127.0.0.1');
         $logs[] = 'APP_URL='.$appUrl;
-
-        $php = ml_find_php();
-        $logs[] = 'PHP: '.$php;
 
         if (! is_file($vendorAutoload)) {
             if (! is_file($composerPhar)) {
@@ -178,12 +262,32 @@ function ml_run_full_setup(string $root, ?string $detectedBaseUrl = null): array
             );
         }
 
-        [$code, $out, $err] = ml_run(escapeshellarg($php).' artisan migrate --force --seed', $root);
-        $logs[] = trim($out."\n".$err);
-        if ($code !== 0) {
-            throw new RuntimeException('migrate --seed failed. See log above.');
+        $alreadySeeded = false;
+        try {
+            $pdoDb = new PDO('mysql:host=127.0.0.1;port=3306;dbname=marketlink', 'root', '', [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            ]);
+            $alreadySeeded = (int) $pdoDb->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='marketlink' AND table_name='users'")->fetchColumn() > 0
+                && (int) $pdoDb->query('SELECT COUNT(*) FROM users')->fetchColumn() > 0;
+        } catch (Throwable) {
+            $alreadySeeded = false;
         }
-        $logs[] = 'Database migrated + seeded';
+
+        if ($alreadySeeded) {
+            [$code, $out, $err] = ml_run(escapeshellarg($php).' artisan migrate --force', $root);
+            $logs[] = trim($out."\n".$err);
+            if ($code !== 0) {
+                throw new RuntimeException('migrate failed. See log above.');
+            }
+            $logs[] = 'Database already had data — migrated only (seed skipped)';
+        } else {
+            [$code, $out, $err] = ml_run(escapeshellarg($php).' artisan migrate --force --seed', $root);
+            $logs[] = trim($out."\n".$err);
+            if ($code !== 0) {
+                throw new RuntimeException('migrate --seed failed. See log above.');
+            }
+            $logs[] = 'Database migrated + seeded';
+        }
 
         [$code, $out, $err] = ml_run(escapeshellarg($php).' artisan storage:link', $root);
         $logs[] = trim($out."\n".$err) ?: 'storage:link done';
