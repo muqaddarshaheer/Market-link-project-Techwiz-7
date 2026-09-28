@@ -110,19 +110,24 @@
     @endforelse
 </div>
 
-<script type="application/json" id="expPrintData">@json([
-    'stall' => $farmer->stall_name,
-    'month' => $month,
-    'total' => $total,
-    'sales' => $sales,
-    'net' => $net,
-    'rows' => $expenses->map(fn ($e) => [
-        'title' => $e->title,
-        'date' => $e->expense_date->format('d/m/Y'),
-        'cat' => $e->categoryLabel(),
-        'amount' => (float) $e->amount,
-    ])->values(),
-])</script>
+@php
+    $expPrintData = [
+        'stall' => $farmer->stall_name,
+        'month' => $month,
+        'total' => $total,
+        'sales' => $sales,
+        'net' => $net,
+        'rows' => $expenses->map(function ($e) {
+            return [
+                'title' => $e->title,
+                'date' => $e->expense_date->format('d/m/Y'),
+                'cat' => $e->categoryLabel(),
+                'amount' => (float) $e->amount,
+            ];
+        })->values()->all(),
+    ];
+@endphp
+<script type="application/json" id="expPrintData">@json($expPrintData)</script>
 @endsection
 
 @push('scripts')

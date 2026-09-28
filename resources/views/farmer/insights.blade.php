@@ -84,16 +84,21 @@
     </ul>
 </div>
 
-<script type="application/json" id="salesPrintData">@json([
-    'stall' => $farmer->stall_name,
-    'orders' => $orderTotal,
-    'revenue' => $revenueTotal,
-    'rows' => $byDay->map(fn ($r) => [
-        'day' => $r->day,
-        'orders' => (int) $r->total,
-        'revenue' => (float) $r->revenue,
-    ])->values(),
-])</script>
+@php
+    $salesPrintData = [
+        'stall' => $farmer->stall_name,
+        'orders' => $orderTotal,
+        'revenue' => $revenueTotal,
+        'rows' => $byDay->map(function ($r) {
+            return [
+                'day' => $r->day,
+                'orders' => (int) $r->total,
+                'revenue' => (float) $r->revenue,
+            ];
+        })->values()->all(),
+    ];
+@endphp
+<script type="application/json" id="salesPrintData">@json($salesPrintData)</script>
 @endsection
 
 @push('scripts')
