@@ -26,13 +26,22 @@ class OrderChatController extends Controller
         return $this->store($request, $order, 'farmer');
     }
 
+    public function storeGuest(Request $request, Order $order)
+    {
+        $allowed = collect(session('ml_guest_orders', []))->map(fn ($id) => (int) $id);
+        abort_unless($allowed->contains((int) $order->id), 403);
+        abort_unless($order->customer_id === null, 403);
+
+        return $this->store($request, $order, 'guest');
+    }
+
     public function showFarmer(Order $order)
     {
         $profile = auth()->user()->farmerProfile;
         abort_unless($profile && (int) $order->farmer_id === (int) $profile->id, 403);
 
         $order->load(['items', 'farmer.user', 'market', 'customer', 'messages' => fn ($q) => $q->with('sender')->orderBy('created_at')]);
-        $this->markReadFor($order, 'farmer');
+        $this->markReadFor($order);
 
         return view('farmer.orders.show', compact('order'));
     }
@@ -48,19 +57,23 @@ class OrderChatController extends Controller
 
         $message = OrderMessage::query()->create([
             'order_id' => $order->id,
-            'user_id' => auth()->id(),
+            'user_id' => $as === 'guest' ? null : auth()->id(),
+            'guest_name' => $as === 'guest' ? ($order->guest_name ?: 'Guest') : null,
             'body' => $body,
             'is_read' => false,
         ]);
 
         $order->loadMissing('customer', 'farmer.user');
 
-        if ($as === 'customer' && $order->farmer?->user) {
+        if (in_array($as, ['customer', 'guest'], true) && $order->farmer?->user) {
+            $who = $as === 'guest'
+                ? ($order->guest_name ?: 'Guest')
+                : auth()->user()->name;
             $this->notifications->send(
                 $order->farmer->user,
                 'order_chat',
                 'New chat · '.$order->order_number,
-                auth()->user()->name.': '.mb_strimwidth($body, 0, 120, '…'),
+                $who.': '.mb_strimwidth($body, 0, 120, '…'),
                 ['order_id' => $order->id, 'url' => route('farmer.orders.show', $order)]
             );
         }
@@ -82,25 +95,29 @@ class OrderChatController extends Controller
                     'id' => $message->id,
                     'body' => $message->body,
                     'mine' => true,
-                    'sender' => auth()->user()->name,
+                    'sender' => $as === 'guest' ? ($order->guest_name ?: 'You') : auth()->user()->name,
                     'at' => $message->created_at->format('M j, g:i A'),
                 ],
             ]);
         }
 
-        $route = $as === 'farmer'
-            ? route('farmer.orders.show', $order)
-            : route('customer.orders.show', $order);
+        $route = match ($as) {
+            'farmer' => route('farmer.orders.show', $order),
+            'guest' => route('guest.orders.show', $order),
+            default => route('customer.orders.show', $order),
+        };
 
         return redirect($route.'#order-chat')->with('success', 'Message sent.');
     }
 
-    private function markReadFor(Order $order, string $as): void
+    private function markReadFor(Order $order): void
     {
         $selfId = auth()->id();
         OrderMessage::query()
             ->where('order_id', $order->id)
-            ->where('user_id', '!=', $selfId)
+            ->where(function ($q) use ($selfId) {
+                $q->whereNull('user_id')->orWhere('user_id', '!=', $selfId);
+            })
             ->where('is_read', false)
             ->update(['is_read' => true]);
     }

@@ -10,6 +10,7 @@ class OrderMessage extends Model
     protected $fillable = [
         'order_id',
         'user_id',
+        'guest_name',
         'body',
         'is_read',
     ];
@@ -31,8 +32,26 @@ class OrderMessage extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function isMine(?int $userId = null): bool
+    public function senderLabel(): string
     {
-        return (int) $this->user_id === (int) ($userId ?? auth()->id());
+        if ($this->user_id) {
+            return $this->sender->name ?? 'User';
+        }
+
+        return $this->guest_name ?: 'Guest';
+    }
+
+    public function isMine(?int $userId = null, bool $asGuest = false): bool
+    {
+        if ($asGuest) {
+            return $this->user_id === null;
+        }
+
+        $uid = $userId ?? auth()->id();
+        if (! $uid) {
+            return false;
+        }
+
+        return (int) $this->user_id === (int) $uid;
     }
 }

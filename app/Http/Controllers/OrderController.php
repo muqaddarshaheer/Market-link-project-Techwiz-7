@@ -47,8 +47,8 @@ class OrderController extends Controller
             $data['customer_note'] ?? null
         );
 
-        return redirect()->route('customer.orders.show', $placed[0])
-            ->with('success', count($placed).' pre-order'.(count($placed) > 1 ? 's' : '').' placed. Pay the farmer when you pick up.');
+        return redirect()->to(route('customer.orders.show', $placed[0]).'#order-chat')
+            ->with('success', count($placed).' pre-order'.(count($placed) > 1 ? 's' : '').' placed. Chat with your farmer below — pay when you pick up.');
     }
 
     public function show(Order $order)
@@ -169,14 +169,17 @@ class OrderController extends Controller
             'Quick guest order'
         );
 
-        return redirect()->route('home')->with('success', 'Order '.$placed[0]->order_number.' placed. Pay at the stall in Rs. Pickup '.$pickup.' · '.$slot);
+        return $this->redirectGuestToOrderChat($placed, 'Order confirmed. Chat with the farmer below using your Order ID.');
     }
 
     public function guestCreate()
     {
         $lines = array_map('intval', session('ml_guest_cart', []));
-        $products = Product::query()->with('farmer')->whereIn('id', array_keys($lines))->get();
+        $products = Product::query()->with(['farmer', 'market'])->whereIn('id', array_keys($lines))->get();
         $slots = $products->flatMap(fn ($product) => $product->farmer->slots())->pluck('label')->unique()->values();
+        if ($slots->isEmpty()) {
+            $slots = collect(['08:00-10:00', '10:00-12:00', '16:00-18:00']);
+        }
 
         return view('orders.guest', compact('products', 'lines', 'slots'));
     }
@@ -199,7 +202,55 @@ class OrderController extends Controller
         ], $data['pickup_date'], $data['pickup_slot'], $data['customer_note'] ?? null);
         session()->forget('ml_guest_cart');
 
-        return redirect()->route('home')->with('success', 'Guest pre-order '.$placed[0]->order_number.' is placed. Pay the farmer at the stall. No account was created.');
+        return $this->redirectGuestToOrderChat($placed, 'Guest pre-order placed. Your Order ID and chat with the farmer are ready below.');
+    }
+
+    public function guestShow(Order $order)
+    {
+        $this->authorizeGuestOrder($order);
+        $order->load([
+            'items.product',
+            'farmer.user',
+            'market',
+            'messages' => fn ($q) => $q->with('sender')->orderBy('created_at'),
+        ]);
+
+        OrderMessage::query()
+            ->where('order_id', $order->id)
+            ->whereNotNull('user_id')
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return view('orders.guest-confirm', compact('order'));
+    }
+
+    public function guestInvoice(Order $order)
+    {
+        $this->authorizeGuestOrder($order);
+        $order->load('items', 'farmer', 'market', 'customer');
+
+        return view('orders.invoice', compact('order'));
+    }
+
+    /** @param  array<int, \App\Models\Order>  $placed */
+    private function redirectGuestToOrderChat(array $placed, string $message)
+    {
+        $ids = collect(session('ml_guest_orders', []))
+            ->merge(collect($placed)->pluck('id'))
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+        session(['ml_guest_orders' => $ids]);
+
+        return redirect()->to(route('guest.orders.show', $placed[0]).'#order-chat')
+            ->with('success', $message);
+    }
+
+    private function authorizeGuestOrder(Order $order): void
+    {
+        $allowed = collect(session('ml_guest_orders', []))->map(fn ($id) => (int) $id);
+        abort_unless($allowed->contains((int) $order->id), 403);
     }
 
     // Only the buyer (or admin) can open / change this order

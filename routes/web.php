@@ -101,6 +101,9 @@ Route::put('/guest/cart/{product}', [CartController::class, 'guestUpdate'])->nam
 Route::post('/guest/cart/{product}/remove', [CartController::class, 'guestRemove'])->name('guest.cart.remove');
 Route::get('/guest/checkout', [OrderController::class, 'guestCreate'])->name('guest.checkout');
 Route::post('/guest/checkout', [OrderController::class, 'guestStore'])->middleware('throttle:8,1')->name('guest.checkout.store');
+Route::get('/guest/orders/{order}', [OrderController::class, 'guestShow'])->name('guest.orders.show');
+Route::get('/guest/orders/{order}/slip', [OrderController::class, 'guestInvoice'])->name('guest.orders.slip');
+Route::post('/guest/orders/{order}/chat', [OrderChatController::class, 'storeGuest'])->middleware('throttle:40,1')->name('guest.orders.chat');
 
 // Customer cart + checkout
 Route::middleware(['auth', 'role:customer'])->group(function () {

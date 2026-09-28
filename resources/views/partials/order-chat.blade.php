@@ -1,7 +1,8 @@
-{{-- Order chat box: customer ↔ farmer, tied to Order ID --}}
+{{-- Order chat box: customer/guest ↔ farmer, tied to Order ID --}}
 @php
     $postRoute = $postRoute ?? null;
     $slipRoute = $slipRoute ?? null;
+    $asGuest = (bool) ($asGuest ?? false);
     $messages = ($order->relationLoaded('messages')
         ? $order->messages
         : $order->messages()->with('sender')->latest()->get()
@@ -29,10 +30,10 @@
 
     <div class="order-chat-thread" id="orderChatThread">
         @forelse($messages as $msg)
-            @php $mine = $msg->isMine(); @endphp
+            @php $mine = $msg->isMine(null, $asGuest); @endphp
             <div class="order-chat-bubble {{ $mine ? 'is-mine' : 'is-theirs' }}">
                 <div class="order-chat-meta">
-                    <strong>{{ $mine ? 'You' : ($msg->sender->name ?? 'User') }}</strong>
+                    <strong>{{ $mine ? 'You' : $msg->senderLabel() }}</strong>
                     <span>{{ $msg->created_at->format('M j, g:i A') }}</span>
                 </div>
                 <div class="order-chat-body">{{ $msg->body }}</div>
@@ -70,5 +71,8 @@
     (function () {
         var thread = document.getElementById('orderChatThread');
         if (thread) thread.scrollTop = thread.scrollHeight;
+        if (window.location.hash === '#order-chat') {
+            document.getElementById('order-chat')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     })();
 </script>

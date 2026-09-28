@@ -98,8 +98,10 @@ class Order extends Model
         $userId = $userId ?? auth()->id();
 
         return $this->messages()
-            ->where('user_id', '!=', $userId)
             ->where('is_read', false)
+            ->where(function ($q) use ($userId) {
+                $q->whereNull('user_id')->orWhere('user_id', '!=', $userId);
+            })
             ->count();
     }
 
