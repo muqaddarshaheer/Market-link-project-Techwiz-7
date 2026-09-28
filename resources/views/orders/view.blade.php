@@ -21,15 +21,23 @@
 
     @include('partials.contact-actions', [
         'phone' => $order->farmerPhone(),
-        'label' => 'Talk to farmer',
-        'prefill' => 'Assalam o Alaikum! Order '.$order->order_number.' ke baare mein — ',
+        'label' => 'Call / WhatsApp farmer',
+        'prefill' => 'Assalam o Alaikum! MarketLink Order '.$order->order_number.' (total '.money($order->total_amount).') — pickup '.$order->pickup_date->format('M j').' '.$order->pickup_slot.'. Mere paas order slip hai. ',
         'class' => 'mt-3',
     ])
 </div>
 <div class="d-flex gap-2 flex-wrap no-print">
-    <a class="btn btn-outline-ml" href="{{ route('customer.orders.invoice', $order) }}">Print invoice</a>
+    <a class="btn btn-outline-ml" href="{{ route('customer.orders.invoice', $order) }}" target="_blank" rel="noopener"><i class="bi bi-receipt"></i> Order slip / invoice</a>
+    <a class="btn btn-ml" href="#order-chat"><i class="bi bi-chat-dots"></i> Chat with farmer</a>
     <form method="POST" action="{{ route('customer.orders.reorder', $order) }}">@csrf<button class="btn btn-outline-ml">Reorder</button></form>
 </div>
+
+@include('partials.order-chat', [
+    'order' => $order,
+    'postRoute' => route('customer.orders.chat', $order),
+    'slipRoute' => route('customer.orders.invoice', $order),
+    'peerLabel' => $order->farmer->stall_name ?? 'the farmer',
+])
 @if($order->isOpenForChange())
     <form method="POST" action="{{ route('customer.orders.update', $order) }}" class="card-ml p-3 mt-3">
         @csrf @method('PUT')

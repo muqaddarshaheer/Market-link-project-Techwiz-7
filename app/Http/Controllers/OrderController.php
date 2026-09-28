@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\OrderMessage;
 use App\Models\Product;
 use App\Services\NotificationService;
 use App\Services\OrderService;
@@ -53,7 +54,13 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $this->authorizeCustomer($order);
-        $order->load('items.product', 'farmer.user', 'market', 'reviews');
+        $order->load(['items.product', 'farmer.user', 'market', 'reviews', 'messages' => fn ($q) => $q->with('sender')->orderBy('created_at')]);
+
+        OrderMessage::query()
+            ->where('order_id', $order->id)
+            ->where('user_id', '!=', auth()->id())
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
 
         return view('orders.view', compact('order'));
     }
@@ -137,7 +144,7 @@ class OrderController extends Controller
 
     public function invoice(Order $order)
     {
-        $this->authorizeCustomer($order);
+        $this->authorizeOrderParty($order);
         $order->load('items', 'farmer', 'market', 'customer');
 
         return view('orders.invoice', compact('order'));
@@ -199,5 +206,16 @@ class OrderController extends Controller
     private function authorizeCustomer(Order $order): void
     {
         abort_unless($order->customer_id === auth()->id() || auth()->user()->isAdmin(), 403);
+    }
+
+    /** Customer, farmer on this order, or admin — for order slip / shared views */
+    private function authorizeOrderParty(Order $order): void
+    {
+        $user = auth()->user();
+        if ($user->isAdmin() || (int) $order->customer_id === (int) $user->id) {
+            return;
+        }
+        $profile = $user->farmerProfile;
+        abort_unless($profile && (int) $order->farmer_id === (int) $profile->id, 403);
     }
 }

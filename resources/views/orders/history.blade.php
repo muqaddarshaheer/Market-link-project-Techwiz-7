@@ -21,15 +21,17 @@
                 <a href="{{ route('customer.orders.show', $order) }}"><strong>{{ $order->order_number }}</strong></a>
                 <div class="small muted">{{ $order->farmer->stall_name }} · {{ $order->pickup_date->format('M j') }} · {{ money($order->total_amount) }}</div>
             </div>
-            <div class="d-flex gap-2 align-items-center">
+            <div class="d-flex gap-2 align-items-center flex-wrap">
                 @include('partials.order-status-badge', ['status' => $order->status])
+                <a class="btn btn-outline-ml btn-sm" href="{{ route('customer.orders.show', $order) }}#order-chat"><i class="bi bi-chat-dots"></i> Chat</a>
+                <a class="btn btn-outline-ml btn-sm" href="{{ route('customer.orders.invoice', $order) }}" target="_blank" rel="noopener"><i class="bi bi-receipt"></i> Slip</a>
                 <form method="POST" action="{{ route('customer.orders.reorder', $order) }}">@csrf<button class="btn btn-outline-ml btn-sm">Reorder</button></form>
             </div>
         </div>
         @include('partials.contact-actions', [
             'phone' => $order->farmerPhone(),
             'label' => 'Talk to farmer',
-            'prefill' => 'Assalam o Alaikum! Order '.$order->order_number.' — ',
+            'prefill' => 'Assalam o Alaikum! MarketLink Order '.$order->order_number.' — mere paas order slip hai. ',
             'class' => 'mt-2',
         ])
     </div>

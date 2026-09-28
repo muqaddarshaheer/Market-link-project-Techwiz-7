@@ -16,6 +16,7 @@ use App\Http\Controllers\SmartCropGuideController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MarketController;
+use App\Http\Controllers\OrderChatController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProduceGuideController;
 use App\Http\Controllers\ProductController;
@@ -87,6 +88,7 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     Route::post('/orders/{order}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
     Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
+    Route::post('/orders/{order}/chat', [OrderChatController::class, 'storeCustomer'])->middleware('throttle:40,1')->name('orders.chat');
     Route::post('/orders/{order}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::post('/reviews/{review}/helpful', [ReviewController::class, 'helpful'])->name('reviews.helpful');
 });
@@ -135,6 +137,9 @@ Route::middleware(['auth', 'role:farmer'])->prefix('farmer')->name('farmer.')->g
     Route::post('/products/template', [FarmerDashboardController::class, 'saveTemplate'])->name('products.template.save');
     Route::post('/products/template/apply', [FarmerDashboardController::class, 'applyTemplate'])->name('products.template.apply');
     Route::get('/orders', [FarmerDashboardController::class, 'ordersIndex'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderChatController::class, 'showFarmer'])->name('orders.show');
+    Route::get('/orders/{order}/slip', [OrderController::class, 'invoice'])->name('orders.slip');
+    Route::post('/orders/{order}/chat', [OrderChatController::class, 'storeFarmer'])->middleware('throttle:40,1')->name('orders.chat');
     Route::post('/orders/{order}/accept', [FarmerDashboardController::class, 'accept'])->name('orders.accept');
     Route::post('/orders/{order}/decline', [FarmerDashboardController::class, 'decline'])->name('orders.decline');
     Route::post('/orders/{order}/ready', [FarmerDashboardController::class, 'ready'])->name('orders.ready');

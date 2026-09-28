@@ -88,6 +88,21 @@ class Order extends Model
         return $this->hasMany(Review::class);
     }
 
+    public function messages(): HasMany
+    {
+        return $this->hasMany(OrderMessage::class);
+    }
+
+    public function unreadMessagesFor(?int $userId = null): int
+    {
+        $userId = $userId ?? auth()->id();
+
+        return $this->messages()
+            ->where('user_id', '!=', $userId)
+            ->where('is_read', false)
+            ->count();
+    }
+
     public function isOpenForChange(): bool
     {
         return in_array($this->status, ['placed', 'accepted'], true)

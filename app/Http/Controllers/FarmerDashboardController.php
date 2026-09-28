@@ -346,6 +346,9 @@ class FarmerDashboardController extends Controller
     {
         $farmer = $this->profile();
         $orders = $farmer->orders()->with(['customer', 'items', 'market'])
+            ->withCount(['messages as unread_chat_count' => function ($q) {
+                $q->where('is_read', false)->where('user_id', '!=', auth()->id());
+            }])
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
             ->latest()->paginate(12)->withQueryString();
 

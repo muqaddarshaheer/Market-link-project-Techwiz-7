@@ -565,7 +565,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2024_09_24_000001_create_marketlink_tables',1),(5,'2026_09_25_000001_add_pin_quality_and_guest_orders',1),(6,'2026_09_26_000002_restore_password_auth',1),(7,'2026_09_27_000001_create_smart_crops_table',1),(8,'2026_09_28_000001_create_farmer_lands_table',2),(9,'2026_09_28_000002_create_farmer_expenses_table',3);
+INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2024_09_24_000001_create_marketlink_tables',1),(5,'2026_09_25_000001_add_pin_quality_and_guest_orders',1),(6,'2026_09_26_000002_restore_password_auth',1),(7,'2026_09_27_000001_create_smart_crops_table',1),(8,'2026_09_28_000001_create_farmer_lands_table',2),(9,'2026_09_28_000002_create_farmer_expenses_table',3),(10,'2026_09_28_160000_create_order_messages_table',4);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -685,6 +685,40 @@ LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
 INSERT INTO `orders` VALUES (1,'ML-DEMO-1001',2,NULL,NULL,NULL,1,1,'2026-09-23','08:00-10:00','completed',9.50,'unpaid','Please pack the tomatoes ripe.','2026-09-22 21:26:46',NULL,'2026-09-26 16:26:46','2026-09-26 16:26:46'),(2,'ML-DEMO-1002',2,NULL,NULL,NULL,2,1,'2026-09-28','10:00-12:00','placed',7.00,'unpaid',NULL,'2026-09-27 21:26:46',NULL,'2026-09-26 16:26:46','2026-09-26 16:26:46');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `order_messages`
+--
+
+DROP TABLE IF EXISTS `order_messages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `order_messages` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `order_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `body` text NOT NULL,
+  `is_read` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `order_messages_order_id_foreign` (`order_id`),
+  KEY `order_messages_user_id_foreign` (`user_id`),
+  KEY `order_messages_order_id_created_at_index` (`order_id`,`created_at`),
+  KEY `order_messages_order_id_is_read_index` (`order_id`,`is_read`),
+  CONSTRAINT `order_messages_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `order_messages_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `order_messages`
+--
+
+LOCK TABLES `order_messages` WRITE;
+/*!40000 ALTER TABLE `order_messages` DISABLE KEYS */;
+/*!40000 ALTER TABLE `order_messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

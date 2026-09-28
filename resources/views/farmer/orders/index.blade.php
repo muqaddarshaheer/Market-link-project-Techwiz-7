@@ -30,6 +30,17 @@
         'class' => 'mt-2',
     ])
 
+    <div class="d-flex flex-wrap gap-2 mt-2">
+        <a class="btn btn-outline-ml btn-sm" href="{{ route('farmer.orders.show', $order) }}">
+            <i class="bi bi-chat-dots"></i> Open chat
+            @php $unread = (int) ($order->unread_chat_count ?? 0); @endphp
+            @if($unread > 0)<span class="badge bg-danger">{{ $unread }}</span>@endif
+        </a>
+        <a class="btn btn-outline-ml btn-sm" href="{{ route('farmer.orders.slip', $order) }}" target="_blank" rel="noopener">
+            <i class="bi bi-receipt"></i> Order slip
+        </a>
+    </div>
+
     @if($order->status === 'placed')
         <form method="POST" action="{{ route('farmer.orders.accept', $order) }}" class="d-flex gap-2 mt-2">@csrf
             <input class="form-control" name="farmer_notes" data-i18n-placeholder="ord.notePh" placeholder="Optional note">
