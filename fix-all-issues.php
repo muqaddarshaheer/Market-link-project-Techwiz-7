@@ -155,19 +155,20 @@ $sql = preg_replace('/\s*CHECK\s*\(\s*json_valid\s*\([^)]*\)\s*\)/i', '', $sql);
 $sql = str_replace("\r\n", "\n", $sql);
 $sql = preg_replace('/^\xEF\xBB\xBF/', '', $sql);
 
-// Hosting-safe: NO CREATE DATABASE / USE (commented). Tables only.
+// Hosting/local dump: INCLUDE CREATE DATABASE so phpMyAdmin auto-creates DB on XAMPP.
 $header = "-- MarketLink TechWiz 7 - FULL dump (UTF-8 no BOM)\n"
-    ."-- phpMyAdmin: SELECT your database first, then Import this file (charset utf-8)\n"
-    ."-- Or open /import-db.php in the project (recommended)\n"
-    ."-- Demo: farmer@marketlink.com / Farmer@123\n"
-    ."-- CREATE DATABASE and USE are intentionally omitted for shared hosting.\n\n"
+    ."-- phpMyAdmin: Import this file (charset utf-8). Database creates automatically.\n"
+    ."-- Or open /import-db.php in the project\n"
+    ."-- Demo: farmer@marketlink.com / Farmer@123\n\n"
+    ."CREATE DATABASE IF NOT EXISTS `marketlink` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\n"
+    ."USE `marketlink`;\n\n"
     ."SET NAMES utf8mb4;\n"
     ."SET FOREIGN_KEY_CHECKS=0;\n"
     ."SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';\n\n";
 
-// Strip any CREATE DATABASE / USE if present
-$sql = preg_replace('/^CREATE DATABASE.*$/mi', '-- CREATE DATABASE omitted for hosting', $sql);
-$sql = preg_replace('/^USE\s+`?marketlink`?\s*;?\s*$/mi', '-- USE marketlink; omitted for hosting', $sql);
+// Strip dump's own CREATE DATABASE / USE then inject ours above
+$sql = preg_replace('/^CREATE DATABASE.*$/mi', '', $sql);
+$sql = preg_replace('/^USE\s+`?marketlink`?\s*;?\s*$/mi', '', $sql);
 
 $final = $header.ltrim($sql)."\nSET FOREIGN_KEY_CHECKS=1;\n";
 
