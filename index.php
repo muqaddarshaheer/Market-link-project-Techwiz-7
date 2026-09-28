@@ -1,11 +1,16 @@
 <?php
 
 /**
- * XAMPP entry: http://localhost/marketlink-techwiz-7/
- * Uses PHP and the MySQL database named marketlink.
+ * XAMPP entry: http://localhost/your-folder-name/
  */
 
 $publicPath = __DIR__.DIRECTORY_SEPARATOR.'public';
+$autoload = __DIR__.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
+if (! is_file($autoload)) {
+    require __DIR__.DIRECTORY_SEPARATOR.'bootstrap'.DIRECTORY_SEPARATOR.'missing-vendor.php';
+    ml_missing_vendor_page(__DIR__);
+}
+
 $uri = urldecode(parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/', PHP_URL_PATH));
 $base = rtrim(str_replace('\\', '/', dirname(isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : '')), '/');
 if ($base !== '' && $base !== '/' && strpos($uri, $base) === 0) {

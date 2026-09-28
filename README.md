@@ -102,6 +102,21 @@ Guest / Customer          Farmer                    Admin
 
 ## Setup
 
+### GitHub ZIP (XAMPP testers — no Composer install needed on PC)
+
+1. Unzip into `C:\xampp\htdocs\`
+2. Double-click **`setup.bat`** (or open `http://localhost/Your-Folder/install.php`)
+3. Start Apache + MySQL in XAMPP
+4. Create MySQL database `marketlink`
+5. Run: `C:\xampp\php\php.exe artisan migrate --seed`
+6. Open: `http://localhost/Your-Folder-Name/`
+
+See **SETUP.txt** for the same steps in short form.
+
+> Fatal `vendor/autoload.php` error means setup was not run yet. GitHub ZIP never includes `vendor/` — that is normal.
+
+### Git clone / developers
+
 ```bash
 git clone https://github.com/muqaddarshaheer/Market-link-project-Techwiz-7.git
 cd Market-link-project-Techwiz-7

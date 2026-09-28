@@ -1,0 +1,23 @@
+MarketLink — ZIP / XAMPP setup (testers)
+
+GitHub ZIP me "vendor" folder nahi aati. Is liye pehli dafa setup zaroori hai.
+
+OPTION A (easy)
+1. Folder ko C:\xampp\htdocs\ me rakho
+2. setup.bat pe double-click karo (internet chahiye pehli dafa)
+3. XAMPP me Apache + MySQL ON
+4. phpMyAdmin me database banao: marketlink
+5. Command Prompt me folder open karke:
+   C:\xampp\php\php.exe artisan migrate --seed
+6. Browser:
+   http://localhost/Market-link-project-Techwiz-7-main/
+
+OPTION B (browser)
+1. http://localhost/Your-Folder-Name/install.php
+2. "Run setup" dabao
+3. Phir migrate --seed (upar wala step 5)
+
+Demo logins (seed ke baad):
+- farmer@marketlink.com / Farmer@123
+- customer@marketlink.com / Customer@123
+- admin@marketlink.com / Admin@123
