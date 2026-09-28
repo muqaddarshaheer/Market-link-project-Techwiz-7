@@ -1,6 +1,12 @@
--- MarketLink TechWiz 7 - FULL database
--- phpMyAdmin: Import this file (Character set of file = utf-8)
+-- MarketLink TechWiz 7 - FULL dump (UTF-8 no BOM)
+-- phpMyAdmin: SELECT your database first, then Import this file (charset utf-8)
+-- Or open /import-db.php in the project (recommended)
 -- Demo: farmer@marketlink.com / Farmer@123
+-- CREATE DATABASE and USE are intentionally omitted for shared hosting.
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS=0;
+SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';
 
 -- MariaDB dump 10.19  Distrib 10.4.32-MariaDB, for Win64 (AMD64)
 --
@@ -18,14 +24,6 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
---
--- Current Database: `marketlink`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `marketlink` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
-
-USE `marketlink`;
 
 --
 -- Table structure for table `announcements`
@@ -984,4 +982,6 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-09-28 13:40:05
+-- Dump completed on 2026-09-28 15:42:54
+
+SET FOREIGN_KEY_CHECKS=1;
