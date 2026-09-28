@@ -27,12 +27,12 @@
                     @if(auth()->user()->isCustomer())
                         <form method="POST" action="{{ route('customer.favorites.toggle') }}">@csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
-                            <button class="btn btn-outline-ml btn-sm" type="submit" aria-label="Favorite"><i class="bi bi-heart"></i></button>
+                            <button class="btn btn-outline-ml btn-sm pc-btn" type="submit" aria-label="Favorite"><i class="bi bi-heart"></i></button>
                         </form>
                         @if($product->is_available && ! $product->is_sold_out && $product->stock_quantity > 0)
                             <form method="POST" action="{{ route('cart.add', $product) }}" data-ajax-cart>@csrf
                                 <input type="hidden" name="quantity" value="1">
-                                <button class="btn btn-ml btn-sm" type="submit">Add</button>
+                                <button class="btn btn-ml btn-sm pc-btn pc-btn-add" type="submit"><i class="bi bi-bag-plus"></i><span>Add</span></button>
                             </form>
                         @endif
                     @endif
@@ -41,11 +41,11 @@
                     @if($product->is_available && ! $product->is_sold_out && $product->stock_quantity > 0)
                         <form method="POST" action="{{ route('guest.cart.add', $product) }}" data-ajax-cart>@csrf
                             <input type="hidden" name="quantity" value="1">
-                            <button class="btn btn-ml btn-sm" type="submit">Add</button>
+                            <button class="btn btn-ml btn-sm pc-btn pc-btn-add" type="submit"><i class="bi bi-bag-plus"></i><span>Add</span></button>
                         </form>
                     @endif
                 @endguest
-                <a class="btn btn-outline-ml btn-sm" href="{{ route('products.show', $product) }}">View</a>
+                <a class="btn btn-outline-ml btn-sm pc-btn pc-btn-view" href="{{ route('products.show', $product) }}"><i class="bi bi-eye"></i><span>View</span></a>
             </div>
         </div>
     </div>

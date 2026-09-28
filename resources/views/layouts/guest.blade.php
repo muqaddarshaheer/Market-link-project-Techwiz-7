@@ -28,6 +28,9 @@
         </div>
     </aside>
     <main class="auth-form">
+        <button class="btn btn-outline-ml btn-sm auth-theme-btn" type="button" data-theme-toggle onclick="mlTheme()" aria-label="Toggle dark mode" aria-pressed="false">
+            <i class="bi bi-moon-stars"></i>
+        </button>
         @include('partials.flashes')
         @yield('content')
     </main>
