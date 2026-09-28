@@ -1,0 +1,50 @@
+{
+  "currency": "Rs.",
+  "crops": [
+    {"id": "potato", "label_en": "Potato", "label_ur": "Aloo / Potato", "icon": "🥔", "aliases": ["aloo", "alu", "potato", "آلو"]},
+    {"id": "wheat", "label_en": "Wheat", "label_ur": "Gandum / Wheat", "icon": "🌾", "aliases": ["gandum", "wheat", "گندم"]},
+    {"id": "rice", "label_en": "Rice", "label_ur": "Chawal / Rice", "icon": "🍚", "aliases": ["chawal", "rice", "چاول"]},
+    {"id": "corn", "label_en": "Corn", "label_ur": "Makai / Corn", "icon": "🌽", "aliases": ["makai", "corn", "maize", "مکئی"]},
+    {"id": "tomato", "label_en": "Tomato", "label_ur": "Tamatar / Tomato", "icon": "🍅", "aliases": ["tamatar", "tomato", "ٹماٹر"]},
+    {"id": "onion", "label_en": "Onion", "label_ur": "Piyaz / Onion", "icon": "🧅", "aliases": ["piyaz", "pyaz", "onion", "پیاز"]},
+    {"id": "carrot", "label_en": "Carrot", "label_ur": "Gajar / Carrot", "icon": "🥕", "aliases": ["gajar", "carrot", "گاجر"]},
+    {"id": "cucumber", "label_en": "Cucumber", "label_ur": "Kheera / Cucumber", "icon": "🥒", "aliases": ["kheera", "cucumber", "کھیرا"]},
+    {"id": "chili", "label_en": "Chili", "label_ur": "Mirch / Chili", "icon": "🌶️", "aliases": ["mirch", "chili", "chilli", "مرچ"]},
+    {"id": "spinach", "label_en": "Spinach", "label_ur": "Palak / Spinach", "icon": "🥬", "aliases": ["palak", "spinach", "پالک"]},
+    {"id": "eggplant", "label_en": "Eggplant", "label_ur": "Baingan / Eggplant", "icon": "🍆", "aliases": ["baingan", "eggplant", "brinjal", "بینگن"]},
+    {"id": "broccoli", "label_en": "Broccoli", "label_ur": "Broccoli", "icon": "🥦", "aliases": ["broccoli"]},
+    {"id": "mango", "label_en": "Mango", "label_ur": "Aam / Mango", "icon": "🥭", "aliases": ["aam", "mango", "آم"]},
+    {"id": "apple", "label_en": "Apple", "label_ur": "Seb / Apple", "icon": "🍎", "aliases": ["seb", "apple", "سیب"]},
+    {"id": "orange", "label_en": "Orange", "label_ur": "Kinnow / Orange", "icon": "🍊", "aliases": ["kinnow", "orange", "malta", "کینو"]},
+    {"id": "watermelon", "label_en": "Watermelon", "label_ur": "Tarbooz / Watermelon", "icon": "🍉", "aliases": ["tarbooz", "tarbooz", "watermelon", "تربوز"]},
+    {"id": "grapes", "label_en": "Grapes", "label_ur": "Angoor / Grapes", "icon": "🍇", "aliases": ["angoor", "grapes", "انگور"]},
+    {"id": "other", "label_en": "Other Crop", "label_ur": "Other Crop", "icon": "🌱", "aliases": ["other", "fasal", "فصل"]}
+  ],
+  "land_units": [
+    {"id": "marla_272", "label": "Marla (272.25 sq ft)", "to_sqft": 272.25, "group": "marla"},
+    {"id": "marla_225", "label": "Marla (225 sq ft)", "to_sqft": 225, "group": "marla"},
+    {"id": "kanal", "label": "Kanal", "to_sqft": 5445, "group": "kanal"},
+    {"id": "acre", "label": "Acre / Killa", "to_sqft": 43560, "group": "acre"},
+    {"id": "hectare", "label": "Hectare", "to_sqft": 107639.1, "group": "hectare"},
+    {"id": "bigha_pk", "label": "Bigha (local ~4 Kanal)", "to_sqft": 21780, "group": "bigha"},
+    {"id": "murabba", "label": "Murabba (~25 Acre)", "to_sqft": 1089000, "group": "murabba"},
+    {"id": "sqft", "label": "Square Feet", "to_sqft": 1, "group": "sqft"},
+    {"id": "sqyd", "label": "Square Yard / Gaz", "to_sqft": 9, "group": "sqyd"},
+    {"id": "sqm", "label": "Square Meter", "to_sqft": 10.7639, "group": "sqm"}
+  ],
+  "helpers": [
+    "1 Kanal = 20 Marla (using selected Marla size)",
+    "1 Acre / Killa ≈ 8 Kanal",
+    "1 Hectare ≈ 2.471 Acre"
+  ],
+  "qty_units": [
+    {"id": "g", "label": "Gram", "to_kg": 0.001},
+    {"id": "kg", "label": "Kilogram (Kg)", "to_kg": 1},
+    {"id": "maund", "label": "Maund (40 Kg)", "to_kg": 40},
+    {"id": "ton", "label": "Ton (1000 Kg)", "to_kg": 1000},
+    {"id": "packet", "label": "Seed Packet", "to_kg": null},
+    {"id": "plants", "label": "Plants", "to_kg": null},
+    {"id": "crate", "label": "Crate", "to_kg": null},
+    {"id": "other", "label": "Other", "to_kg": null}
+  ]
+}

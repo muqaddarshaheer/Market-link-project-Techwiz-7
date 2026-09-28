@@ -1205,6 +1205,17 @@ body.app-shell {
   background: linear-gradient(180deg, #1c3328 0%, #18211c 100%);
   color: #f3f7f4;
 }
+[data-theme="dark"] .ml-hero-phone-top strong,
+[data-theme="dark"] .ml-hero-phone-item strong {
+  color: #f4faf6 !important;
+}
+[data-theme="dark"] .ml-hero-phone-top span,
+[data-theme="dark"] .ml-hero-phone-label {
+  color: #b7c4bb !important;
+}
+[data-theme="dark"] .ml-hero-phone-item small {
+  color: #7dcea0 !important;
+}
 [data-theme="dark"] .ml-hero-phone-item,
 [data-theme="dark"] .ml-hero-phone-search {
   background: #101612;
@@ -3504,8 +3515,13 @@ body:has(.home-page) main.py-4 { padding-top: .35rem !important; }
 [data-theme="dark"] .product-card-stall {
   color: #c5d6cc !important;
 }
+[data-theme="dark"] .thumb {
+  background: #1c3328;
+}
 [data-theme="dark"] .thumb-label {
   color: #fff !important;
+  background: linear-gradient(transparent, rgba(6, 20, 14, .92) 40%) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .55);
 }
 [data-theme="dark"] .text-dark,
 [data-theme="dark"] .text-body,
@@ -3805,7 +3821,8 @@ body:has(.home-page) main.py-4 { padding-top: .35rem !important; }
   color: #c5d6cc !important;
 }
 [data-theme="dark"] #harvest-calendar .hc-card {
-  background:
+  background-color: #f7fbf8 !important;
+  background-image:
     radial-gradient(circle at 100% 0%, rgba(47, 158, 75, .12), transparent 34%),
     radial-gradient(circle at 0% 100%, rgba(240, 162, 2, .1), transparent 30%),
     linear-gradient(165deg, #f3fbf5 0%, #fffdf8 55%, #ffffff 100%) !important;
@@ -3993,9 +4010,23 @@ body:has(.home-page) main.py-4 { padding-top: .35rem !important; }
   color: #fff !important;
 }
 [data-theme="dark"] #harvest-calendar .hc-card .btn-ml {
-  background: linear-gradient(180deg, #248655, #145c38) !important;
+  background-color: #145c38 !important;
+  background-image: linear-gradient(180deg, #248655, #145c38) !important;
   color: #fff !important;
   border-color: transparent !important;
+}
+[data-theme="dark"] #harvest-calendar .harvest-month.is-active {
+  background-color: #1a4d2e !important;
+}
+[data-theme="dark"] #harvest-calendar .harvest-day.is-selected {
+  background-color: #1a4d2e !important;
+}
+[data-theme="dark"] #harvest-calendar .harvest-week-card,
+[data-theme="dark"] #harvest-calendar .harvest-week-card strong,
+[data-theme="dark"] #harvest-calendar .harvest-week-card span {
+  color: #f4faf6 !important;
+  background: #18211c !important;
+  border-color: #2c3b33 !important;
 }
 [data-theme="dark"] #harvest-calendar .hc-badge,
 [data-theme="dark"] #harvest-calendar .harvest-badge {
@@ -6506,7 +6537,7 @@ body:has(.home-page) main.py-4 { padding-top: .35rem !important; }
 [data-theme="dark"] .guest-checkout-steps li span { background: #18211c; }
 [data-theme="dark"] .guest-review > div { background: #121a16; border-color: #2c3b33; }
 
-/* —— Theme polish + interactive borders —— */
+/* ï¿½ï¿½ Theme polish + interactive borders ï¿½ï¿½ */
 :root {
   --ml-border-hover: color-mix(in srgb, var(--ml-green) 55%, var(--ml-line));
   --ml-border-focus: var(--ml-green);
@@ -6681,7 +6712,7 @@ a.card-ml:hover {
   color: var(--ml-text);
 }
 
-/* —— Auth pages: correct light / dark (no inverted card) —— */
+/* ï¿½ï¿½ Auth pages: correct light / dark (no inverted card) ï¿½ï¿½ */
 [data-theme="dark"] .auth-body,
 [data-theme="dark"] .auth-body.auth-login,
 [data-theme="dark"] .auth-body.auth-register {
@@ -6797,4 +6828,282 @@ a.card-ml:hover {
 }
 [data-theme="dark"] .product-card-actions .btn-outline-ml {
   background: #121a16;
+}
+
+/* ï¿½ï¿½ Advanced Whatï¿½s Growing calendar ï¿½ï¿½ */
+.hc-advanced .hc-season-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .55rem;
+  margin: 0 0 .75rem;
+}
+.hc-advanced .hc-season {
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+  text-align: left;
+  padding: .7rem .8rem;
+  border-radius: 14px;
+  border: 1px solid var(--ml-line);
+  background: var(--ml-surface);
+  color: var(--ml-text);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, transform .12s ease;
+}
+.hc-advanced .hc-season strong { font-size: .95rem; }
+.hc-advanced .hc-season span { font-size: .72rem; color: var(--ml-muted); }
+.hc-advanced .hc-season.is-on,
+.hc-advanced .hc-season:hover {
+  border-color: var(--ml-green);
+  background: var(--ml-green-soft);
+}
+.hc-advanced .hc-season-note {
+  font-size: .9rem;
+  color: var(--ml-muted);
+  margin: 0 0 1rem;
+  max-width: 52rem;
+}
+.hc-advanced .hc-crop-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin: 0 0 .85rem;
+}
+.hc-advanced .hc-crop-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .4rem .7rem;
+  border-radius: 999px;
+  border: 1px solid var(--ml-line);
+  background: #fff;
+  color: var(--ml-text);
+  font-size: .8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.hc-advanced .hc-crop-pill.is-on,
+.hc-advanced .hc-crop-pill:hover {
+  border-color: var(--ml-green);
+  background: var(--ml-green-soft);
+}
+.hc-advanced .hc-crop-pill.is-fav { box-shadow: inset 0 0 0 1px #c9a227; }
+.hc-advanced .hc-crop-pill.is-fruit { border-color: #f0c9a0; }
+.hc-advanced .hc-crop-pill.is-herb { border-color: #b7e0c4; }
+.hc-advanced .hc-main-split {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.35fr) minmax(240px, .85fr);
+  align-items: start;
+}
+.hc-advanced .hc-detail {
+  border: 1px solid var(--ml-line);
+  border-radius: 16px;
+  background: #f7fbf8;
+  padding: 1rem;
+  min-height: 280px;
+}
+.hc-advanced .hc-detail-head {
+  display: flex;
+  gap: .75rem;
+  align-items: flex-start;
+  margin-bottom: .65rem;
+}
+.hc-advanced .hc-detail-glyph {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border: 1px solid var(--ml-line);
+  font-size: 1.35rem;
+  flex: none;
+}
+.hc-advanced .hc-detail-kind {
+  margin: 0;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ml-green);
+}
+.hc-advanced .hc-detail-title {
+  margin: .1rem 0;
+  font-size: 1.15rem;
+  font-family: var(--display);
+}
+.hc-advanced .hc-detail-months {
+  margin: 0;
+  font-size: .8rem;
+  color: var(--ml-muted);
+}
+.hc-advanced .hc-detail-info {
+  font-size: .9rem;
+  color: var(--ml-text);
+  margin: 0 0 .85rem;
+}
+.hc-advanced .hc-detail-cols {
+  display: grid;
+  gap: .75rem;
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 575.98px) {
+  .hc-advanced .hc-detail-cols { grid-template-columns: 1fr; }
+}
+.hc-advanced .hc-detail-cols h4 {
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin: 0 0 .35rem;
+  color: var(--ml-muted);
+}
+.hc-advanced .hc-vitamins,
+.hc-advanced .hc-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: .45rem;
+}
+.hc-advanced .hc-vitamins li,
+.hc-advanced .hc-benefits li {
+  font-size: .84rem;
+  padding: .45rem .55rem;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--ml-line);
+}
+.hc-advanced .hc-vitamins li strong {
+  display: block;
+  font-size: .8rem;
+  margin-bottom: .15rem;
+}
+.hc-advanced .hc-vitamins li span { color: var(--ml-muted); }
+.hc-advanced .hc-detail-actions { margin-top: .85rem; }
+.hc-advanced .hc-fav-btn.is-on {
+  background: #fff6df;
+  border-color: #c9a227;
+  color: #7a4e00;
+}
+.hc-advanced .harvest-day.is-vegetable { background: #e8f6ec; }
+.hc-advanced .harvest-day.is-fruit { background: #fff1e4; }
+.hc-advanced .harvest-day.is-herb { background: #eaf7f0; }
+.hc-advanced .harvest-day.is-selected {
+  outline: 2px solid var(--ml-green);
+  outline-offset: 1px;
+}
+.hc-advanced #harvestSeasonFill[data-season="winter"] { background: #7aa8c9; }
+.hc-advanced #harvestSeasonFill[data-season="spring"] { background: #5fbf7a; }
+.hc-advanced #harvestSeasonFill[data-season="summer"] { background: #e0a24a; }
+.hc-advanced #harvestSeasonFill[data-season="autumn"] { background: #c97b4a; }
+.hc-modal-top {
+  display: flex;
+  gap: .75rem;
+  align-items: center;
+}
+.hc-modal-top > span { font-size: 1.8rem; }
+@media (max-width: 991.98px) {
+  .hc-advanced .hc-season-tabs { grid-template-columns: 1fr 1fr; }
+  .hc-advanced .hc-main-split { grid-template-columns: 1fr; }
+}
+@media (max-width: 575.98px) {
+  .hc-advanced .hc-season-tabs { grid-template-columns: 1fr; }
+}
+[data-theme="dark"] .hc-advanced .hc-crop-pill,
+[data-theme="dark"] .hc-advanced .hc-detail,
+[data-theme="dark"] .hc-advanced .hc-vitamins li,
+[data-theme="dark"] .hc-advanced .hc-benefits li {
+  background: #121a16;
+  border-color: #2c3b33;
+  color: #f4faf6;
+}
+[data-theme="dark"] .hc-advanced .hc-detail-glyph { background: #18211c; }
+[data-theme="dark"] .hc-advanced .harvest-day.is-vegetable { background: #1c3328; }
+[data-theme="dark"] .hc-advanced .harvest-day.is-fruit { background: #3a2e18; }
+[data-theme="dark"] .hc-advanced .harvest-day.is-herb { background: #1a3226; }
+
+/* ï¿½ï¿½ Dark mode: stop light-theme greens vanishing on dark surfaces ï¿½ï¿½ */
+[data-theme="dark"] .ml-hero-phone-screen,
+[data-theme="dark"] .ml-hero-phone-screen * {
+  color: #f3f7f4;
+}
+[data-theme="dark"] .ml-hero-phone-top strong,
+[data-theme="dark"] .ml-hero-phone-item strong {
+  color: #f4faf6 !important;
+}
+[data-theme="dark"] .ml-hero-phone-top span,
+[data-theme="dark"] .ml-hero-phone-label {
+  color: #b7c4bb !important;
+}
+[data-theme="dark"] .ml-hero-phone-item small {
+  color: #7dcea0 !important;
+}
+[data-theme="dark"] .farmer-card-phone,
+[data-theme="dark"] .market-card h3,
+[data-theme="dark"] .market-card h3 a,
+[data-theme="dark"] .farmer-card h3,
+[data-theme="dark"] .farmer-card h3 a,
+[data-theme="dark"] .card-ml h3,
+[data-theme="dark"] .card-ml h3 a,
+[data-theme="dark"] .card-ml strong {
+  color: #f4faf6 !important;
+}
+[data-theme="dark"] .farmer-card-days,
+[data-theme="dark"] .farmer-card-count,
+[data-theme="dark"] .market-card-meta,
+[data-theme="dark"] .card-ml .muted,
+[data-theme="dark"] .card-ml .small {
+  color: #c5d6cc !important;
+}
+[data-theme="dark"] .harvest-facts span {
+  color: #b7c4bb !important;
+}
+[data-theme="dark"] .harvest-facts strong,
+[data-theme="dark"] .harvest-modal-card,
+[data-theme="dark"] .harvest-modal-card h2,
+[data-theme="dark"] .harvest-modal-card h3,
+[data-theme="dark"] .harvest-modal-card p,
+[data-theme="dark"] .harvest-result strong {
+  color: #f4faf6 !important;
+}
+[data-theme="dark"] .harvest-modal-card {
+  background: #18211c !important;
+  border-color: #2c3b33 !important;
+}
+[data-theme="dark"] .harvest-modal-badge {
+  background: #1c3328 !important;
+  color: #8fd6ae !important;
+}
+[data-theme="dark"] .form-label,
+[data-theme="dark"] label.form-label,
+[data-theme="dark"] .form-check-label {
+  color: #eef5f0 !important;
+}
+[data-theme="dark"] .table,
+[data-theme="dark"] .table td,
+[data-theme="dark"] .table th,
+[data-theme="dark"] .table strong {
+  color: #eef5f0 !important;
+}
+[data-theme="dark"] .table thead th {
+  color: #b7c4bb !important;
+  background: #15201b !important;
+}
+[data-theme="dark"] .dropdown-menu .dropdown-item,
+[data-theme="dark"] .dropdown-item {
+  color: #eef5f0 !important;
+}
+[data-theme="dark"] .dropdown-item:hover,
+[data-theme="dark"] .dropdown-item:focus {
+  background: #1c3328 !important;
+  color: #f4faf6 !important;
+}
+[data-theme="dark"] .text-success {
+  color: #7dcea0 !important;
+}
+[data-theme="dark"] .badge-soft {
+  background: #1c3328 !important;
+  color: #8fd6ae !important;
 }

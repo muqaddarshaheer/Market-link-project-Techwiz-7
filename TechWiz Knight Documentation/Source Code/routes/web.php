@@ -1,0 +1,217 @@
+<?php
+
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\CustomerDashboardController;
+use App\Http\Controllers\FarmerController;
+use App\Http\Controllers\FarmerDashboardController;
+use App\Http\Controllers\FarmerExpenseController;
+use App\Http\Controllers\FarmerLandController;
+use App\Http\Controllers\CropCalculatorController;
+use App\Http\Controllers\AdminSmartCropController;
+use App\Http\Controllers\SmartCropGuideController;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MarketController;
+use App\Http\Controllers\OrderChatController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProduceGuideController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReviewController;
+use Illuminate\Support\Facades\Route;
+
+// Fresh CSRF token for long-open pages (avoids 419 Page Expired)
+Route::get('/csrf-token', function () {
+    return response()->json(['token' => csrf_token()]);
+})->name('csrf.token');
+
+// Public pages
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/about', [HomeController::class, 'about'])->name('about');
+Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::post('/contact', [HomeController::class, 'sendContact'])->middleware('throttle:8,1')->name('contact.send');
+Route::get('/sitemap', [HomeController::class, 'sitemap'])->name('sitemap');
+Route::get('/produce-guide', [ProduceGuideController::class, 'index'])->name('produce-guide');
+
+// Browse markets, farmers, products
+Route::get('/markets', [MarketController::class, 'index'])->name('markets.index');
+Route::get('/markets/{market}', [MarketController::class, 'show'])->name('markets.show');
+Route::get('/farmers', [FarmerController::class, 'index'])->name('farmers.index');
+Route::get('/farmers/{farmer}', [FarmerController::class, 'show'])->name('farmers.show');
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/search', [ProductController::class, 'search'])->name('search');
+Route::get('/search/suggest', [ProductController::class, 'suggest'])->name('search.suggest');
+Route::get('/privacy', [HomeController::class, 'privacy'])->name('privacy');
+Route::get('/terms', [HomeController::class, 'terms'])->name('terms');
+Route::post('/chatbot', [ChatbotController::class, 'ask'])->middleware('throttle:30,1')->name('chatbot.ask');
+Route::get('/chatbot/speak', [ChatbotController::class, 'speak'])->middleware('throttle:60,1')->name('chatbot.speak');
+
+// Login / register (guests only)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register/customer', [AuthController::class, 'registerCustomer'])->middleware('throttle:5,1')->name('register.customer');
+    Route::post('/register/farmer', [AuthController::class, 'registerFarmer'])->middleware('throttle:5,1')->name('register.farmer');
+    Route::get('/password/reset', [AuthController::class, 'showForgot'])->name('password.request');
+    Route::post('/password/email', [AuthController::class, 'sendReset'])->middleware('throttle:5,1')->name('password.email');
+    Route::get('/password/reset/{token}', [AuthController::class, 'showReset'])->name('password.reset');
+    Route::post('/password/reset', [AuthController::class, 'reset'])->name('password.update');
+});
+
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// Account settings (any logged-in user)
+Route::middleware('auth')->prefix('account')->name('account.')->group(function () {
+    Route::put('/profile', [AccountController::class, 'updateProfile'])->name('profile');
+    Route::put('/password', [AccountController::class, 'updatePassword'])->name('password');
+});
+
+// Customer panel + orders
+Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
+    Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/favorites', [CustomerDashboardController::class, 'favorites'])->name('favorites');
+    Route::post('/favorites', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+    Route::get('/notifications', [CustomerDashboardController::class, 'notifications'])->name('notifications');
+    Route::get('/notifications/poll', [CustomerDashboardController::class, 'poll'])->name('notifications.poll');
+    Route::post('/notifications/{notification}/read', [CustomerDashboardController::class, 'read'])->name('notifications.read');
+    Route::post('/notifications/read-all', [CustomerDashboardController::class, 'readAll'])->name('notifications.read-all');
+    Route::get('/reviews', [CustomerDashboardController::class, 'reviews'])->name('reviews');
+    Route::get('/profile', [CustomerDashboardController::class, 'profile'])->name('profile');
+    Route::get('/orders', [OrderController::class, 'history'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::post('/orders/{order}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
+    Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
+    Route::post('/orders/{order}/chat', [OrderChatController::class, 'storeCustomer'])->middleware('throttle:40,1')->name('orders.chat');
+    Route::post('/orders/{order}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::post('/reviews/{review}/helpful', [ReviewController::class, 'helpful'])->name('reviews.helpful');
+});
+
+// Guest cart / quick order (no account)
+Route::post('/guest/quick/{product}', [OrderController::class, 'guestQuick'])->middleware('throttle:12,1')->name('guest.quick');
+Route::get('/guest/cart', [CartController::class, 'guestIndex'])->name('guest.cart');
+Route::post('/guest/cart/{product}', [CartController::class, 'guestAdd'])->name('guest.cart.add');
+Route::put('/guest/cart/{product}', [CartController::class, 'guestUpdate'])->name('guest.cart.update');
+Route::post('/guest/cart/{product}/remove', [CartController::class, 'guestRemove'])->name('guest.cart.remove');
+Route::get('/guest/checkout', [OrderController::class, 'guestCreate'])->name('guest.checkout');
+Route::post('/guest/checkout', [OrderController::class, 'guestStore'])->middleware('throttle:8,1')->name('guest.checkout.store');
+Route::get('/guest/orders/{order}', [OrderController::class, 'guestShow'])->name('guest.orders.show');
+Route::get('/guest/orders/{order}/slip', [OrderController::class, 'guestInvoice'])->name('guest.orders.slip');
+Route::post('/guest/orders/{order}/chat', [OrderChatController::class, 'storeGuest'])->middleware('throttle:40,1')->name('guest.orders.chat');
+
+// Customer cart + checkout
+Route::middleware(['auth', 'role:customer'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/{product}', [CartController::class, 'add'])->name('cart.add');
+    Route::put('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{product}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::get('/checkout', [OrderController::class, 'create'])->name('orders.create');
+    Route::post('/checkout', [OrderController::class, 'store'])->name('orders.store');
+});
+
+// Farmer panel
+Route::middleware(['auth', 'role:farmer'])->prefix('farmer')->name('farmer.')->group(function () {
+    Route::get('/dashboard', [FarmerDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/weather/speak', [FarmerDashboardController::class, 'speakWeather'])->middleware('throttle:40,1')->name('weather.speak');
+    Route::get('/crop-calculator', [CropCalculatorController::class, 'index'])->name('crop-calculator');
+    Route::post('/crop-calculator/calculate', [CropCalculatorController::class, 'calculate'])->middleware('throttle:40,1')->name('crop-calculator.calculate');
+    Route::get('/smart-crop-guide', [SmartCropGuideController::class, 'index'])->name('smart-crop-guide');
+    Route::get('/smart-crop-guide/{smartCrop}', [SmartCropGuideController::class, 'show'])->middleware('throttle:60,1')->name('smart-crop-guide.show');
+    Route::get('/crop-health', [\App\Http\Controllers\CropHealthController::class, 'index'])->name('crop-health');
+    Route::post('/crop-health/message', [\App\Http\Controllers\CropHealthController::class, 'message'])->middleware('throttle:40,1')->name('crop-health.message');
+    Route::post('/crop-health/answer', [\App\Http\Controllers\CropHealthController::class, 'answer'])->middleware('throttle:40,1')->name('crop-health.answer');
+    Route::post('/crop-health/photo', [\App\Http\Controllers\CropHealthController::class, 'photo'])->middleware('throttle:20,1')->name('crop-health.photo');
+    Route::post('/crop-health/reset', [\App\Http\Controllers\CropHealthController::class, 'reset'])->middleware('throttle:20,1')->name('crop-health.reset');
+    Route::get('/crop-health/speak', [\App\Http\Controllers\CropHealthController::class, 'speak'])->middleware('throttle:40,1')->name('crop-health.speak');
+    Route::get('/lands', [FarmerLandController::class, 'index'])->name('lands.index');
+    Route::post('/lands', [FarmerLandController::class, 'store'])->middleware('throttle:30,1')->name('lands.store');
+    Route::put('/lands/{land}', [FarmerLandController::class, 'update'])->middleware('throttle:40,1')->name('lands.update');
+    Route::delete('/lands/{land}', [FarmerLandController::class, 'destroy'])->middleware('throttle:20,1')->name('lands.destroy');
+    Route::get('/products', [FarmerDashboardController::class, 'products'])->name('products.index');
+    Route::post('/products', [FarmerDashboardController::class, 'storeProduct'])->name('products.store');
+    Route::put('/products/{product}', [FarmerDashboardController::class, 'updateProduct'])->name('products.update');
+    Route::delete('/products/{product}', [FarmerDashboardController::class, 'destroyProduct'])->name('products.destroy');
+    Route::post('/products/template', [FarmerDashboardController::class, 'saveTemplate'])->name('products.template.save');
+    Route::post('/products/template/apply', [FarmerDashboardController::class, 'applyTemplate'])->name('products.template.apply');
+    Route::get('/orders', [FarmerDashboardController::class, 'ordersIndex'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderChatController::class, 'showFarmer'])->name('orders.show');
+    Route::get('/orders/{order}/slip', [OrderController::class, 'invoice'])->name('orders.slip');
+    Route::post('/orders/{order}/chat', [OrderChatController::class, 'storeFarmer'])->middleware('throttle:40,1')->name('orders.chat');
+    Route::post('/orders/{order}/accept', [FarmerDashboardController::class, 'accept'])->name('orders.accept');
+    Route::post('/orders/{order}/decline', [FarmerDashboardController::class, 'decline'])->name('orders.decline');
+    Route::post('/orders/{order}/ready', [FarmerDashboardController::class, 'ready'])->name('orders.ready');
+    Route::post('/orders/{order}/complete', [FarmerDashboardController::class, 'complete'])->name('orders.complete');
+    Route::get('/slots', [FarmerDashboardController::class, 'slots'])->name('slots.index');
+    Route::put('/slots', [FarmerDashboardController::class, 'updateSlots'])->name('slots.update');
+    Route::get('/insights', [FarmerDashboardController::class, 'insights'])->name('insights');
+    Route::get('/sales', [FarmerDashboardController::class, 'insights'])->name('sales');
+    Route::get('/expenses', [FarmerExpenseController::class, 'index'])->name('expenses.index');
+    Route::post('/expenses', [FarmerExpenseController::class, 'store'])->middleware('throttle:40,1')->name('expenses.store');
+    Route::put('/expenses/{expense}', [FarmerExpenseController::class, 'update'])->middleware('throttle:40,1')->name('expenses.update');
+    Route::delete('/expenses/{expense}', [FarmerExpenseController::class, 'destroy'])->middleware('throttle:20,1')->name('expenses.destroy');
+    Route::get('/reviews', [FarmerDashboardController::class, 'reviews'])->name('reviews');
+    Route::post('/reviews/{review}/reply', [FarmerDashboardController::class, 'reply'])->name('reviews.reply');
+    Route::get('/profile', [FarmerDashboardController::class, 'profileEdit'])->name('profile');
+    Route::put('/profile', [FarmerDashboardController::class, 'profileUpdate'])->name('profile.update');
+    Route::get('/account', [FarmerDashboardController::class, 'account'])->name('account');
+    Route::get('/notifications/poll', [CustomerDashboardController::class, 'poll'])->name('notifications.poll');
+    Route::get('/notifications', [CustomerDashboardController::class, 'notifications'])->name('notifications');
+    Route::post('/notifications/read-all', [CustomerDashboardController::class, 'readAll'])->name('notifications.read-all');
+});
+
+// Admin panel
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/users', [AdminDashboardController::class, 'users'])->name('users.index');
+    Route::get('/users/{user}', [AdminDashboardController::class, 'showUser'])->name('users.show');
+    Route::post('/users/{user}/toggle', [AdminDashboardController::class, 'toggleUser'])->name('users.toggle');
+    Route::post('/users/{user}/status', [AdminDashboardController::class, 'setUserStatus'])->name('users.status');
+    Route::post('/users/{user}/pin', [AdminDashboardController::class, 'setUserPin'])->name('users.pin');
+    Route::post('/pin', [AdminDashboardController::class, 'setOwnPin'])->name('pin.update');
+    Route::post('/orders/{order}/payment', [AdminDashboardController::class, 'setPayment'])->name('orders.payment');
+    Route::get('/farmers', [AdminDashboardController::class, 'farmers'])->name('farmers.index');
+    Route::get('/farmers/{farmer}', [AdminDashboardController::class, 'showFarmer'])->name('farmers.show');
+    Route::get('/orders', [AdminDashboardController::class, 'orders'])->name('orders.index');
+    Route::get('/orders/{order}', [AdminDashboardController::class, 'showOrder'])->name('orders.show');
+    Route::post('/farmers/{farmer}/decide', [AdminDashboardController::class, 'decideFarmer'])->name('farmers.decide');
+    Route::put('/farmers/{farmer}', [AdminDashboardController::class, 'updateFarmer'])->name('farmers.update');
+    Route::post('/farmers/{farmer}/suspend', [AdminDashboardController::class, 'suspendFarmer'])->name('farmers.suspend');
+    Route::delete('/farmers/{farmer}', [AdminDashboardController::class, 'destroyFarmer'])->name('farmers.destroy');
+    Route::get('/markets', [AdminDashboardController::class, 'markets'])->name('markets.index');
+    Route::post('/markets', [AdminDashboardController::class, 'storeMarket'])->name('markets.store');
+    Route::put('/markets/{market}', [AdminDashboardController::class, 'updateMarket'])->name('markets.update');
+    Route::delete('/markets/{market}', [AdminDashboardController::class, 'destroyMarket'])->name('markets.destroy');
+    Route::get('/categories', [AdminDashboardController::class, 'categories'])->name('categories.index');
+    Route::post('/categories', [AdminDashboardController::class, 'storeCategory'])->name('categories.store');
+    Route::put('/categories/{category}', [AdminDashboardController::class, 'updateCategory'])->name('categories.update');
+    Route::delete('/categories/{category}', [AdminDashboardController::class, 'destroyCategory'])->name('categories.destroy');
+    Route::get('/smart-crops', [AdminSmartCropController::class, 'index'])->name('smart-crops.index');
+    Route::post('/smart-crops', [AdminSmartCropController::class, 'store'])->name('smart-crops.store');
+    Route::put('/smart-crops/{smartCrop}', [AdminSmartCropController::class, 'update'])->name('smart-crops.update');
+    Route::delete('/smart-crops/{smartCrop}', [AdminSmartCropController::class, 'destroy'])->name('smart-crops.destroy');
+    Route::get('/products', [AdminDashboardController::class, 'products'])->name('products.index');
+    Route::put('/products/{product}', [AdminDashboardController::class, 'updateProduct'])->name('products.update');
+    Route::delete('/products/{product}', [AdminDashboardController::class, 'destroyProduct'])->name('products.destroy');
+    Route::get('/reviews', [AdminDashboardController::class, 'reviews'])->name('reviews.index');
+    Route::post('/reviews/{review}', [AdminDashboardController::class, 'moderateReview'])->name('reviews.moderate');
+    Route::delete('/reviews/{review}', [AdminDashboardController::class, 'destroyReview'])->name('reviews.destroy');
+    Route::get('/reports', [AdminDashboardController::class, 'reports'])->name('reports.index');
+    Route::get('/reports/export', [AdminDashboardController::class, 'exportReports'])->name('reports.export');
+    Route::get('/announcements', [AdminDashboardController::class, 'announcements'])->name('announcements.index');
+    Route::post('/announcements', [AdminDashboardController::class, 'storeAnnouncement'])->name('announcements.store');
+    Route::put('/announcements/{announcement}', [AdminDashboardController::class, 'updateAnnouncement'])->name('announcements.update');
+    Route::delete('/announcements/{announcement}', [AdminDashboardController::class, 'destroyAnnouncement'])->name('announcements.destroy');
+    Route::get('/faqs', [AdminDashboardController::class, 'faqs'])->name('faqs.index');
+    Route::get('/chatbot-faqs', [AdminDashboardController::class, 'faqs'])->name('chatbot-faqs.index');
+    Route::post('/faqs', [AdminDashboardController::class, 'storeFaq'])->name('faqs.store');
+    Route::delete('/faqs/{faq}', [AdminDashboardController::class, 'destroyFaq'])->name('faqs.destroy');
+    Route::get('/settings', [AdminDashboardController::class, 'settings'])->name('settings');
+    Route::put('/settings', [AdminDashboardController::class, 'updateSettings'])->name('settings.update');
+    Route::get('/notifications/poll', [CustomerDashboardController::class, 'poll'])->name('notifications.poll');
+});
