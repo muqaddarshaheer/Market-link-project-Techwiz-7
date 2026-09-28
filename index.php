@@ -9,7 +9,9 @@ require_once __DIR__.DIRECTORY_SEPARATOR.'bootstrap'.DIRECTORY_SEPARATOR.'missin
 if (ml_needs_setup(__DIR__)) {
     $script = basename($_SERVER['SCRIPT_NAME'] ?? '');
     $uriPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-    $isInstaller = ($script === 'install.php') || str_ends_with($uriPath, '/install.php');
+    $isInstaller = in_array($script, ['install.php', 'import-db.php'], true)
+        || str_ends_with($uriPath, '/install.php')
+        || str_ends_with($uriPath, '/import-db.php');
     if (! $isInstaller) {
         ml_try_auto_setup(__DIR__);
     }

@@ -1,5 +1,10 @@
 * text=auto eol=lf
 
+# Keep SQL dumps exact bytes (prevent Windows UTF-16 / CRLF corruption)
+*.sql -text
+marketlink.sql -text
+database/marketlink.sql -text
+
 *.blade.php diff=html
 *.css diff=css
 *.html diff=html

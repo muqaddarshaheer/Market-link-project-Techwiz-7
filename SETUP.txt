@@ -1,23 +1,18 @@
-MarketLink — 60 SECOND START
+MarketLink — START HERE (judges)
 
-NEED: XAMPP PHP 8.2/8.3 + MySQL ON
+1) Unzip into C:\xampp\htdocs\
+2) XAMPP: Apache + MySQL ON
+3) Open ONE of these:
 
-A) AUTO (best)
-1) Unzip ZIP into C:\xampp\htdocs\
-2) Open: http://localhost/Your-Folder-Name/
+   http://localhost/Your-Folder-Name/import-db.php
+   → click "Import marketlink.sql"
 
-B) phpMyAdmin SQL import
-1) http://localhost/phpmyadmin
-2) Import tab
-3) Choose file: database/marketlink.sql  (or marketlink.sql in root)
-4) Character set of the file: utf-8
-5) Click Go
-6) Open the site in browser
+   OR just:
+   http://localhost/Your-Folder-Name/
+   → auto setup
 
-Demo:
-farmer@marketlink.com / Farmer@123
-customer@marketlink.com / Customer@123
-admin@marketlink.com / Admin@123
+DO NOT use phpMyAdmin Import if it shows "Unexpected character"
+(that is a Windows encoding bug). Use import-db.php instead.
 
-If phpMyAdmin says "Unexpected character" / 703 errors:
-you opened a UTF-16 copy. Re-download fresh ZIP from GitHub and import again with charset utf-8.
+Demo: farmer@marketlink.com / Farmer@123
+Need: PHP 8.2 or 8.3

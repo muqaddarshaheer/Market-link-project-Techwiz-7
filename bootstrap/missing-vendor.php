@@ -48,10 +48,10 @@ function ml_setup_fail_page(string $root, string $error, array $logs = []): void
     echo '<ol class="muted">';
     echo '<li>XAMPP Control Panel → start <strong>Apache</strong> + <strong>MySQL</strong></li>';
     echo '<li>PHP must be <strong>8.2+</strong> (Laravel 11)</li>';
-    echo '<li>Folder <code>'.htmlspecialchars($folder, ENT_QUOTES, 'UTF-8').'</code> me <code>setup.bat</code> double-click</li>';
-    echo '<li>Ya neeche Retry dabao</li>';
+    echo '<li>Open <code>import-db.php</code> to load SQL (skip phpMyAdmin if it errors)</li>';
+    echo '<li>Or <code>setup.bat</code> / Retry below</li>';
     echo '</ol>';
-    echo '<p><a class="btn" href="./">Retry</a> <a class="btn" href="./install.php">Open installer</a></p>';
+    echo '<p><a class="btn" href="./">Retry</a> <a class="btn" href="./import-db.php">Import SQL</a> <a class="btn" href="./install.php">Installer</a></p>';
     if ($logs) {
         echo '<pre>'.htmlspecialchars(implode("\n\n", $logs), ENT_QUOTES, 'UTF-8').'</pre>';
     }
