@@ -9,6 +9,7 @@
 /composer.phar
 /composer-setup.php
 /storage/framework/install.lock
+/MarketLink-READY.zip
 .env
 .env.backup
 .env.production
