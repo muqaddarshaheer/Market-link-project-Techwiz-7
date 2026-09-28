@@ -1,21 +1,23 @@
-MarketLink — ZIP / XAMPP (testers)
-
-GitHub ZIP me "vendor" folder nahi aati. Sirf EK dafa setup chalao.
+MarketLink — kisi ko bhi kaise bhejo (chal jaye)
 
 ========================================
-1) Folder ko C:\xampp\htdocs\ me rakho
-2) XAMPP me Apache + MySQL ON karo
-3) setup.bat pe DOUBLE-CLICK (internet pehli dafa)
-   YA browser: http://localhost/Your-Folder/install.php
-4) Done. Site kholo:
-   http://localhost/Your-Folder-Name/
+TUM (developer) — READY ZIP banao
 ========================================
+1) Apne PC pe pehle setup.bat chala lo (ek dafa) taake vendor/ ho
+2) SHARE-ZIP.bat double-click
+3) Desktop pe "MarketLink-READY.zip" ban jayegi
+4) YEH ZIP WhatsApp / Drive pe bhejo
 
-Kuch aur manually nahi chalana — database + seed automatic.
+GitHub "Download ZIP" mat bhejo testing ke liye — usme vendor nahi hota.
 
-Demo logins:
-- farmer@marketlink.com / Farmer@123
-- customer@marketlink.com / Customer@123
-- admin@marketlink.com / Admin@123
+========================================
+DOST / TESTER
+========================================
+1) MarketLink-READY.zip ko C:\xampp\htdocs\ me unzip
+2) XAMPP: Apache + MySQL ON
+3) Browser: http://localhost/Folder-Name/
+4) Pehli visit pe site KHUD setup kar leti hai (DB + demo data)
+5) Login:
+   farmer@marketlink.com / Farmer@123
 
-Agar pehle site kholo bina setup ke: friendly page aayegi (fatal error nahi).
+Agar MySQL off ho to error page pe "Retry" — MySQL on karke dubara kholo.

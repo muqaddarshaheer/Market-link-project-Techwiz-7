@@ -7,12 +7,11 @@
 $publicPath = __DIR__.DIRECTORY_SEPARATOR.'public';
 require __DIR__.DIRECTORY_SEPARATOR.'bootstrap'.DIRECTORY_SEPARATOR.'missing-vendor.php';
 if (ml_needs_setup(__DIR__)) {
-    // Allow the installer itself to run without the lock file.
     $script = basename($_SERVER['SCRIPT_NAME'] ?? '');
     $uriPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
     $isInstaller = ($script === 'install.php') || str_ends_with($uriPath, '/install.php');
     if (! $isInstaller) {
-        ml_missing_vendor_page(__DIR__);
+        ml_try_auto_setup(__DIR__);
     }
 }
 

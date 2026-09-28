@@ -7,7 +7,7 @@ define('LARAVEL_START', microtime(true));
 require __DIR__.'/../bootstrap/missing-vendor.php';
 $appRoot = dirname(__DIR__);
 if (ml_needs_setup($appRoot)) {
-    ml_missing_vendor_page($appRoot);
+    ml_try_auto_setup($appRoot);
 }
 $autoload = $appRoot.'/vendor/autoload.php';
 
