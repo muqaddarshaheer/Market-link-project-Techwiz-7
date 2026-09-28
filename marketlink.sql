@@ -1,12 +1,7 @@
--- MarketLink TechWiz 7 — FULL database (import-friendly)
--- =====================================================
--- phpMyAdmin (60 seconds):
---   1) Open http://localhost/phpmyadmin
---   2) Click Import → Choose File → database/marketlink.sql → Go
---   3) Open http://localhost/Your-Folder-Name/
--- Or just open the site: auto-setup imports this file.
+-- MarketLink TechWiz 7 - FULL database
+-- phpMyAdmin: Import this file (Character set of file = utf-8)
 -- Demo: farmer@marketlink.com / Farmer@123
--- =====================================================
+
 -- MariaDB dump 10.19  Distrib 10.4.32-MariaDB, for Win64 (AMD64)
 --
 -- Host: localhost    Database: marketlink
@@ -989,4 +984,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-09-28 13:34:05
+-- Dump completed on 2026-09-28 13:40:05
