@@ -3,7 +3,7 @@ setlocal EnableExtensions
 cd /d "%~dp0"
 
 echo.
-echo === MarketLink setup (XAMPP / GitHub ZIP) ===
+echo === MarketLink — one-click setup (ZIP / XAMPP) ===
 echo.
 
 set PHP_BIN=
@@ -13,59 +13,39 @@ if "%PHP_BIN%"=="" (
   where php >nul 2>nul && set PHP_BIN=php
 )
 if "%PHP_BIN%"=="" (
-  echo ERROR: PHP not found. Install XAMPP and start again.
+  echo ERROR: PHP not found. Install XAMPP first.
   echo Expected: C:\xampp\php\php.exe
   pause
   exit /b 1
 )
 
 echo Using PHP: %PHP_BIN%
+echo Make sure XAMPP MySQL is RUNNING, then wait...
 echo.
 
-if not exist ".env" (
-  if exist ".env.example" (
-    copy /Y ".env.example" ".env" >nul
-    echo Created .env
-  )
-)
-
-if not exist "vendor\autoload.php" (
-  if not exist "composer.phar" (
-    echo Downloading Composer...
-    "%PHP_BIN%" -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-    if errorlevel 1 (
-      echo Could not download Composer. Check internet.
-      pause
-      exit /b 1
-    )
-    "%PHP_BIN%" composer-setup.php
-    del composer-setup.php >nul 2>nul
-  )
-  echo Installing vendor packages...
-  "%PHP_BIN%" composer.phar install --no-interaction --prefer-dist
-  if errorlevel 1 (
-    echo composer install failed.
-    pause
-    exit /b 1
-  )
-) else (
-  echo vendor\ already exists
-)
-
-echo Generating app key...
-"%PHP_BIN%" artisan key:generate --force
-
-if not exist "storage\framework" mkdir "storage\framework"
-if not exist "storage\logs" mkdir "storage\logs"
-if not exist "bootstrap\cache" mkdir "bootstrap\cache"
-echo. > "storage\framework\install.lock"
+"%PHP_BIN%" -d max_execution_time=0 setup-cli.php
+set EXITCODE=%ERRORLEVEL%
 
 echo.
-echo DONE.
-echo 1^) XAMPP: start Apache + MySQL
-echo 2^) phpMyAdmin: create database "marketlink"
-echo 3^) Run:  "%PHP_BIN%" artisan migrate --seed
-echo 4^) Open: http://localhost/%CD:~3%\
-echo    or:    http://localhost/Market-link-project-Techwiz-7-main/
+if not "%EXITCODE%"=="0" (
+  echo Setup FAILED. Fix the error above and run setup.bat again.
+  pause
+  exit /b %EXITCODE%
+)
+
+for %%I in ("%CD%") do set FOLDER=%%~nxI
+
+echo.
+echo ========================================
+echo  SUCCESS — site is ready
+echo ========================================
+echo.
+echo Open in browser:
+echo   http://localhost/%FOLDER%/
+echo.
+echo Demo logins:
+echo   farmer@marketlink.com   / Farmer@123
+echo   customer@marketlink.com / Customer@123
+echo   admin@marketlink.com    / Admin@123
 echo.
 pause

@@ -52,25 +52,30 @@ class AppServiceProvider extends ServiceProvider
             $unread = 0;
             $cartCount = 0;
 
-            if ($user) {
-                $unread = (int) Cache::remember(
-                    'user.'.$user->id.'.unread',
-                    20,
-                    fn () => $user->appNotifications()->where('is_read', false)->count()
-                );
-
-                if ($user->isCustomer()) {
-                    $cartCount = (int) Cache::remember(
-                        'user.'.$user->id.'.cart_qty',
+            try {
+                if ($user) {
+                    $unread = (int) Cache::remember(
+                        'user.'.$user->id.'.unread',
                         20,
-                        fn () => (int) ($user->cart?->items()->sum('quantity') ?? 0)
+                        fn () => $user->appNotifications()->where('is_read', false)->count()
                     );
+
+                    if ($user->isCustomer()) {
+                        $cartCount = (int) Cache::remember(
+                            'user.'.$user->id.'.cart_qty',
+                            20,
+                            fn () => (int) ($user->cart?->items()->sum('quantity') ?? 0)
+                        );
+                    }
+                } else {
+                    $cartCount = (int) array_sum(array_map('intval', session('ml_guest_cart', [])));
                 }
-            } else {
+
+                $settings = Cache::remember('settings.all', 300, fn () => Setting::query()->pluck('value', 'key')->all());
+            } catch (\Throwable) {
+                $settings = [];
                 $cartCount = (int) array_sum(array_map('intval', session('ml_guest_cart', [])));
             }
-
-            $settings = Cache::remember('settings.all', 300, fn () => Setting::query()->pluck('value', 'key')->all());
 
             $view->with([
                 'unreadNotifications' => $unread,
@@ -85,9 +90,13 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('layouts.app', function ($view) {
-            $view->with('liveAnnouncements', Cache::remember('announcements.live', 60, function () {
-                return Announcement::query()->live()->latest('published_at')->take(3)->get();
-            }));
+            try {
+                $view->with('liveAnnouncements', Cache::remember('announcements.live', 60, function () {
+                    return Announcement::query()->live()->latest('published_at')->take(3)->get();
+                }));
+            } catch (\Throwable) {
+                $view->with('liveAnnouncements', collect());
+            }
         });
     }
 }

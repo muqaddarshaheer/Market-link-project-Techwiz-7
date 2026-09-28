@@ -5,10 +5,15 @@
  */
 
 $publicPath = __DIR__.DIRECTORY_SEPARATOR.'public';
-$autoload = __DIR__.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
-if (! is_file($autoload)) {
-    require __DIR__.DIRECTORY_SEPARATOR.'bootstrap'.DIRECTORY_SEPARATOR.'missing-vendor.php';
-    ml_missing_vendor_page(__DIR__);
+require __DIR__.DIRECTORY_SEPARATOR.'bootstrap'.DIRECTORY_SEPARATOR.'missing-vendor.php';
+if (ml_needs_setup(__DIR__)) {
+    // Allow the installer itself to run without the lock file.
+    $script = basename($_SERVER['SCRIPT_NAME'] ?? '');
+    $uriPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+    $isInstaller = ($script === 'install.php') || str_ends_with($uriPath, '/install.php');
+    if (! $isInstaller) {
+        ml_missing_vendor_page(__DIR__);
+    }
 }
 
 $uri = urldecode(parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/', PHP_URL_PATH));

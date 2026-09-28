@@ -8,6 +8,7 @@
 /vendor
 /composer.phar
 /composer-setup.php
+/storage/framework/install.lock
 .env
 .env.backup
 .env.production
