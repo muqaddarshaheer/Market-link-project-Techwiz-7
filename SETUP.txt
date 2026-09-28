@@ -1,23 +1,26 @@
-MarketLink — kisi ko bhi kaise bhejo (chal jaye)
+MarketLink — kisi bhi PC pe kaise chalaye
 
 ========================================
-TUM (developer) — READY ZIP banao
+GitHub ZIP (Code → Download ZIP)
 ========================================
-1) Apne PC pe pehle setup.bat chala lo (ek dafa) taake vendor/ ho
-2) SHARE-ZIP.bat double-click
-3) Desktop pe "MarketLink-READY.zip" ban jayegi
-4) YEH ZIP WhatsApp / Drive pe bhejo
-
-GitHub "Download ZIP" mat bhejo testing ke liye — usme vendor nahi hota.
-
-========================================
-DOST / TESTER
-========================================
-1) MarketLink-READY.zip ko C:\xampp\htdocs\ me unzip
+1) Unzip → C:\xampp\htdocs\
 2) XAMPP: Apache + MySQL ON
 3) Browser: http://localhost/Folder-Name/
-4) Pehli visit pe site KHUD setup kar leti hai (DB + demo data)
-5) Login:
-   farmer@marketlink.com / Farmer@123
+4) Pehli visit pe site KHUD setup karti hai (.env + DB + demo data)
 
-Agar MySQL off ho to error page pe "Retry" — MySQL on karke dubara kholo.
+Composer / manual migrate zaroori NAHI — vendor GitHub ZIP me included hai.
+
+========================================
+READY ZIP (SHARE-ZIP.bat) — optional
+========================================
+Desktop pe MarketLink-READY.zip bhi bana sakte ho sharing ke liye.
+Same steps: unzip → MySQL ON → browser open.
+
+========================================
+Demo login (seed ke baad)
+========================================
+farmer@marketlink.com / Farmer@123
+customer@marketlink.com / Customer@123
+admin@marketlink.com / Admin@123
+
+Agar MySQL band ho: XAMPP me MySQL start karke page pe Retry.

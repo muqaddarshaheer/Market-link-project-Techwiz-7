@@ -102,16 +102,17 @@ Guest / Customer          Farmer                    Admin
 
 ## Setup
 
-### GitHub ZIP (XAMPP testers)
+### GitHub ZIP / any PC (XAMPP)
 
-**Best for sharing:** on your PC run **`SHARE-ZIP.bat`** → Desktop pe `MarketLink-READY.zip` banegi (vendor included). Yahi ZIP bhejo — tester unzip karke site open kare, pehli visit pe auto-setup.
+`vendor/` is included in the repo so **Code → Download ZIP** works without Composer.
 
 1. Unzip into `C:\xampp\htdocs\`
 2. Start **Apache + MySQL** in XAMPP
-3. Open: `http://localhost/Your-Folder-Name/` (auto DB + seed)
-4. Or double-click **`setup.bat`** / `install.php` if auto needs a retry
+3. Open: `http://localhost/Your-Folder-Name/`
+4. First visit auto-creates `.env`, database `marketlink`, migrate + seed
 
-See **SETUP.txt**.
+Optional: **`SHARE-ZIP.bat`** → Desktop `MarketLink-READY.zip` for WhatsApp sharing.  
+If MySQL was offline, start it and click **Retry**. See **SETUP.txt**.
 
 ### Git clone / developers
 

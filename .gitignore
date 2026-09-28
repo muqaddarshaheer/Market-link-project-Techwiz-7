@@ -5,7 +5,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
-/vendor
+# vendor/ IS tracked on purpose so GitHub "Download ZIP" runs on any XAMPP PC
 /composer.phar
 /composer-setup.php
 /storage/framework/install.lock
