@@ -1,24 +1,38 @@
-<nav class="navbar navbar-expand-lg navbar-ml sticky-top">
-    <div class="container">
+<nav class="navbar navbar-expand-xl navbar-ml fixed-top">
+    <div class="container-fluid px-3 px-xl-4 nav-inner">
         <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('home') }}">
-            <img class="brand-logo" src="{{ asset('images/logo.svg') }}" alt="" width="40" height="40">
-            <span class="fw-bold">{{ $siteName ?? 'MarketLink' }}</span>
+            <img class="brand-logo" src="{{ asset('images/logo.svg') }}" alt="" width="34" height="34">
+            <span class="fw-bold brand-text">{{ $siteName ?? 'MarketLink' }}</span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navMain">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a></li>
-                <li class="nav-item"><a class="nav-link {{ request()->routeIs('markets.*') ? 'active' : '' }}" href="{{ route('markets.index') }}">Markets</a></li>
-                <li class="nav-item"><a class="nav-link {{ request()->routeIs('farmers.*') ? 'active' : '' }}" href="{{ route('farmers.index') }}">Farmers</a></li>
-                <li class="nav-item"><a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('products.index') }}">Products</a></li>
-                <li class="nav-item"><a class="nav-link {{ request()->routeIs('produce-guide') ? 'active' : '' }}" href="{{ route('produce-guide') }}">HarvestWise</a></li>
-                <li class="nav-item"><a class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">About</a></li>
-                <li class="nav-item"><a class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">Contact</a></li>
+            <ul class="navbar-nav me-xl-auto align-items-xl-center nav-links">
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}" title="Home"><i class="bi bi-house-door"></i><span>Home</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('markets.*') ? 'active' : '' }}" href="{{ route('markets.index') }}" title="Markets"><i class="bi bi-geo-alt"></i><span>Markets</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('farmers.*') ? 'active' : '' }}" href="{{ route('farmers.index') }}" title="Farmers"><i class="bi bi-people"></i><span>Farmers</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('products.index') }}" title="Products"><i class="bi bi-basket2"></i><span>Products</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('produce-guide') ? 'active' : '' }}" href="{{ route('produce-guide') }}" title="HarvestWise"><i class="bi bi-flower1"></i><span>HarvestWise</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}" title="About"><i class="bi bi-info-circle"></i><span>About</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}" title="Contact"><i class="bi bi-envelope"></i><span>Contact</span></a>
+                </li>
             </ul>
 
-            <form class="nav-search ms-lg-2 me-lg-2 my-2 my-lg-0" action="{{ route('search') }}" method="GET" x-data="searchBox()" @click.outside="open = false" role="search">
+            <form class="nav-search ms-xl-2 me-xl-2 my-2 my-xl-0" action="{{ route('search') }}" method="GET" x-data="searchBox()" @click.outside="open = false" role="search">
                 <label class="visually-hidden" for="navSearchInput">Search</label>
                 <i class="bi bi-search" aria-hidden="true"></i>
                 <input
@@ -89,24 +103,24 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             @if(auth()->user()->isCustomer())
-                                <li><a class="dropdown-item" href="{{ route('customer.dashboard') }}">Dashboard</a></li>
-                                <li><a class="dropdown-item" href="{{ route('customer.orders.index') }}">Orders</a></li>
-                                <li><a class="dropdown-item" href="{{ route('customer.favorites') }}">Favorites</a></li>
-                                <li><a class="dropdown-item" href="{{ route('customer.profile') }}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ route('customer.dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{{ route('customer.orders.index') }}"><i class="bi bi-receipt"></i> Orders</a></li>
+                                <li><a class="dropdown-item" href="{{ route('customer.favorites') }}"><i class="bi bi-heart"></i> Favorites</a></li>
+                                <li><a class="dropdown-item" href="{{ route('customer.profile') }}"><i class="bi bi-person"></i> Profile</a></li>
                             @elseif(auth()->user()->isFarmer())
-                                <li><a class="dropdown-item" href="{{ route('farmer.dashboard') }}">Farmer dashboard</a></li>
-                                <li><a class="dropdown-item" href="{{ route('farmer.products.index') }}">Products</a></li>
-                                <li><a class="dropdown-item" href="{{ route('farmer.orders.index') }}">Orders</a></li>
-                                <li><a class="dropdown-item" href="{{ route('farmer.profile') }}">Stall profile</a></li>
-                                <li><a class="dropdown-item" href="{{ route('farmer.account') }}">Account</a></li>
-                                <li><a class="dropdown-item" href="{{ route('farmer.insights') }}">Insights</a></li>
+                                <li><a class="dropdown-item" href="{{ route('farmer.dashboard') }}"><i class="bi bi-speedometer2"></i> Farmer dashboard</a></li>
+                                <li><a class="dropdown-item" href="{{ route('farmer.products.index') }}"><i class="bi bi-basket2"></i> Products</a></li>
+                                <li><a class="dropdown-item" href="{{ route('farmer.orders.index') }}"><i class="bi bi-receipt"></i> Orders</a></li>
+                                <li><a class="dropdown-item" href="{{ route('farmer.profile') }}"><i class="bi bi-shop"></i> Stall profile</a></li>
+                                <li><a class="dropdown-item" href="{{ route('farmer.account') }}"><i class="bi bi-person-gear"></i> Account</a></li>
+                                <li><a class="dropdown-item" href="{{ route('farmer.insights') }}"><i class="bi bi-graph-up"></i> Insights</a></li>
                             @else
-                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">Admin dashboard</a></li>
-                                <li><a class="dropdown-item" href="{{ route('admin.settings') }}">Account &amp; settings</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="bi bi-shield-lock"></i> Admin dashboard</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.settings') }}"><i class="bi bi-gear"></i> Account &amp; settings</a></li>
                             @endif
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">@csrf
-                                    <button class="dropdown-item">Log out</button>
+                                    <button class="dropdown-item"><i class="bi bi-box-arrow-right"></i> Log out</button>
                                 </form>
                             </li>
                         </ul>
@@ -116,8 +130,8 @@
                         <i class="bi bi-bag"></i>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ ($cartCount ?? 0) < 1 ? 'd-none' : '' }}" data-cart-badge>{{ $cartCount ?? 0 }}</span>
                     </a>
-                    <a class="btn btn-outline-ml btn-sm" href="{{ route('login') }}">Log in</a>
-                    <a class="btn btn-ml btn-sm" href="{{ route('register') }}">Join</a>
+                    <a class="btn btn-outline-ml btn-sm" href="{{ route('login') }}"><i class="bi bi-box-arrow-in-right"></i> Log in</a>
+                    <a class="btn btn-ml btn-sm" href="{{ route('register') }}"><i class="bi bi-person-plus"></i> Join</a>
                 @endauth
             </div>
         </div>
