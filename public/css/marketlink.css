@@ -138,10 +138,10 @@ body.app-shell {
 }
 .nav-search {
   position: relative;
-  flex: 0 1 200px;
-  min-width: 140px;
-  max-width: 220px;
-  width: 100%;
+  flex: 1 1 240px;
+  min-width: 200px;
+  max-width: 320px;
+  width: auto;
 }
 .nav-actions {
   display: flex;
@@ -161,26 +161,32 @@ body.app-shell {
   text-overflow: ellipsis;
 }
 
-/* Always show icon + label on nav links */
+/* Keep icon + label; give search room; wrap if needed */
 .navbar-ml .nav-link span {
-  display: inline;
+  display: inline !important;
 }
-@media (min-width: 1200px) and (max-width: 1399.98px) {
+.navbar-ml .nav-inner {
+  flex-wrap: wrap;
+  row-gap: .35rem;
+}
+@media (min-width: 1200px) {
   .navbar-ml .nav-link {
-    padding: .35rem .45rem !important;
-    font-size: .8rem;
-    gap: .25rem;
+    padding: .35rem .5rem !important;
+    font-size: .82rem;
   }
-  .nav-search { max-width: 150px; flex-basis: 140px; min-width: 120px; }
-  .navbar-ml .brand-text { max-width: 7.5rem; overflow: hidden; text-overflow: ellipsis; }
-  .nav-actions .btn-sm { padding: .3rem .45rem; font-size: .78rem; }
+  .nav-search {
+    flex: 1 1 260px;
+    min-width: 220px;
+    max-width: 340px;
+  }
+  .navbar-ml .brand-text { max-width: none; }
 }
 @media (min-width: 1400px) {
-  .nav-search { max-width: 240px; flex-basis: 220px; }
+  .nav-search { max-width: 380px; }
 }
 
 @media (max-width: 1199.98px) {
-  .nav-search { max-width: none; flex: 1 1 100%; order: 2; margin-top: .35rem; }
+  .nav-search { max-width: none; flex: 1 1 100%; order: 2; margin-top: .35rem; min-width: 0; }
   .nav-actions { order: 3; width: 100%; flex-wrap: wrap; }
   .navbar-ml .nav-links { width: 100%; flex-wrap: wrap; padding: .35rem 0; }
 }
@@ -1771,12 +1777,41 @@ body:has(.home-page) {
 .product-card-title a:hover { color: var(--ml-green-dark); }
 .product-card-stall { margin: 0; color: var(--ml-muted); font-size: .88rem; }
 .product-card-foot {
-  display: flex; justify-content: space-between; align-items: center;
-  gap: .65rem; flex-wrap: wrap; margin-top: .35rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .55rem .65rem;
+  margin-top: .55rem;
+}
+.product-card-foot > strong {
+  min-width: 0;
+  line-height: 1.25;
 }
 .product-card-foot strong span { font-size: .85rem; font-weight: 600; color: var(--ml-muted); }
-.product-card-actions { display: flex; gap: .35rem; flex-wrap: wrap; }
+.product-card-actions {
+  display: flex;
+  gap: .4rem;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-end;
+}
+.product-card-actions .btn {
+  min-height: 36px;
+  padding: .35rem .85rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
 .product-card .thumb { display: block; color: inherit; text-decoration: none; }
+@media (max-width: 419.98px) {
+  .product-card-foot {
+    grid-template-columns: 1fr;
+  }
+  .product-card-actions {
+    justify-content: flex-start;
+    width: 100%;
+  }
+}
 .home-quote {
   padding: 1rem 1.1rem; border-left: 3px solid #1f6b45; background: #f4faf6;
   border-radius: 0 14px 14px 0; height: 100%;
@@ -3972,7 +4007,12 @@ body:has(.home-page) main.py-4 { padding-top: .35rem !important; }
 
 .shop-results { position: relative; min-height: 240px; transition: opacity .15s ease; }
 .shop-results.is-loading { opacity: .45; pointer-events: none; }
-.shop-reveal { opacity: 0; transform: translateY(12px); transition: opacity .18s ease, transform .18s ease; }
+/* Visible by default so Add/View never stay invisible if JS is slow */
+.shop-reveal { opacity: 1; transform: none; transition: opacity .18s ease, transform .18s ease; }
+.shop-results.is-animating .shop-reveal:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(12px);
+}
 .shop-reveal.is-visible { opacity: 1; transform: none; }
 .shop-filters a { color: var(--ml-green-dark); font-weight: 700; }
 @media (max-width: 991.98px) {
@@ -6303,10 +6343,17 @@ body:has(.home-page) main.py-4 { padding-top: .35rem !important; }
   gap: .5rem;
 }
 .guest-slot {
+  position: relative;
   margin: 0;
   cursor: pointer;
 }
-.guest-slot input { position: absolute; opacity: 0; pointer-events: none; }
+.guest-slot input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
 .guest-slot span {
   display: block;
   text-align: center;

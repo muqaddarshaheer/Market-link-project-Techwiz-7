@@ -40,7 +40,7 @@
                     class="form-control"
                     type="search"
                     name="q"
-                    placeholder="Search produce, stalls, markets"
+                    placeholder="Search produce or stalls"
                     autocomplete="off"
                     enterkeyhint="search"
                     x-model="q"
