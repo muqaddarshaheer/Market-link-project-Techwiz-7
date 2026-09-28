@@ -1,24 +1,26 @@
-MarketLink — kisi bhi PC pe (GitHub ZIP)
+MarketLink — 60 SECOND START (judges / any PC)
 
-REQUIREMENTS
-- XAMPP with PHP 8.2 or 8.3 (Laravel 11)
-- Apache + MySQL ON
+NEED: XAMPP with PHP 8.2 or 8.3 + MySQL
 
-========================================
-STEPS
-========================================
-1) GitHub → Code → Download ZIP
-2) Unzip → C:\xampp\htdocs\
-3) XAMPP: Apache + MySQL start
-4) Browser: http://localhost/Folder-Name/
-5) Pehli visit pe auto setup (.env + DB + demo)
+----------------------------------------
+EASIEST (recommended)
+----------------------------------------
+1) Unzip GitHub ZIP into C:\xampp\htdocs\
+2) XAMPP: start Apache + MySQL
+3) Open: http://localhost/Market-link-project-Techwiz-7-main/
+   → site auto-imports database/marketlink.sql
 
-Composer zaroori NAHI — vendor ZIP me included hai.
+----------------------------------------
+OR manual SQL (phpMyAdmin)
+----------------------------------------
+1) http://localhost/phpmyadmin
+2) Import → choose file:  database/marketlink.sql  → Go
+   (file creates DB "marketlink" + all tables + demo data)
+3) Open site folder in browser
 
-Demo:
-farmer@marketlink.com / Farmer@123
-customer@marketlink.com / Customer@123
-admin@marketlink.com / Admin@123
+Demo logins:
+  farmer@marketlink.com   / Farmer@123
+  customer@marketlink.com / Customer@123
+  admin@marketlink.com    / Admin@123
 
-Agar PHP 8.0/8.1 ho: site clear message degi — XAMPP PHP 8.2+ install karo.
-Agar MySQL off ho: start karke Retry.
+If PHP is 8.0/8.1: install XAMPP PHP 8.2+ first.

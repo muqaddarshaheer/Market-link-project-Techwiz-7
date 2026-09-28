@@ -102,18 +102,17 @@ Guest / Customer          Farmer                    Admin
 
 ## Setup
 
-### GitHub ZIP / any PC (XAMPP)
+### GitHub ZIP / any PC (XAMPP) — 60 seconds
 
-`vendor/` is in the repo — **Code → Download ZIP** works without Composer.
-
-**Need PHP 8.2 or 8.3** (Laravel 11). Old XAMPP PHP 8.0/8.1 will show a clear upgrade page.
+**Need PHP 8.2 or 8.3** + MySQL. `vendor/` and `database/marketlink.sql` are in the ZIP.
 
 1. Unzip into `C:\xampp\htdocs\`
 2. Start **Apache + MySQL**
-3. Open `http://localhost/Your-Folder-Name/`
-4. First visit auto-creates `.env`, DB `marketlink`, migrate + seed
+3. Open `http://localhost/Your-Folder-Name/` → auto-imports SQL + starts
 
-See **SETUP.txt**.
+**Manual SQL (optional):** phpMyAdmin → Import → `database/marketlink.sql` (or root `marketlink.sql`)
+
+See **SETUP.txt**. Demo: `farmer@marketlink.com` / `Farmer@123`
 
 ### Git clone / developers
 

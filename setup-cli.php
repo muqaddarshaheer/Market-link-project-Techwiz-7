@@ -142,6 +142,87 @@ function ml_run(string $cmd, string $cwd): array
     return [proc_close($proc), (string) $out, (string) $err];
 }
 
+function ml_find_mysql(): ?string
+{
+    foreach ([
+        'C:\\xampp\\mysql\\bin\\mysql.exe',
+        'C:\\XAMPP\\mysql\\bin\\mysql.exe',
+        '/opt/lampp/bin/mysql',
+        '/usr/bin/mysql',
+    ] as $bin) {
+        if (is_file($bin)) {
+            return $bin;
+        }
+    }
+
+    $where = [];
+    if (strncasecmp(PHP_OS, 'WIN', 3) === 0) {
+        @exec('where mysql 2>nul', $where);
+    } else {
+        @exec('command -v mysql 2>/dev/null', $where);
+    }
+    foreach ($where as $line) {
+        $line = trim($line);
+        if ($line !== '' && is_file($line)) {
+            return $line;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Import database/marketlink.sql (phpMyAdmin-compatible dump).
+ */
+function ml_import_sql_dump(string $root, array &$logs): bool
+{
+    $sqlFile = $root.DIRECTORY_SEPARATOR.'database'.DIRECTORY_SEPARATOR.'marketlink.sql';
+    if (! is_file($sqlFile)) {
+        $sqlFile = $root.DIRECTORY_SEPARATOR.'marketlink.sql';
+    }
+    if (! is_file($sqlFile)) {
+        $logs[] = 'SQL dump not found';
+
+        return false;
+    }
+
+    $mysql = ml_find_mysql();
+    if ($mysql) {
+        // Dump already contains CREATE DATABASE + USE marketlink
+        $cmd = escapeshellarg($mysql).' -u root --default-character-set=utf8mb4 < '.escapeshellarg($sqlFile);
+        if (strncasecmp(PHP_OS, 'WIN', 3) === 0) {
+            $cmd = 'cmd /c '.$cmd;
+        }
+        [$code, $out, $err] = ml_run($cmd, $root);
+        $logs[] = trim($out."\n".$err) ?: 'mysql import finished';
+        if ($code === 0) {
+            $logs[] = 'Imported database/marketlink.sql via mysql';
+
+            return true;
+        }
+        $logs[] = 'mysql CLI import failed, trying PHP fallback…';
+    }
+
+    // PHP fallback: split on ;\n (good enough for our mysqldump)
+    try {
+        $pdo = new PDO('mysql:host=127.0.0.1;port=3306', 'root', '', [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::MYSQL_ATTR_MULTI_STATEMENTS => true,
+        ]);
+        $sql = (string) file_get_contents($sqlFile);
+        $sql = preg_replace('/^--.*$/m', '', $sql);
+        $sql = preg_replace('/\/\*![0-9]{5}.*?\*\//s', '', $sql);
+        $pdo->exec($sql);
+        $logs[] = 'Imported database/marketlink.sql via PHP';
+
+        return true;
+    } catch (Throwable $e) {
+        $logs[] = 'PHP SQL import failed: '.$e->getMessage();
+
+        return false;
+    }
+}
+
 function ml_set_env_value(string $envPath, string $key, string $value): void
 {
     $contents = is_file($envPath) ? (string) file_get_contents($envPath) : '';
@@ -262,6 +343,7 @@ function ml_run_full_setup(string $root, ?string $detectedBaseUrl = null): array
             );
         }
 
+        // Prefer ready SQL dump (fast for judges). Fallback: migrate --seed.
         $alreadySeeded = false;
         try {
             $pdoDb = new PDO('mysql:host=127.0.0.1;port=3306;dbname=marketlink', 'root', '', [
@@ -274,20 +356,21 @@ function ml_run_full_setup(string $root, ?string $detectedBaseUrl = null): array
         }
 
         if ($alreadySeeded) {
-            [$code, $out, $err] = ml_run(escapeshellarg($php).' artisan migrate --force', $root);
-            $logs[] = trim($out."\n".$err);
-            if ($code !== 0) {
-                throw new RuntimeException('migrate failed. See log above.');
-            }
-            $logs[] = 'Database already had data — migrated only (seed skipped)';
-        } else {
+            $logs[] = 'Database already has data — keeping it';
+        } elseif (! ml_import_sql_dump($root, $logs)) {
             [$code, $out, $err] = ml_run(escapeshellarg($php).' artisan migrate --force --seed', $root);
             $logs[] = trim($out."\n".$err);
             if ($code !== 0) {
-                throw new RuntimeException('migrate --seed failed. See log above.');
+                throw new RuntimeException(
+                    'SQL import and migrate --seed both failed. In phpMyAdmin: Import database/marketlink.sql then Retry.'
+                );
             }
-            $logs[] = 'Database migrated + seeded';
+            $logs[] = 'Database migrated + seeded (fallback)';
         }
+
+        // Ensure any newer migrations after the dump still apply
+        [$code, $out, $err] = ml_run(escapeshellarg($php).' artisan migrate --force', $root);
+        $logs[] = trim($out."\n".$err) ?: 'migrate check done';
 
         [$code, $out, $err] = ml_run(escapeshellarg($php).' artisan storage:link', $root);
         $logs[] = trim($out."\n".$err) ?: 'storage:link done';
